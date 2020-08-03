@@ -12,13 +12,11 @@
 
 ## Project Overview
 
-[Trello Board](https://trello.com/b/kfJ5JVr9/labspt7-life-logger)
+[Trello Board](https://trello.com/b/LCsRTrVS/agile-sprint-board)
 
-[Product Canvas](https://www.notion.so/Life-Logger-7281115559ed4d9282db7fcde90238c0)
+[Product Vision Doc](https://docs.google.com/document/d/16fimUo2P8UbLCcSzHP-_v34BNaltLbc5OlVyNgevw28/edit?usp=sharing)
 
-Organize all the things about life that are irregular. The things you forget to do. 
-Change your oil, rotate your tires, replace your AC air filter. Home, auto, other maintenance tasks. 
-Log events, later searchable so you can remember when/where/what you did.
+
 
 
 ### Key Features
