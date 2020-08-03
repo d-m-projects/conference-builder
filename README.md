@@ -1,10 +1,7 @@
 ## Contributors
 
 [Joseph Hayden](https://github.com/JHaydenDev)
-| :------: | :------: | :------: | :------: |
-[<img src="./contributors/joseph.png" width = "200" />](https://github.com/JHaydenDev)|[<img src="./contributors/karen.png" width = "200" />](https://github.com/kly001)|
-[<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/JHaydenDev)|[<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/kly001)|
-|[<img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com//)|[<img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/)|[ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/)|[ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/)   
+
 
 <br/>
 
