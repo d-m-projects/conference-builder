@@ -21,21 +21,11 @@
 
 ### Key Features
 
-- Access a calendar with events displayed
-- Ability to create events with various information. When, where, category (work,home life, recreation).
-- Search feature so you can remember when/where/what you did.
-- Functional user dashboard to manage events.
-
 ## Tech Stack
 
 #### Front end built using:
 
-	- React, using Create React as a framework.
-	- useContext and Redux for state management.
-
-#### Front end deployed to [Heroku](https://github.com/Lambda-School-Labs/life-logger-fe)
-
-#### Back end deployed to [Heroku](https://github.com/Lambda-School-Labs/life-logger-be)
+#### Front end deployed to [Heroku](https://dashboard.heroku.com/apps/evening-falls-61116/settings)
 
 # Testing
 
@@ -78,4 +68,4 @@ These contribution guidelines have been adapted from [this good-Contributing.md-
 
 ## Documentation
 
-See [Backend Documentation](https://github.com/Lambda-School-Labs/life-logger-be/blob/master/README.md) for details on the backend of our project.
+See PVD Doc.
