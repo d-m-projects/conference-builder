@@ -33,7 +33,7 @@
 
 # Installation Instructions
 
-	type npm i in the root folder of the project. 
+	type yarn i in the root folder of the project. 
 
 
 ## Issue/Bug Request
