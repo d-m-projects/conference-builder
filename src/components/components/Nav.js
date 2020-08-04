@@ -1,5 +1,5 @@
 //Packages
-import React from "react";
+import React, {useState} from "react";
 import { Link } from "react-router-dom";
 
 import { Menu } from "antd"
@@ -9,15 +9,19 @@ import './Nav.css';
 //Components
 
 const Nav = () => {
+	const [current, setcurrent] = useState({current: "home"})
 
-	const handleClick = () => { }
+	const handleClick = (e) => {
+		console.log(14, e);
+		setcurrent({current: e.key})
+	}
 
 	return (
-		<Menu onClick={handleClick} mode="horizontal">
-			<Menu.Item>
+		<Menu onClick={handleClick} selectedKeys={[current]} mode="horizontal">
+			<Menu.Item key="home">
 				<Link exact to="/">Home</Link>
 			</Menu.Item>
-			<Menu.Item>
+			<Menu.Item key="calendar">
 				<Link to="/calendar">Calendar</Link>
 			</Menu.Item>
 		</Menu>
