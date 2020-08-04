@@ -1,36 +1,36 @@
 //Packages
-import React, {useState} from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+// import { Link } from "react-router-dom";
+import { A } from "hookrouter";
 
 import { Menu } from "antd"
-import { CalendarOutlined, DownloadOutlined} from '@ant-design/icons';
+import { CalendarOutlined, SaveOutlined } from '@ant-design/icons';
 import 'antd/dist/antd.css';
 import './Nav.css';
+
 
 //Components
 
 const Nav = () => {
-	const [current, setcurrent] = useState({current: "home"})
+	const [current, setcurrent] = useState({ current: "home" })
 
 	const handleClick = (e) => {
 		console.log(14, e);
-		setcurrent({current: e.key})
+		setcurrent({ current: e.key })
 	}
 
 	return (
 		<Menu onClick={handleClick} selectedKeys={[current]} mode="horizontal" defaultSelectedKeys={["Home"]}>
-			<Menu.Item key="home"><Link exact to="/">Home</Link></Menu.Item>
-			<Menu.Item key="calendar" icon={<CalendarOutlined />}><Link to="/calendar">Calendar</Link></Menu.Item>
-			<Menu.Item key="Load" icon={<DownloadOutlined />}><Link to="/load">Load</Link></Menu.Item>
+			<Menu.Item key="home">
+				<A href="/">Home</A>
+			</Menu.Item>
+			<Menu.Item key="calendar" icon={<CalendarOutlined />}>
+				<A href="/calendar">Calendar</A>
+			</Menu.Item>
+			<Menu.Item key="file" icon={<SaveOutlined />}>
+				<A href="/file">File</A>
+			</Menu.Item>
 		</Menu>
-		// <Menu onClick={handleClick} selectedKeys={[current]} mode="horizontal">
-		// 	<Menu.Item key="home">
-		// 		<Link exact to="/">Home</Link>
-		// 	</Menu.Item>
-		// 	<Menu.Item key="calendar">
-		// 		<Link to="/calendar">Calendar</Link>
-		// 	</Menu.Item>
-		// </Menu>
 	);
 };
 
