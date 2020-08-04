@@ -20,18 +20,20 @@ const { Header, Content, Footer } = Layout
 
 function App() {
 	return (
-		<Layout className="layout">
-			<Head />
-			<Content style={{ padding: '0 50px' }}>
-				<Breadcrumb style={{ margin: '16px 0' }}>
-					<Breadcrumb.Item>Home</Breadcrumb.Item>
-					<Breadcrumb.Item>List</Breadcrumb.Item>
-					<Breadcrumb.Item>App</Breadcrumb.Item>
-				</Breadcrumb>
-				<div style={{backgroundColor:"white", padding:"20px", height:"200px"}}>Content</div>
-			</Content>
-			<Foot />
-		</Layout>
+		<Router>
+			<Layout className="layout" theme="light" >
+				<Head />
+				<Content style={{ padding: '0 50px' }}>
+					<Breadcrumb style={{ margin: '16px 0' }}>
+						<Breadcrumb.Item>Home</Breadcrumb.Item>
+						<Breadcrumb.Item>List</Breadcrumb.Item>
+						<Breadcrumb.Item>App</Breadcrumb.Item>
+					</Breadcrumb>
+					<div style={{ backgroundColor: "white", padding: "20px", height: "200px" }}>Content</div>
+				</Content>
+				<Foot />
+			</Layout>
+		</Router>
 	)
 	//   return (
 	//     <div>

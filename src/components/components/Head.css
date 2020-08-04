@@ -1,6 +1,14 @@
-header {
+Header {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
 	background-color: peachpuff;
+}
+
+.ant-layout-header{
+	background-color: peachpuff;
+}
+
+.logo {
+	color: navy;
 }

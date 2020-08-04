@@ -3,6 +3,7 @@ import React, {useState} from "react";
 import { Link } from "react-router-dom";
 
 import { Menu } from "antd"
+import { CalendarOutlined, DownloadOutlined} from '@ant-design/icons';
 import 'antd/dist/antd.css';
 import './Nav.css';
 
@@ -17,14 +18,19 @@ const Nav = () => {
 	}
 
 	return (
-		<Menu onClick={handleClick} selectedKeys={[current]} mode="horizontal">
-			<Menu.Item key="home">
-				<Link exact to="/">Home</Link>
-			</Menu.Item>
-			<Menu.Item key="calendar">
-				<Link to="/calendar">Calendar</Link>
-			</Menu.Item>
+		<Menu onClick={handleClick} selectedKeys={[current]} mode="horizontal" defaultSelectedKeys={["Home"]}>
+			<Menu.Item key="home"><Link exact to="/">Home</Link></Menu.Item>
+			<Menu.Item key="calendar" icon={<CalendarOutlined />}><Link to="/calendar">Calendar</Link></Menu.Item>
+			<Menu.Item key="Load" icon={<DownloadOutlined />}><Link to="/load">Load</Link></Menu.Item>
 		</Menu>
+		// <Menu onClick={handleClick} selectedKeys={[current]} mode="horizontal">
+		// 	<Menu.Item key="home">
+		// 		<Link exact to="/">Home</Link>
+		// 	</Menu.Item>
+		// 	<Menu.Item key="calendar">
+		// 		<Link to="/calendar">Calendar</Link>
+		// 	</Menu.Item>
+		// </Menu>
 	);
 };
 
