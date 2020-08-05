@@ -12,7 +12,7 @@ import Head from "./components/components/Head";
 import Foot from "./components/components/Foot";
 
 //Style
-import "./App.css";
+import "./App.scss";
 
 // antd setup
 import { Layout, Menu, Breadcrumb } from 'antd';

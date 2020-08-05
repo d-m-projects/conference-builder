@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { Menu } from "antd"
 import { CalendarOutlined, SaveOutlined } from '@ant-design/icons';
 import 'antd/dist/antd.css';
-import './Nav.css';
+import './Nav.scss';
 
 
 //Components
