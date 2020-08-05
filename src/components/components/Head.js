@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { Layout, Menu } from "antd"
 
 import Nav from "./Nav";
-import './Head.css';
+import './Head.scss';
 
 // antd setup
 const { Header } = Layout
