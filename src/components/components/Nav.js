@@ -1,7 +1,6 @@
 //Packages
 import React, { useState } from "react";
-// import { Link } from "react-router-dom";
-import { A } from "hookrouter";
+import { Link } from "react-router-dom";
 
 import { Menu } from "antd"
 import { CalendarOutlined, SaveOutlined } from '@ant-design/icons';
@@ -22,13 +21,13 @@ const Nav = () => {
 	return (
 		<Menu onClick={handleClick} selectedKeys={[current]} mode="horizontal" defaultSelectedKeys={["Home"]}>
 			<Menu.Item key="home">
-				<A href="/">Home</A>
+				<Link to="/">Home</Link>
 			</Menu.Item>
 			<Menu.Item key="calendar" icon={<CalendarOutlined />}>
-				<A href="/calendar">Calendar</A>
+				<Link to="/calendar">Calendar</Link>
 			</Menu.Item>
 			<Menu.Item key="file" icon={<SaveOutlined />}>
-				<A href="/file">File</A>
+				<Link to="/file">File</Link>
 			</Menu.Item>
 		</Menu>
 	);
