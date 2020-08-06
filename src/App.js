@@ -3,8 +3,9 @@ import React from "react";
 import { Route } from "react-router-dom";
 import { BrowserRouter as Router, Switch } from "react-router-dom";
 
-import Dashboard from "./components/dashboard/index";
-import Create from "./components/Create";
+import Dashboard from "./components/dashboard/";
+import Create from "./components/create/";
+import File from "./components/file/";
 import LandingPage from "./components/landing-page";
 import Head from "./components/components/Head";
 import Foot from "./components/components/Foot";
@@ -13,7 +14,7 @@ import Foot from "./components/components/Foot";
 import "./App.scss";
 
 // antd setup
-import { Layout, Breadcrumb, Grid, Row, Col } from 'antd';
+import { Breadcrumb, Col, Grid, Layout, Row, } from 'antd';
 import 'antd/dist/antd.css';
 const { Content } = Layout
 
@@ -23,13 +24,13 @@ const { useBreakpoint } = Grid
 function App() {
 	const screens = useBreakpoint();
 	return (
-		<Layout className="layout" theme="light" >
-			<Router>
+		<Router>
+			<Layout className="layout" theme="light" >
 				<Row>
 					<Col span={24}>
 						{console.log(27, screens)}
 						<Head />
-						<Content style={{ padding: '0 50px' }}>
+						<Content style={{ margin: '50px' }}>
 							{/* <Breadcrumb style={{ margin: '16px 0' }}>
 								<Breadcrumb.Item>Home</Breadcrumb.Item>
 								<Breadcrumb.Item>List</Breadcrumb.Item>
@@ -40,14 +41,15 @@ function App() {
 									<Route exact path="/" component={LandingPage} />
 									<Route path="/create" component={Create} />
 									<Route path="/dashboard" component={Dashboard} />
+									<Route path="/file" component={File} />
 								</Switch>
 							</div>
 						</Content>
 						<Foot />
 					</Col>
 				</Row>
-			</Router>
-		</Layout>
+			</Layout>
+		</Router>
 	)
 }
 
