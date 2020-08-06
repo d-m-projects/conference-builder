@@ -63,8 +63,6 @@ const Create = () => {
 		</Steps>
 	)
 
-
-
 	return (
 		<Card title={showsteps}>
 			<Fade >
