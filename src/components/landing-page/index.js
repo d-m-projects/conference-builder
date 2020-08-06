@@ -1,14 +1,15 @@
 import React from 'react';
+import Fade from 'react-reveal/Fade'
 
 
 const LandingPage = () => {
 
 	return (
-		<div>
+		<Fade bottom>
 			<div>
-				This is the LandingPage!
-</div>
-		</div>
+				<p>This is the LandingPage!</p>
+			</div>
+		</Fade >
 	);
 };
 

@@ -1,19 +1,25 @@
 import React, { useState } from 'react';
 import { Redirect, useHistory } from "react-router-dom";
+import Fade from 'react-reveal/Fade'
 
 // antd setup
 import { Button, Steps, message } from 'antd';
 import { CaretRightOutlined } from '@ant-design/icons';
 import 'antd/dist/antd.css';
 
-const {Step} = Steps;
+import Step1 from "./create/Step1";
+import Step2 from "./create/Step2";
+import Step3 from "./create/Step3";
+import Step4 from "./create/Step4";
+
+const { Step } = Steps;
 
 const Create = () => {
-	const [start, setStart] = useState(0);
+	const [start, setStart] = useState(false);
 	const [current, setCurrent] = useState(0);
 
 	const handleStart = () => {
-		setStart(1)
+		setStart(true)
 	}
 
 	let history = useHistory();
@@ -25,21 +31,21 @@ const Create = () => {
 	const steps = [
 		{
 			title: 'First',
-			content: 'Step One',
+			content: <Step1 />,
 		},
 		{
 			title: 'Second',
-			content: 'Step Two',
+			content: <Step2 />,
 		},
 		{
 			title: 'Third',
-			content: 'Step Three',
+			content: <Step3 />,
 		},
 		{
 			title: 'Finish',
-			content: 'Complete',
+			content: <Step4 />,
 		},
-	]; 
+	];
 
 	const next = () => {
 		setCurrent(current + 1)
@@ -49,12 +55,14 @@ const Create = () => {
 		setCurrent(current - 1)
 	}
 	const startbutt = (
-		<div>
-			<Button type="primary" shape="round" size="large" onClick = {handleStart}>Create New</Button>
-		</div>
+		<Fade bottom>
+			<div>
+				<Button type="primary" shape="round" size="large" onClick={handleStart}>Create New</Button>
+			</div>
+		</Fade>
 	)
 	const flow = (
-		<>
+		<Fade >
 			<Steps current={current}>
 				{steps.map(item => (
 					<Step key={item.title} title={item.title} />
@@ -78,7 +86,7 @@ const Create = () => {
 					</Button>
 				)}
 			</div>
-		</>	)
+		</Fade>)
 
 	return (
 		start
