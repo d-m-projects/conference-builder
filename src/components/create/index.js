@@ -15,8 +15,16 @@ const { Step } = Steps;
 
 const Create = () => {
   const [current, setCurrent] = useState(0);
+  const history = useHistory();
 
-  let history = useHistory();
+  const next = () => {
+    setCurrent(current + 1);
+  };
+
+  const prev = () => {
+    setCurrent(current - 1);
+  };
+
   const handleDone = () => {
     message.success("Processing complete!");
     history.push("/");
@@ -25,7 +33,7 @@ const Create = () => {
   const steps = [
     {
       title: "Create Program",
-      content: <CreateProgram />,
+      content: <CreateProgram formNext={next} />,
     },
     {
       title: "Manage Program",
@@ -36,14 +44,6 @@ const Create = () => {
       content: <ReviewProgram />,
     },
   ];
-
-  const next = () => {
-    setCurrent(current + 1);
-  };
-
-  const prev = () => {
-    setCurrent(current - 1);
-  };
 
   const showsteps = (
     <Steps current={current}>
@@ -64,18 +64,14 @@ const Create = () => {
             </Button>
           )}
           {current < steps.length - 1 &&
-            (current === 0 ? (
-              <Button type="primary" shape="round" onClick={() => next()}>
-                Create
-              </Button>
-            ) : (
+            (current === 0 ? null : (
               <Button type="primary" onClick={() => next()}>
                 Next
               </Button>
             ))}
           {current === steps.length - 1 && (
             <Button type="primary" onClick={handleDone}>
-              Done
+              Submit
             </Button>
           )}
         </div>
