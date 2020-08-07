@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import ProgramContext from "../../../contexts/programContext";
 
+import * as dates from "date-arithmetic";
 import moment from "moment";
 
 // antd components
@@ -12,11 +13,16 @@ const CreateProgram = ({ formNext }) => {
   const program = useContext(ProgramContext);
 
   const onFinish = (values) => {
-    console.log("Success:", values);
+    program.name = values.programName;
+    program.dateStart = values.programLength[0]._d;
+    program.dateEnd = values.programLength[1]._d;
 
-    program.Name = values.programName;
-    program.DateStart = values.programLength[0]._d;
-    program.DateEnd = values.programLength[1]._d;
+    let current = program.dateStart;
+
+    while (dates.lte(current, program.dateEnd, "day")) {
+      program.days.push({ date: current, sessions: [] });
+      current = dates.add(current, 1, "day");
+    }
 
     formNext();
   };

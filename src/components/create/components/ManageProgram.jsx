@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useState, useContext } from "react";
 import ProgramContext from "../../../contexts/programContext";
 
 import * as dates from "date-arithmetic";
@@ -12,7 +12,7 @@ const localizer = momentLocalizer(moment);
 function ProgramCalendarView(props) {
   const program = useContext(ProgramContext);
 
-  const range = buildRange(program.DateStart, program.DateEnd);
+  const range = buildRange(program.dateStart, program.dateEnd);
 
   function buildRange(startDate, endDate) {
     const range = [];
@@ -26,7 +26,7 @@ function ProgramCalendarView(props) {
     return range;
   }
 
-  return <TimeGrid {...props} range={range} />;
+  return <TimeGrid {...props} range={range} step={30} />;
 }
 
 ProgramCalendarView.title = () => {};
@@ -42,18 +42,47 @@ function ProgramCalendarToolbar() {
 }
 
 function ManageProgram() {
+  const program = useContext(ProgramContext);
+
+  const [sessions, setSessions] = useState({ events: [] });
+
+  function addSession(timeSlot) {
+    const { start, end } = timeSlot;
+    const title = window.prompt("Enter a name for this session");
+
+    if (title) {
+      program.days.map((day) => {
+        if (moment(day.date).isSame(moment(end), "day")) {
+          const newSession = {
+            title,
+            start: new Date(start),
+            end: new Date(end),
+          };
+
+          day.sessions.push(newSession);
+
+          setSessions({ events: [...sessions.events, { ...newSession }] });
+        }
+        return day;
+      });
+    }
+  }
+
   return (
-    <>
+    <div className="yeet">
       <Calendar
-        events={[]}
+        selectable
+        events={sessions.events}
         localizer={localizer}
         views={{ month: ProgramCalendarView }}
         style={{ height: 800 }}
         components={{
           toolbar: ProgramCalendarToolbar,
         }}
+        onSelectEvent={(event) => alert(event.title)}
+        onSelectSlot={addSession}
       />
-    </>
+    </div>
   );
 }
 
