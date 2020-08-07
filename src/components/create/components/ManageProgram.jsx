@@ -1,29 +1,60 @@
 import React, { useContext } from "react";
 import ProgramContext from "../../../contexts/programContext";
 
-import { Calendar, momentLocalizer, Views } from "react-big-calendar";
+import * as dates from "date-arithmetic";
+
+import { Calendar, Views, momentLocalizer } from "react-big-calendar";
+import TimeGrid from "react-big-calendar/lib/TimeGrid";
 import moment from "moment";
 
 const localizer = momentLocalizer(moment);
 
-const ManageProgram = () => {
+function ProgramCalendarView(props) {
   const program = useContext(ProgramContext);
-  console.log("PROGRAM CONTEXT", program);
+
+  const range = buildRange(program.DateStart, program.DateEnd);
+
+  function buildRange(startDate, endDate) {
+    const range = [];
+    let current = startDate;
+
+    while (dates.lte(current, endDate, "day")) {
+      range.push(current);
+      current = dates.add(current, 1, "day");
+    }
+
+    return range;
+  }
+
+  return <TimeGrid {...props} range={range} />;
+}
+
+ProgramCalendarView.title = () => {};
+
+function ProgramCalendarToolbar() {
+  const program = useContext(ProgramContext);
 
   return (
+    <div className="program-calendar-toolbar">
+      <h1>{program.Name}</h1>
+    </div>
+  );
+}
+
+function ManageProgram() {
+  return (
     <>
-      {/* <Calendar
-        selectable
+      <Calendar
+        events={[]}
         localizer={localizer}
-        // events={this.state.events}
-        defaultView={Views.WEEK}
-        scrollToTime={new Date(1970, 1, 1, 6)}
-        defaultDate={new Date(2015, 3, 12)}
-        // onSelectEvent={(event) => alert(event.title)}
-        // onSelectSlot={this.handleSelect}
-      /> */}
+        views={{ month: ProgramCalendarView }}
+        style={{ height: 800 }}
+        components={{
+          toolbar: ProgramCalendarToolbar,
+        }}
+      />
     </>
   );
-};
+}
 
 export default ManageProgram;
