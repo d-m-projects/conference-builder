@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import ProgramContext from "../../../contexts/programContext";
 
 import moment from "moment";
+import db from "../../../data/database"
 
 // antd components
 import { Form, Input, Button, DatePicker } from "antd";
@@ -17,7 +18,16 @@ const CreateProgram = ({ formNext }) => {
     program.Name = values.programName;
     program.DateStart = values.programLength[0]._d;
     program.DateEnd = values.programLength[1]._d;
-
+	const send = {
+		name: program.Name,
+		dateStart: program.DateStart,
+		dateEnd: program.DateEnd,
+		days: program.Days
+	}
+	db.insert(send)
+	.then((id) => {
+		console.log(`CreateProgram.jsx 29: id `, id);
+	})
     formNext();
   };
 
