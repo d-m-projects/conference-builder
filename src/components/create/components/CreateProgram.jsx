@@ -14,8 +14,8 @@ const CreateProgram = ({ formNext }) => {
 
   const onFinish = (values) => {
     program.name = values.programName;
-    program.dateStart = values.programLength[0]._d;
-    program.dateEnd = values.programLength[1]._d;
+    program.dateStart = moment(values.programLength[0]._d).set("hour", 0).set("minute", 0).set("second", 0)._d;
+    program.dateEnd = moment(values.programLength[1]._d).set("hour", 0).set("minute", 0).set("second", 0)._d;
 
     let current = program.dateStart;
 
