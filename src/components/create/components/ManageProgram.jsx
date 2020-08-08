@@ -36,7 +36,7 @@ function ProgramCalendarToolbar() {
 
   return (
     <div className="program-calendar-toolbar">
-      <h1>{program.Name}</h1>
+      <h1>{program.name}</h1>
     </div>
   );
 }
