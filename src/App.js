@@ -14,29 +14,31 @@ import Foot from "./components/components/Foot";
 import "./App.scss";
 
 // antd setup
-import { Breadcrumb, Col, Grid, Layout, Row, } from 'antd';
-import 'antd/dist/antd.css';
-const { Content } = Layout
+import { /*Breadcrumb, Grid,*/ Col, Layout, Row } from "antd";
+import "antd/dist/antd.css";
 
-const { useBreakpoint } = Grid
+import "react-big-calendar/lib/sass/styles.scss";
+
+const { Content } = Layout;
+
+// const { useBreakpoint } = Grid;
 
 // Components
 function App() {
-	const screens = useBreakpoint();
+	//   const screens = useBreakpoint(); // for setting up responsiveness
 	return (
 		<Router>
-			<Layout className="layout" theme="light" >
+			<Layout className="layout" theme="light">
 				<Row>
 					<Col span={24}>
-						{console.log(27, screens)}
 						<Head />
-						<Content style={{ margin: '50px' }}>
+						<Content style={{ margin: "50px" }}>
 							{/* <Breadcrumb style={{ margin: '16px 0' }}>
 								<Breadcrumb.Item>Home</Breadcrumb.Item>
 								<Breadcrumb.Item>List</Breadcrumb.Item>
 								<Breadcrumb.Item>App</Breadcrumb.Item>
 							</Breadcrumb> */}
-							<div style={{ backgroundColor: "white", padding: "20px", height: "200px" }}>
+							<div style={{ backgroundColor: "white", padding: "20px" }}>
 								<Switch>
 									<Route exact path="/" component={LandingPage} />
 									<Route path="/create" component={Create} />
@@ -50,7 +52,7 @@ function App() {
 				</Row>
 			</Layout>
 		</Router>
-	)
+	);
 }
 
 export default App;
