@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useHistory } from "react-router-dom";
+import ProgramContext from "../../contexts/programContext";
+
 import Fade from "react-reveal/Fade";
+import db from "../../data/database"
 
 // antd setup
 import { Button, Steps, message, Card } from "antd";
@@ -15,17 +18,24 @@ const { Step } = Steps;
 const Create = () => {
 	const [current, setCurrent] = useState(0);
 	const history = useHistory();
+	const program = useContext(ProgramContext)
+
+	const changeStep = (direction) => {
+		setCurrent(current + direction)
+		program.current = current
+	}
 
 	const next = () => {
-		setCurrent(current + 1);
+		changeStep(+1);
 	};
 
 	const prev = () => {
-		setCurrent(current - 1);
+		changeStep(-1);
 	};
 
-	const handleDone = () => {
+	const doSubmit = () => {
 		message.success("Processing complete!");
+		db.clean()
 		history.push("/");
 	};
 
@@ -69,7 +79,7 @@ const Create = () => {
 							</Button>
 						))}
 					{current === steps.length - 1 && (
-						<Button type="primary" onClick={handleDone}>
+						<Button type="primary" onClick={doSubmit}>
 							Submit
 						</Button>
 					)}
