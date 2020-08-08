@@ -1,10 +1,8 @@
 //Packages
 import React from "react";
-import { Link } from "react-router-dom";
-// import './Foot.css';
 
 // antd setup
-import { Layout, Menu } from "antd"
+import { Layout } from "antd"
 const { Footer } = Layout
 
 //Components

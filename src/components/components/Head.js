@@ -1,8 +1,7 @@
 //Packages
 import React from "react";
-import { Link } from "react-router-dom";
 
-import { Layout, Menu } from "antd"
+import { Layout } from "antd"
 
 import Nav from "./Nav";
 import './Head.scss';

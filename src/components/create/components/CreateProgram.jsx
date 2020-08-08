@@ -3,6 +3,7 @@ import ProgramContext from "../../../contexts/programContext";
 
 import * as dates from "date-arithmetic";
 import moment from "moment";
+import db from "../../../data/database"
 
 // antd components
 import { Form, Input, Button, DatePicker } from "antd";
@@ -24,6 +25,10 @@ const CreateProgram = ({ formNext }) => {
       current = dates.add(current, 1, "day");
     }
 
+	db.insert(program)
+	.then((id) => {
+		console.log(`CreateProgram.jsx 29: id `, id)
+	})
     formNext();
   };
 
