@@ -1,0 +1,25 @@
+.rbc-now {
+  font-weight: normal !important;
+}
+
+.rbc-today {
+  background-color: #ececec !important;
+}
+
+.calendar-days-default {
+  background-color: #ececec;
+}
+
+.program-days {
+  background-color: rgba(229, 255, 0, 0.075);
+}
+
+.program-session-icons {
+  margin-right: 0.2rem;
+}
+
+.program-session-card {
+  background-color: #008cff !important; //Default
+  // background-color: #00ad1d !important; //Session with presentations
+  // background-color: #ad0000 !important; //Session with no presentations
+}

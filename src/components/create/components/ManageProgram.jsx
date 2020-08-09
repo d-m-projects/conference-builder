@@ -1,50 +1,41 @@
 import React, { useState, useContext } from "react";
 import ProgramContext from "../../../contexts/programContext";
 
-import * as dates from "date-arithmetic";
-
-import { Calendar, Views, momentLocalizer } from "react-big-calendar";
-import TimeGrid from "react-big-calendar/lib/TimeGrid";
+import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
+
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+
+import "./styles.scss";
 
 const localizer = momentLocalizer(moment);
 
-function ProgramCalendarView(props) {
-  const program = useContext(ProgramContext);
+function ProgramEvent({ event }) {
+  // const program = useContext(ProgramContext);
 
-  const range = buildRange(program.dateStart, program.dateEnd);
-
-  function buildRange(startDate, endDate) {
-    const range = [];
-    let current = startDate;
-
-    while (dates.lte(current, endDate, "day")) {
-      range.push(current);
-      current = dates.add(current, 1, "day");
-    }
-
-    return range;
+  function deleteSession(event) {
+    console.log("Delete requested on", event);
   }
 
-  return <TimeGrid {...props} range={range} step={30} />;
-}
-
-ProgramCalendarView.title = () => {};
-
-function ProgramCalendarToolbar() {
-  const program = useContext(ProgramContext);
+  function editSession(event) {
+    console.log("Edit requested on", event);
+  }
 
   return (
-    <div className="program-calendar-toolbar">
-      <h1>{program.name}</h1>
-    </div>
+    <>
+      <span className="program-session-icons">
+        <DeleteOutlined className="test" onClick={() => deleteSession(event)} />{" "}
+        <EditOutlined onClick={() => editSession(event)} />
+      </span>
+      <span>{event.title}</span>
+    </>
   );
 }
 
 function ManageProgram() {
   const program = useContext(ProgramContext);
 
-  const [sessions, setSessions] = useState({ events: [] });
+  const [sessions, setSessions] = useState([]);
 
   function addSession(timeSlot) {
     const { start, end } = timeSlot;
@@ -61,25 +52,48 @@ function ManageProgram() {
 
           day.sessions.push(newSession);
 
-          setSessions({ events: [...sessions.events, { ...newSession }] });
+          setSessions([...sessions, { ...newSession }]);
         }
         return day;
       });
     }
   }
 
+  function dayPropGetter(date) {
+    if (
+      moment(date).dayOfYear() < moment(program.dateStart).dayOfYear() ||
+      moment(date).dayOfYear() > moment(program.dateEnd).dayOfYear()
+    ) {
+      return {
+        className: "calendar-days-default",
+      };
+    } else {
+      return {
+        className: "program-days",
+      };
+    }
+  }
+
+  function eventPropGetter(event) {
+    return {
+      className: "program-session-card",
+    };
+  }
+
   return (
-    <div className="yeet">
+    <div className="manage-program">
+      <h1>{program.name}</h1>
       <Calendar
         selectable
-        events={sessions.events}
+        popup
+        events={sessions}
         localizer={localizer}
-        views={{ month: ProgramCalendarView }}
         style={{ height: 800 }}
+        dayPropGetter={dayPropGetter}
+        eventPropGetter={eventPropGetter}
         components={{
-          toolbar: ProgramCalendarToolbar,
+          event: ProgramEvent,
         }}
-        onSelectEvent={(event) => alert(event.title)}
         onSelectSlot={addSession}
       />
     </div>
