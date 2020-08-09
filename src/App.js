@@ -1,7 +1,10 @@
 //Packages
-import React from "react";
+import React, {useContext, useEffect} from "react";
 import { Route } from "react-router-dom";
 import { BrowserRouter as Router, Switch } from "react-router-dom";
+import ProgramContext from "./contexts/programContext";
+
+import db from "./data/database"
 
 import Dashboard from "./components/dashboard/";
 import Create from "./components/create/";
@@ -22,9 +25,13 @@ import "react-big-calendar/lib/sass/styles.scss";
 const { Content } = Layout;
 
 // const { useBreakpoint } = Grid;
-
 // Components
 function App() {
+	useEffect(() => {
+		console.log(`App.js 28: `, db.start())
+		db.read(1)
+	}, [])
+	
 	//   const screens = useBreakpoint(); // for setting up responsiveness
 	return (
 		<Router>

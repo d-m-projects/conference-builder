@@ -37,6 +37,7 @@ const Create = () => {
 		message.success("Processing complete!");
 		db.clean()
 		history.push("/");
+		window.location.reload();
 	};
 
 	const steps = [

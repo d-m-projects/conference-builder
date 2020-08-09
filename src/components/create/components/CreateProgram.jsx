@@ -25,7 +25,7 @@ const CreateProgram = ({ formNext }) => {
       current = dates.add(current, 1, "day");
     }
 
-	db.insert(program)
+	db.update(program)
 	.then((id) => {
 		console.log(`CreateProgram.jsx 29: id `, id)
 	})
