@@ -106,6 +106,7 @@ function ManageProgram() {
         events={sessions}
         localizer={localizer}
         style={{ height: 800 }}
+        defaultDate={dateStart}
         dayPropGetter={dayPropGetter}
         eventPropGetter={eventPropGetter}
         components={{
