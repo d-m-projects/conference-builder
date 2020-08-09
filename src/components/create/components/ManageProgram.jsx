@@ -1,9 +1,10 @@
-import React, { useState, useContext } from "react";
-import ProgramContext from "../../../contexts/programContext";
+import React, { useContext } from "react";
+import { ProgramContext } from "../../../contexts/Program";
 
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 
+import { Popconfirm, message } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 import "./styles.scss";
@@ -11,21 +12,30 @@ import "./styles.scss";
 const localizer = momentLocalizer(moment);
 
 function ProgramEvent({ event }) {
-  // const program = useContext(ProgramContext);
+  const program = useContext(ProgramContext);
+  const { deleteSession } = program;
 
-  function deleteSession(event) {
-    console.log("Delete requested on", event);
+  function handleDelete(event) {
+    deleteSession(event);
+
+    message.success("Session deleted!");
   }
 
-  function editSession(event) {
+  function handleEdit(event) {
     console.log("Edit requested on", event);
   }
 
   return (
     <>
       <span className="program-session-icons">
-        <DeleteOutlined className="test" onClick={() => deleteSession(event)} />{" "}
-        <EditOutlined onClick={() => editSession(event)} />
+        <Popconfirm
+          title="Are you sure you want to delete this session?"
+          onConfirm={() => handleDelete(event)}
+          okText="Yes"
+          cancelText="No">
+          <DeleteOutlined />
+        </Popconfirm>
+        <EditOutlined onClick={() => handleEdit(event)} />
       </span>
       <span>{event.title}</span>
     </>
@@ -34,35 +44,28 @@ function ProgramEvent({ event }) {
 
 function ManageProgram() {
   const program = useContext(ProgramContext);
+  const { name, sessions, addSession, dateStart, dateEnd } = program;
 
-  const [sessions, setSessions] = useState([]);
-
-  function addSession(timeSlot) {
+  function handleSelectSlot(timeSlot) {
     const { start, end } = timeSlot;
     const title = window.prompt("Enter a name for this session");
 
     if (title) {
-      program.days.map((day) => {
-        if (moment(day.date).isSame(moment(end), "day")) {
-          const newSession = {
-            title,
-            start: new Date(start),
-            end: new Date(end),
-          };
+      const session = {
+        title,
+        start: new Date(start),
+        end: new Date(end),
+        id: sessions.length,
+      };
 
-          day.sessions.push(newSession);
-
-          setSessions([...sessions, { ...newSession }]);
-        }
-        return day;
-      });
+      addSession(session);
     }
   }
 
   function dayPropGetter(date) {
     if (
-      moment(date).dayOfYear() < moment(program.dateStart).dayOfYear() ||
-      moment(date).dayOfYear() > moment(program.dateEnd).dayOfYear()
+      moment(date).dayOfYear() < moment(dateStart).dayOfYear() ||
+      moment(date).dayOfYear() > moment(dateEnd).dayOfYear()
     ) {
       return {
         className: "calendar-days-default",
@@ -82,7 +85,7 @@ function ManageProgram() {
 
   return (
     <div className="manage-program">
-      <h1>{program.name}</h1>
+      <h1>{name}</h1>
       <Calendar
         selectable
         popup
@@ -94,7 +97,7 @@ function ManageProgram() {
         components={{
           event: ProgramEvent,
         }}
-        onSelectSlot={addSession}
+        onSelectSlot={handleSelectSlot}
       />
     </div>
   );
