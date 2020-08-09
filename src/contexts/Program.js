@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const ProgramContext = React.createContext();
 
@@ -9,7 +9,12 @@ const ProgramProvider = (props) => {
     dateEnd: null,
     days: [],
     sessions: [],
+    nextSessionId: 0
   });
+
+  useEffect(() => {
+    console.log("Context Changed", program)
+  }, [program])
 
   const createProgram = (programInfo) => {
     console.log("Setting Program...", programInfo);
@@ -25,7 +30,8 @@ const ProgramProvider = (props) => {
   const addSession = (session) => {
     setProgram({
       ...program,
-      sessions: [...program.sessions, session],
+      sessions: [...program.sessions, {...session, id: program.nextSessionId}],
+      nextSessionId: program.nextSessionId + 1,
     });
   };
 
@@ -36,11 +42,10 @@ const ProgramProvider = (props) => {
   const deleteSession = (session) => {
     setProgram({
       ...program,
-      sessions: program.sessions.map((event) => {
+      sessions: program.sessions.filter((event) => {
         if (event.id !== session.id) {
-          return event;
+          return true;
         }
-        return null;
       }),
     });
   };
