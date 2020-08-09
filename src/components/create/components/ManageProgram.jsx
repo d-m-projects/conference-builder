@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useState, useContext } from "react";
 import { ProgramContext } from "../../../contexts/Program";
 
 import { Calendar, momentLocalizer } from "react-big-calendar";
@@ -6,6 +6,8 @@ import moment from "moment";
 
 import { Popconfirm, message } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+
+import ProgramModal from "./ProgramModal";
 
 import "./styles.scss";
 
@@ -15,6 +17,8 @@ function ProgramEvent({ event }) {
   const program = useContext(ProgramContext);
   const { deleteSession } = program;
 
+  const [showModal, setShowModal] = useState(false);
+
   function handleDelete(event) {
     deleteSession(event);
 
@@ -22,11 +26,12 @@ function ProgramEvent({ event }) {
   }
 
   function handleEdit(event) {
-    console.log("Edit requested on", event);
+    setShowModal(true);
   }
 
   return (
     <>
+      <ProgramModal session={event} visible={showModal} setVisible={setShowModal} />
       <span className="program-session-icons">
         <Popconfirm
           title="Are you sure you want to delete this session?"
