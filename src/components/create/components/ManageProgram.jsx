@@ -48,17 +48,26 @@ function ManageProgram() {
 
   function handleSelectSlot(timeSlot) {
     const { start, end } = timeSlot;
-    const title = window.prompt("Enter a name for this session");
+    if (
+      moment(start).dayOfYear() >= moment(dateStart).dayOfYear() &&
+      moment(end).dayOfYear() <= moment(dateEnd).dayOfYear()
+    ) {
+      const title = window.prompt("Enter a name for this session.");
 
-    if (title) {
-      const session = {
-        title,
-        start: new Date(start),
-        end: new Date(end),
-        id: sessions.length,
-      };
+      if (title) {
+        const session = {
+          title,
+          start: new Date(start),
+          end: new Date(end),
+          id: sessions.length,
+        };
 
-      addSession(session);
+        addSession(session);
+
+        message.success("New session added.");
+      }
+    } else {
+      message.warn("Date not within range of program.");
     }
   }
 
