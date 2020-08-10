@@ -7,7 +7,7 @@ import moment from "moment";
 import { Popconfirm, message } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
-import ProgramModal from "./ProgramModal";
+import AddSessionModal from "./AddSessionModal";
 
 import "./styles.scss";
 
@@ -31,7 +31,11 @@ function ProgramEvent({ event }) {
 
   return (
     <>
-      <ProgramModal session={event} visible={showModal} setVisible={setShowModal} />
+      <AddSessionModal
+        visible={showModal}
+        setVisible={setShowModal}
+        addSession={() => console.log("ProgramEvent -> Implement session edit functionality")}
+      />
       <span className="program-session-icons">
         <Popconfirm
           title="Are you sure you want to delete this session?"
@@ -49,7 +53,9 @@ function ProgramEvent({ event }) {
 
 function ManageProgram() {
   const program = useContext(ProgramContext);
-  const { name, sessions, addSession, dateStart, dateEnd } = program;
+  const { name, sessions, addSession, modifyTempSession, dateStart, dateEnd } = program;
+
+  const [showModal, setShowModal] = useState(false);
 
   function handleSelectSlot(timeSlot) {
     const { start, end } = timeSlot;
@@ -57,20 +63,23 @@ function ManageProgram() {
       moment(start).dayOfYear() >= moment(dateStart).dayOfYear() &&
       moment(end).dayOfYear() <= moment(dateEnd).dayOfYear()
     ) {
-      const title = window.prompt("Enter a name for this session.");
+      modifyTempSession({ start, end });
 
-      if (title) {
-        const session = {
-          title,
-          start: new Date(start),
-          end: new Date(end),
-          id: sessions.length,
-        };
+      setShowModal(true);
+      // const title = window.prompt("Enter a name for this session.");
 
-        addSession(session);
+      // if (title) {
+      //   const session = {
+      //     title,
+      //     start: new Date(start),
+      //     end: new Date(end),
+      //     id: sessions.length,
+      //   };
 
-        message.success("New session added.");
-      }
+      //   addSession(session);
+
+      //   message.success("New session added.");
+      // }
     } else {
       message.warn("Date not within range of program.");
     }
@@ -99,6 +108,7 @@ function ManageProgram() {
 
   return (
     <div className="manage-program">
+      <AddSessionModal visible={showModal} setVisible={setShowModal} addSession={addSession} />
       <h1>{name}</h1>
       <Calendar
         selectable

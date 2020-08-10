@@ -23,3 +23,20 @@
   // background-color: #00ad1d !important; //Session with presentations
   // background-color: #ad0000 !important; //Session with no presentations
 }
+
+// Modal form style
+.dynamic-delete-button {
+  cursor: pointer;
+  position: relative;
+  top: 4px;
+  font-size: 24px;
+  color: #999;
+  transition: all 0.3s;
+}
+.dynamic-delete-button:hover {
+  color: #777;
+}
+.dynamic-delete-button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
