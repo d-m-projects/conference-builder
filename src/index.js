@@ -4,17 +4,15 @@ import 'normalize.css';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import ProgramContext from './contexts/programContext'
-import Program from './contexts/Program'
-
+import { ProgramProvider } from "./contexts/Program";
 
 ReactDOM.render(
-	//   <React.StrictMode>
-	<ProgramContext.Provider value={Program}>
-		<App />
-	</ProgramContext.Provider>,
-	//   </React.StrictMode>,
-	document.getElementById('root')
+  // <React.StrictMode>
+  <ProgramProvider>
+    <App />
+  </ProgramProvider>,
+  // </React.StrictMode>,
+  document.getElementById("root")
 );
 
 // If you want your app to work offline and load faster, you can change

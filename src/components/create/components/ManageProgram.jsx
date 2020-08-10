@@ -1,86 +1,128 @@
 import React, { useState, useContext } from "react";
-import ProgramContext from "../../../contexts/programContext";
+import { ProgramContext } from "../../../contexts/Program";
 
-import * as dates from "date-arithmetic";
-
-import { Calendar, Views, momentLocalizer } from "react-big-calendar";
-import TimeGrid from "react-big-calendar/lib/TimeGrid";
+import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
+
+import { Popconfirm, message } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+
+import AddSessionModal from "./AddSessionModal";
+
+import "./styles.scss";
 
 const localizer = momentLocalizer(moment);
 
-function ProgramCalendarView(props) {
+function ProgramEvent({ event }) {
   const program = useContext(ProgramContext);
+  const { deleteSession } = program;
 
-  const range = buildRange(program.dateStart, program.dateEnd);
+  const [showModal, setShowModal] = useState(false);
 
-  function buildRange(startDate, endDate) {
-    const range = [];
-    let current = startDate;
+  function handleDelete(event) {
+    deleteSession(event);
 
-    while (dates.lte(current, endDate, "day")) {
-      range.push(current);
-      current = dates.add(current, 1, "day");
-    }
-
-    return range;
+    message.success("Session deleted!");
   }
 
-  return <TimeGrid {...props} range={range} step={30} />;
-}
-
-ProgramCalendarView.title = () => {};
-
-function ProgramCalendarToolbar() {
-  const program = useContext(ProgramContext);
+  function handleEdit(event) {
+    setShowModal(true);
+  }
 
   return (
-    <div className="program-calendar-toolbar">
-      <h1>{program.name}</h1>
-    </div>
+    <>
+      <AddSessionModal
+        visible={showModal}
+        setVisible={setShowModal}
+        addSession={() => console.log("ProgramEvent -> Implement session edit functionality")}
+      />
+      <span className="program-session-icons">
+        <Popconfirm
+          title="Are you sure you want to delete this session?"
+          onConfirm={() => handleDelete(event)}
+          okText="Yes"
+          cancelText="No">
+          <DeleteOutlined />
+        </Popconfirm>
+        <EditOutlined onClick={() => handleEdit(event)} />
+      </span>
+      <span>{event.title}</span>
+    </>
   );
 }
 
 function ManageProgram() {
   const program = useContext(ProgramContext);
+  const { name, sessions, addSession, modifyTempSession, dateStart, dateEnd } = program;
 
-  const [sessions, setSessions] = useState({ events: [] });
+  const [showModal, setShowModal] = useState(false);
 
-  function addSession(timeSlot) {
+  function handleSelectSlot(timeSlot) {
     const { start, end } = timeSlot;
-    const title = window.prompt("Enter a name for this session");
+    if (
+      moment(start).dayOfYear() >= moment(dateStart).dayOfYear() &&
+      moment(end).dayOfYear() <= moment(dateEnd).dayOfYear()
+    ) {
+      modifyTempSession({ start, end });
 
-    if (title) {
-      program.days.map((day) => {
-        if (moment(day.date).isSame(moment(end), "day")) {
-          const newSession = {
-            title,
-            start: new Date(start),
-            end: new Date(end),
-          };
+      setShowModal(true);
+      // const title = window.prompt("Enter a name for this session.");
 
-          day.sessions.push(newSession);
+      // if (title) {
+      //   const session = {
+      //     title,
+      //     start: new Date(start),
+      //     end: new Date(end),
+      //     id: sessions.length,
+      //   };
 
-          setSessions({ events: [...sessions.events, { ...newSession }] });
-        }
-        return day;
-      });
+      //   addSession(session);
+
+      //   message.success("New session added.");
+      // }
+    } else {
+      message.warn("Date not within range of program.");
     }
   }
 
+  function dayPropGetter(date) {
+    if (
+      moment(date).dayOfYear() < moment(dateStart).dayOfYear() ||
+      moment(date).dayOfYear() > moment(dateEnd).dayOfYear()
+    ) {
+      return {
+        className: "calendar-days-default",
+      };
+    } else {
+      return {
+        className: "program-days",
+      };
+    }
+  }
+
+  function eventPropGetter(event) {
+    return {
+      className: "program-session-card",
+    };
+  }
+
   return (
-    <div className="yeet">
+    <div className="manage-program">
+      <AddSessionModal visible={showModal} setVisible={setShowModal} addSession={addSession} />
+      <h1>{name}</h1>
       <Calendar
         selectable
-        events={sessions.events}
+        popup
+        events={sessions}
         localizer={localizer}
-        views={{ month: ProgramCalendarView }}
         style={{ height: 800 }}
+        defaultDate={dateStart}
+        dayPropGetter={dayPropGetter}
+        eventPropGetter={eventPropGetter}
         components={{
-          toolbar: ProgramCalendarToolbar,
+          event: ProgramEvent,
         }}
-        onSelectEvent={(event) => alert(event.title)}
-        onSelectSlot={addSession}
+        onSelectSlot={handleSelectSlot}
       />
     </div>
   );
