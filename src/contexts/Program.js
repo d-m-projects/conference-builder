@@ -9,15 +9,15 @@ const ProgramProvider = (props) => {
     dateEnd: null,
     days: [],
     sessions: [],
-    nextSessionId: 0
+    nextSessionId: 0,
+    tempSession: {},
   });
 
   useEffect(() => {
-    console.log("Context Changed", program)
-  }, [program])
+    // console.log("Context Changed", program)
+  }, [program]);
 
   const createProgram = (programInfo) => {
-    console.log("Setting Program...", programInfo);
     setProgram({
       ...program,
       name: programInfo.name,
@@ -27,10 +27,20 @@ const ProgramProvider = (props) => {
     });
   };
 
+  const modifyTempSession = (session) => {
+    setProgram({
+      ...program,
+      tempSession: {
+        ...program.tempSession,
+        ...session,
+      },
+    });
+  };
+
   const addSession = (session) => {
     setProgram({
       ...program,
-      sessions: [...program.sessions, {...session, id: program.nextSessionId}],
+      sessions: [...program.sessions, { ...session, id: program.nextSessionId }],
       nextSessionId: program.nextSessionId + 1,
     });
   };
@@ -51,7 +61,8 @@ const ProgramProvider = (props) => {
   };
 
   return (
-    <ProgramContext.Provider value={{ ...program, createProgram, addSession, editSession, deleteSession }}>
+    <ProgramContext.Provider
+      value={{ ...program, createProgram, addSession, editSession, deleteSession, modifyTempSession }}>
       {props.children}
     </ProgramContext.Provider>
   );
