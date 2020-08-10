@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
-import ProgramContext from "../../../contexts/programContext";
+import { ProgramContext } from "../../../contexts/Program";
 
 import * as dates from "date-arithmetic";
 import moment from "moment";
-import db from "../../../data/database"
+import db from "../../../data/database";
 
 // antd components
 import { Form, Input, Button, DatePicker } from "antd";
@@ -12,23 +12,30 @@ const { RangePicker } = DatePicker;
 
 const CreateProgram = ({ formNext }) => {
   const program = useContext(ProgramContext);
+  const { createProgram } = program;
 
   const onFinish = (values) => {
-    program.name = values.programName;
-    program.dateStart = moment(values.programLength[0]._d).set("hour", 0).set("minute", 0).set("second", 0)._d;
-    program.dateEnd = moment(values.programLength[1]._d).set("hour", 0).set("minute", 0).set("second", 0)._d;
+    const newProgram = {
+      name: values.programName,
+      dateStart: moment(values.programLength[0]._d).set("hour", 0).set("minute", 0).set("second", 0)._d,
+      dateEnd: moment(values.programLength[1]._d).set("hour", 0).set("minute", 0).set("second", 0)._d,
+      days: [],
+    };
 
-    let current = program.dateStart;
+    let current = newProgram.dateStart;
 
-    while (dates.lte(current, program.dateEnd, "day")) {
-      program.days.push({ date: current, sessions: [] });
+    while (dates.lte(current, newProgram.dateEnd, "day")) {
+      newProgram.days.push({ date: current, sessions: [] });
       current = dates.add(current, 1, "day");
     }
 
-	db.insert(program)
-	.then((id) => {
-		console.log(`CreateProgram.jsx 29: id `, id)
-	})
+    createProgram(newProgram);
+
+    // db.insert(program)
+    // .then((id) => {
+    // 	console.log(`CreateProgram.jsx 29: id `, id)
+    // })
+
     formNext();
   };
 
