@@ -14,8 +14,8 @@ function AddSessionModal({ visible, setVisible, addSession }) {
 
     addSession({
       title: values.sessionName,
-      start: tempSession.start._d,
-      end: tempSession.end._d,
+      start: tempSession.start,
+      end: tempSession.end,
       presentations: values.presentations,
     });
 
