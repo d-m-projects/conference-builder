@@ -38,10 +38,8 @@ function App() {
 					console.log(`App.js 38: `, res)
 					loadProgress(res)
 					message.info("Previous creation progress\nLoaded!");
-
 				} else {
 					console.log(`App.js 43: New Program`)
-					createProgram()
 				}
 			})
 			.catch((err) => console.error(`App.js 46: `, err))

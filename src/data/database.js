@@ -48,7 +48,7 @@ db.update = (data) => {
 			console.log(">>> Updated: ", x, data)
 		})
 		.catch((err) => {
-			console.error(`>>> Update error: `, err);
+			console.error(`>>> Update error: `, data, err);
 		})
 
 	return action

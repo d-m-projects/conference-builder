@@ -45,7 +45,7 @@ const CreateProgram = ({ formNext }) => {
         label="Program Name"
         name="programName"
         rules={[{ required: true, message: "Please input a valid name." }]}>
-        <Input />
+        <Input defaultValue = {program.name || ""}/>
       </Form.Item>
 
       <Form.Item

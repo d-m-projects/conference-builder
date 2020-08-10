@@ -4,35 +4,41 @@ import db from "../data/database"
 
 const ProgramContext = React.createContext();
 
+const defaultProgram = {
+	id: 1,
+	name: "",
+	dateStart: null,
+	dateEnd: null,
+	days: [],
+	sessions: [],
+	nextSessionId: 0,
+	tempSession: {},
+}
 const ProgramProvider = (props) => {
-	const [program, setProgram] = useState({
-		name: "",
-		dateStart: null,
-		dateEnd: null,
-		days: [],
-		sessions: [],
-		nextSessionId: 0,
-		tempSession: {},
-	});
+	const [program, setProgram] = useState(defaultProgram);
 
 	useEffect(() => {
 		console.log("Context Changed", program)
 		if (program.dateStart) {
 			db.update(program)
-				.then()
+				.then((x) => {
+					console.log(`Program.js 23: `, x)
+				})
+				.catch((err) => {
+					console.log(`Context > DB update failed`, err)
+				})
 		}
 	}, [program]);
 
 	const createProgram = (programInfo) => {
-		if (program.dateStart) {
-			setProgram({
-				...program,
-				name: programInfo.name,
-				dateStart: programInfo.dateStart,
-				dateEnd: programInfo.dateEnd,
-				days: programInfo.days,
-			});
-		}
+
+		setProgram({
+			...program,
+			name: programInfo.name,
+			dateStart: programInfo.dateStart,
+			dateEnd: programInfo.dateEnd,
+			days: programInfo.days,
+		});
 	};
 
 	const modifyTempSession = (session) => {
@@ -72,9 +78,14 @@ const ProgramProvider = (props) => {
 		setProgram(programInfo);
 	}
 
+	const clearProgram = () => {
+		db.clean();
+		setProgram(defaultProgram);
+	}
+
 	return (
 		<ProgramContext.Provider
-			value={{ ...program, createProgram, addSession, editSession, deleteSession, modifyTempSession, loadProgress }}>
+			value={{ ...program, createProgram, addSession, editSession, deleteSession, modifyTempSession, loadProgress, clearProgram }}>
 			{props.children}
 		</ProgramContext.Provider>
 	);

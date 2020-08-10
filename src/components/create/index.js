@@ -19,6 +19,7 @@ const Create = () => {
 	const [current, setCurrent] = useState(0);
 	const history = useHistory();
 	const program = useContext(ProgramContext)
+	const {clearProgram} = program
 
 	const changeStep = (direction) => {
 		setCurrent(current + direction)
@@ -35,9 +36,9 @@ const Create = () => {
 
 	const doSubmit = () => {
 		message.success("Processing complete!");
-		db.clean()
+		clearProgram();
 		history.push("/");
-		window.location.reload();
+		// window.location.reload();
 	};
 
 	const steps = [
