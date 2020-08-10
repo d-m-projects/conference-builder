@@ -24,13 +24,15 @@ const ProgramProvider = (props) => {
 	}, [program]);
 
 	const createProgram = (programInfo) => {
-		setProgram({
-			...program,
-			name: programInfo.name,
-			dateStart: programInfo.dateStart,
-			dateEnd: programInfo.dateEnd,
-			days: programInfo.days,
-		});
+		if (program.dateStart) {
+			setProgram({
+				...program,
+				name: programInfo.name,
+				dateStart: programInfo.dateStart,
+				dateEnd: programInfo.dateEnd,
+				days: programInfo.days,
+			});
+		}
 	};
 
 	const modifyTempSession = (session) => {

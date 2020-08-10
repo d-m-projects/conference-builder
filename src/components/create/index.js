@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import { useHistory } from "react-router-dom";
-import ProgramContext from "../../contexts/programContext";
+import { ProgramContext } from "../../contexts/Program";
 
 import Fade from "react-reveal/Fade";
 import db from "../../data/database"
