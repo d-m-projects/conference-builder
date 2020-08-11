@@ -38,7 +38,7 @@ const Create = () => {
 		message.success("Processing complete!");
 		clearProgram();
 		history.push("/");
-		// window.location.reload();
+		window.location.reload();
 	};
 
 	const steps = [

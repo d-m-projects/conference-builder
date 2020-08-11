@@ -8,7 +8,7 @@ db.version(1).stores({
 db.start = () => {
 	db.open()
 		.then((x) => {
-			console.log(">>> Opened: ", x.name)
+			conlog(">>> Opened: ", x.name)
 		})
 		.catch((err) => {
 			console.error(">>> Open error: ", (err.stack || err))
@@ -18,46 +18,47 @@ db.start = () => {
 db.insert = (data) => {
 	const action = db.programs.add(data)
 		.then((x) => {
-			console.log(">>> Insert: ", x)
+			conlog(">>> Insert: ", x )
 		})
 		.catch((err) => {
-			console.error(`>>> Insert error: `, err);
+			console.error(">>> Insert error: ", err);
 		})
 
 	return action
 }
 
 db.read = (data) => {
-	return	db.programs.get(data)
+	return db.programs.get(data)
 		.then((x) => {
 			if (x) {
-				console.log(">>> Read: ", x, data)
+				conlog(">>> Read: ", data, x)
 				return x
 			}
 			return 0
 		})
 		.catch((err) => {
-			console.error(`>>> Read error: `, err);
+			console.error(">>> Read error: ", err);
 		})
 
 }
 
 db.update = (data) => {
-	const action = db.programs.put(data)
+	conlog("D STOP", data)
+
+	return db.programs.put(data)
 		.then((x) => {
-			console.log(">>> Updated: ", x, data)
+			conlog(">>>D Updated", x, data)
 		})
 		.catch((err) => {
-			console.error(`>>> Update error: `, data, err);
+			console.error(">>>D Update error", data, err)
 		})
 
-	return action
 }
 
 db.clean = () => {
 	const action = db.delete()
 		.then((x) => {
-			console.log(">>> Cleaned", x);
+			conlog(">>> Cleaned", x);
 		})
 		.catch((err) => {
 			console.error(">>> Clean error:", err);
@@ -66,3 +67,10 @@ db.clean = () => {
 	return action
 }
 export default db
+
+function conlog() {
+	for (const arg in arguments) {
+		console.dir(arguments[arg]);
+	}
+	console.log("__________")
+}

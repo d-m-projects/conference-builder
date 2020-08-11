@@ -35,7 +35,8 @@ function App() {
 		db.read(1)
 			.then((res) => {
 				if (res.id) {
-					console.log(`App.js 38: `, res)
+					console.log(`App.js 38: `)
+					console.dir(res)
 					loadProgress(res)
 					message.info("Previous creation progress\nLoaded!");
 				} else {
