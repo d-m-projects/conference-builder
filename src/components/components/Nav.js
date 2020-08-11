@@ -14,7 +14,7 @@ const Nav = () => {
 	const [current, setcurrent] = useState({ current: "home" })
 
 	const handleClick = (e) => {
-		console.log(14, e);
+		// console.log(14, e);
 		setcurrent({ current: e.key })
 	}
 
