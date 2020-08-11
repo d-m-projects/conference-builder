@@ -60,9 +60,9 @@ const ProgramProvider = (props) => {
 		});
 	};
 
-	const editSession = (session) => {
-		// TODO Add functionality to edit existing session
-	};
+	// const editSession = (session) => {
+	// 	// TODO Add functionality to edit existing session
+	// };
 
 	const deleteSession = (session) => {
 		setProgram({
@@ -79,17 +79,17 @@ const ProgramProvider = (props) => {
 		setProgram(programInfo);
 	}
 
-  const editSession = (modifiedSession) => {
-    setProgram({
-      ...program,
-      sessions: program.sessions.map((session) => {
-        if (session.id === modifiedSession.id) {
-          return modifiedSession;
-        }
-        return session;
-      }),
-    });
-  };
+	const editSession = (modifiedSession) => {
+		setProgram({
+			...program,
+			sessions: program.sessions.map((session) => {
+				if (session.id === modifiedSession.id) {
+					return modifiedSession;
+				}
+				return session;
+			}),
+		});
+	};
 
 	const clearProgram = () => {
 		db.clean();
