@@ -79,6 +79,18 @@ const ProgramProvider = (props) => {
 		setProgram(programInfo);
 	}
 
+  const editSession = (modifiedSession) => {
+    setProgram({
+      ...program,
+      sessions: program.sessions.map((session) => {
+        if (session.id === modifiedSession.id) {
+          return modifiedSession;
+        }
+        return session;
+      }),
+    });
+  };
+
 	const clearProgram = () => {
 		db.clean();
 		setProgram(defaultProgram);
