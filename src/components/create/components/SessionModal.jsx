@@ -27,7 +27,7 @@ function SessionModal({ mode, visible, setVisible, addSession, editSession, sess
   }, [session]);
 
   function onFinish(values) {
-    const completeSession = {
+    let completeSession = {
       title: values.sessionName,
       start: tempSession.start,
       end: tempSession.end,
@@ -35,7 +35,12 @@ function SessionModal({ mode, visible, setVisible, addSession, editSession, sess
     };
 
     if (mode === ModalMode.EDIT) {
-      completeSession.id = session.id;
+      completeSession = {
+        ...completeSession,
+        start: session.start,
+        end: session.end,
+        id: session.id,
+      };
 
       editSession(completeSession);
 
