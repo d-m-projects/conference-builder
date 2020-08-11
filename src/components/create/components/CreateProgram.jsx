@@ -57,10 +57,10 @@ const CreateProgram = ({ formNext }) => {
 				name="programLength"
 				rules={[{ required: true, message: "Please select a valid date range." }]}>
 				<RangePicker
-					defaultValue={[
-						moment(program.dateStart),
-						moment(program.dateEnd)
-					]}
+					defaultValue={program.dateStart
+						? [moment(program.dateStart), moment(program.dateEnd)]
+						: [moment.calendar, moment.calendar]
+					}
 				/>
 			</Form.Item>
 
