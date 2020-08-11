@@ -1,30 +1,51 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { ProgramContext } from "../../../contexts/Program";
 
 import { Modal, Form, Input, Button, Space, TimePicker, message } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 
-function AddSessionModal({ visible, setVisible, addSession }) {
-  // TODO on form input change, store in tempSession object in context so we can restore later if needed
+// Modifies form behavior
+const ModalMode = {
+  EDIT: 1,
+  ADD: 0,
+};
+
+function SessionModal({ mode, visible, setVisible, addSession, editSession, session = null }) {
   const program = useContext(ProgramContext);
   const { tempSession } = program;
 
-  const onFinish = (values) => {
-    // console.log("Received values of form:", values);
+  const [formPrefillData, setFormPrefillData] = useState({});
 
-    addSession({
+  // Preload form inputs if edit mode enabled
+  useEffect(() => {
+    if (mode === ModalMode.EDIT) {
+      setFormPrefillData({
+        sessionName: session.title,
+        presentations: session.presentations.length > 0 ? session.presentations : [],
+      });
+    }
+  }, [session]);
+
+  function onFinish(values) {
+    const completeSession = {
       title: values.sessionName,
       start: tempSession.start,
       end: tempSession.end,
-      presentations: values.presentations,
-    });
+      presentations: values.presentations ? values.presentations : [],
+    };
 
-    setVisible(false);
+    if (mode === ModalMode.EDIT) {
+      completeSession.id = session.id;
 
-    message.success("New session added.");
-  };
+      editSession(completeSession);
 
-  function handleSubmit() {
+      message.success(`Session: "${completeSession.title}" modified.`);
+    } else {
+      addSession(completeSession);
+
+      message.success(`Session: ${completeSession.title} created.`);
+    }
+
     setVisible(false);
   }
 
@@ -33,8 +54,19 @@ function AddSessionModal({ visible, setVisible, addSession }) {
   }
 
   return (
-    <Modal visible={visible} title={"Create new session"} onOk={handleSubmit} onCancel={handleCancel} footer={[null]}>
-      <Form name="dynamic_form_nest_item" onFinish={onFinish} autoComplete="off" layout={"vertical"}>
+    <Modal
+      visible={visible}
+      title={mode === ModalMode.ADD ? "Create new session" : "Modify existing session"}
+      onCancel={handleCancel}
+      footer={[null]}
+      destroyOnClose={true}>
+      <Form
+        name="dynamic_form_nest_item"
+        onFinish={onFinish}
+        autoComplete="off"
+        layout={"vertical"}
+        preserve={false}
+        initialValues={formPrefillData}>
         <Form.Item
           label="Session Name"
           name="sessionName"
@@ -114,4 +146,5 @@ function AddSessionModal({ visible, setVisible, addSession }) {
   );
 }
 
-export default AddSessionModal;
+export { ModalMode };
+export default SessionModal;

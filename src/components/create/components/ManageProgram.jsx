@@ -1,21 +1,26 @@
+// React
 import React, { useState, useContext } from "react";
 import { ProgramContext } from "../../../contexts/Program";
 
+// Calendar
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 
+// UI Components
 import { Popconfirm, message } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
-import AddSessionModal from "./AddSessionModal";
+// Components
+import SessionModal, { ModalMode } from "./SessionModal";
 
+// Styles
 import "./styles.scss";
 
 const localizer = momentLocalizer(moment);
 
 function ProgramEvent({ event }) {
   const program = useContext(ProgramContext);
-  const { deleteSession } = program;
+  const { editSession, deleteSession } = program;
 
   const [showModal, setShowModal] = useState(false);
 
@@ -31,10 +36,12 @@ function ProgramEvent({ event }) {
 
   return (
     <>
-      <AddSessionModal
+      <SessionModal
+        mode={ModalMode.EDIT}
         visible={showModal}
         setVisible={setShowModal}
-        addSession={() => console.log("ProgramEvent -> Implement session edit functionality")}
+        editSession={editSession}
+        session={event}
       />
       <span className="program-session-icons">
         <Popconfirm
@@ -59,32 +66,22 @@ function ManageProgram() {
 
   function handleSelectSlot(timeSlot) {
     const { start, end } = timeSlot;
+
+    // Verify date selection is within program range
     if (
       moment(start).dayOfYear() >= moment(dateStart).dayOfYear() &&
       moment(end).dayOfYear() <= moment(dateEnd).dayOfYear()
     ) {
+      // Push dates to temp session and open modal
       modifyTempSession({ start, end });
 
       setShowModal(true);
-      // const title = window.prompt("Enter a name for this session.");
-
-      // if (title) {
-      //   const session = {
-      //     title,
-      //     start: new Date(start),
-      //     end: new Date(end),
-      //     id: sessions.length,
-      //   };
-
-      //   addSession(session);
-
-      //   message.success("New session added.");
-      // }
     } else {
       message.warn("Date not within range of program.");
     }
   }
 
+  // Change calendar day card backgrounds based on program date range
   function dayPropGetter(date) {
     if (
       moment(date).dayOfYear() < moment(dateStart).dayOfYear() ||
@@ -108,8 +105,13 @@ function ManageProgram() {
 
   return (
     <div className="manage-program">
-      <AddSessionModal visible={showModal} setVisible={setShowModal} addSession={addSession} />
+      {/* ADD SESSION MODAL */}
+      <SessionModal mode={ModalMode.ADD} visible={showModal} setVisible={setShowModal} addSession={addSession} />
+
+      {/* PROGRAM TITLE HEADER */}
       <h1>{name}</h1>
+
+      {/* BIG CALENDAR BOI */}
       <Calendar
         selectable
         popup
