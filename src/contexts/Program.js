@@ -45,8 +45,16 @@ const ProgramProvider = (props) => {
     });
   };
 
-  const editSession = (session) => {
-    // TODO Add functionality to edit existing session
+  const editSession = (modifiedSession) => {
+    setProgram({
+      ...program,
+      sessions: program.sessions.map((session) => {
+        if (session.id === modifiedSession.id) {
+          return modifiedSession;
+        }
+        return session;
+      }),
+    });
   };
 
   const deleteSession = (session) => {
