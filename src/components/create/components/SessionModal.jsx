@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { ProgramContext } from "../../../contexts/Program";
 
-import { Modal, Form, Input, Button, Space, TimePicker, message } from "antd";
+import { Modal, Form, Tooltip, Input, Button, Space, TimePicker, message } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 
 // Modifies form behavior
@@ -82,47 +82,74 @@ function SessionModal({ mode, visible, setVisible, addSession, editSession, sess
         <Form.List name="presentations">
           {(fields, { add, remove }) => {
             return (
-              <div>
+              <>
                 {fields.map((field) => (
-                  <Space key={field.key}>
-                    <Form.Item
-                      {...field}
-                      name={[field.name, "presentationName"]}
-                      fieldKey={[field.fieldKey, "presentationName"]}
-                      rules={[{ required: true, message: "Missing presentation name" }]}>
-                      <Input placeholder="Presentation title" />
-                    </Form.Item>
+                  <div key={field.key}>
+                    <Space style={{ display: "flex" }}>
+                      <Form.Item
+                        {...field}
+                        label="Presentation Title"
+                        name={[field.name, "presentationName"]}
+                        fieldKey={[field.fieldKey, "presentationName"]}
+                        rules={[{ required: true, message: "Missing presentation name" }]}>
+                        <Input />
+                      </Form.Item>
 
-                    <Form.Item
-                      {...field}
-                      name={[field.name, "startTime"]}
-                      fieldKey={[field.fieldKey, "startTime"]}
-                      rules={[{ required: true, message: "Missing start time" }]}>
-                      <TimePicker />
-                    </Form.Item>
+                      <Form.Item
+                        {...field}
+                        label="Starts"
+                        name={[field.name, "startTime"]}
+                        fieldKey={[field.fieldKey, "startTime"]}
+                        rules={[{ required: true, message: "Missing start time" }]}>
+                        <TimePicker placeholder="" />
+                      </Form.Item>
 
-                    <Form.Item
-                      {...field}
-                      name={[field.name, "endTime"]}
-                      fieldKey={[field.fieldKey, "endTime"]}
-                      rules={[{ required: true, message: "Missing end time" }]}>
-                      <TimePicker />
-                    </Form.Item>
+                      <Form.Item
+                        {...field}
+                        label="Ends"
+                        name={[field.name, "endTime"]}
+                        fieldKey={[field.fieldKey, "endTime"]}
+                        rules={[{ required: true, message: "Missing end time" }]}>
+                        <TimePicker placeholder="" />
+                      </Form.Item>
+                    </Space>
 
-                    <Form.Item
-                      {...field}
-                      name={[field.name, "presenterName"]}
-                      fieldKey={[field.fieldKey, "presenterName"]}
-                      rules={[{ required: true, message: "Missing presenter name" }]}>
-                      <Input placeholder="Presenter's name" style={{ width: "60%" }} />
-                    </Form.Item>
+                    <Space style={{ display: "flex" }}>
+                      <Form.Item
+                        {...field}
+                        label="Presenter's Name"
+                        name={[field.name, "presenterName"]}
+                        fieldKey={[field.fieldKey, "presenterName"]}
+                        rules={[{ required: true, message: "Missing presenter name" }]}>
+                        <Input />
+                      </Form.Item>
 
-                    <MinusCircleOutlined
-                      onClick={() => {
-                        remove(field.name);
-                      }}
-                    />
-                  </Space>
+                      <Form.Item
+                        {...field}
+                        label="Credit Type"
+                        name={[field.name, "creditType"]}
+                        fieldKey={[field.fieldKey, "creditType"]}
+                        rules={[{ required: true, message: "Missing credit type" }]}>
+                        <Input />
+                      </Form.Item>
+
+                      <Form.Item
+                        {...field}
+                        label="Credit Amount"
+                        name={[field.name, "creditAmount"]}
+                        fieldKey={[field.fieldKey, "creditAmount"]}
+                        rules={[{ required: true, message: "Missing credit amount" }]}>
+                        <Input />
+                      </Form.Item>
+
+                      <MinusCircleOutlined
+                        style={{ width: "48px", height: "48px" }}
+                        onClick={() => {
+                          remove(field.name);
+                        }}
+                      />
+                    </Space>
+                  </div>
                 ))}
 
                 <Form.Item>
@@ -135,7 +162,7 @@ function SessionModal({ mode, visible, setVisible, addSession, editSession, sess
                     <PlusOutlined /> Add presentation
                   </Button>
                 </Form.Item>
-              </div>
+              </>
             );
           }}
         </Form.List>
