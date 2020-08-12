@@ -31,11 +31,6 @@ const CreateProgram = ({ formNext }) => {
 
 		createProgram(newProgram);
 
-		// db.insert(program)
-		// .then((id) => {
-		// 	console.log(`CreateProgram.jsx 29: id `, id)
-		// })
-
 		formNext();
 	};
 

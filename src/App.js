@@ -1,5 +1,5 @@
 //Packages
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Route } from "react-router-dom";
 import { BrowserRouter as Router, Switch } from "react-router-dom";
 import { ProgramContext } from "./contexts/Program";
@@ -27,6 +27,7 @@ const { Content } = Layout;
 // const { useBreakpoint } = Grid;
 // Components
 function App() {
+	const [flag, setFlag] = useState(0)
 	const program = useContext(ProgramContext);
 	const { loadProgress, createProgram } = program;
 
@@ -34,11 +35,14 @@ function App() {
 		db.start()
 		db.read(1)
 			.then((res) => {
-				if (res.id) {
+				if (res.id && !flag) {
 					console.log(`App.js 38: `)
 					console.dir(res)
 					loadProgress(res)
 					message.info("Previous creation progress\nLoaded!");
+					//show prompt
+					console.log(`App.js 44: show prompt`, )
+					setFlag(1)
 				} else {
 					console.log(`App.js 43: New Program`)
 				}

@@ -1,8 +1,8 @@
 import Dexie from "dexie"
 
-const db = new Dexie("programs")
+const db = new Dexie("programs_db")
 db.version(1).stores({
-	programs: "id, name, dateStart, dateEnd, days"
+	programs: "id"
 })
 
 db.start = () => {
@@ -31,6 +31,7 @@ db.read = (data) => {
 	return db.programs.get(data)
 		.then((x) => {
 			if (x) {
+				x=JSON.parse(x.object)
 				conlog(">>> Read: ", data, x)
 				return x
 			}
@@ -44,13 +45,14 @@ db.read = (data) => {
 
 db.update = (data) => {
 	conlog("D STOP", data)
-
-	return db.programs.put(data)
+	const dataString = {id: 1, object: JSON.stringify(data)}
+	return db.programs.put(dataString, 1)
 		.then((x) => {
-			conlog(">>>D Updated", x, data)
+			conlog(">>>D Updated", x, dataString)
+			return x;
 		})
 		.catch((err) => {
-			console.error(">>>D Update error", data, err)
+			console.error(">>>D Update error", dataString, err)
 		})
 
 }
@@ -69,8 +71,9 @@ db.clean = () => {
 export default db
 
 function conlog() {
+	console.log("____DB____")
 	for (const arg in arguments) {
 		console.dir(arguments[arg]);
 	}
-	console.log("__________")
+	console.log("^^^^^^^^^^")
 }
