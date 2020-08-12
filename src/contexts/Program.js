@@ -94,6 +94,10 @@ const ProgramProvider = (props) => {
 		setProgram(defaultProgram);
 	}
 
+	const tooManyTabs = () => {
+		
+	}
+
 	return (
 		<ProgramContext.Provider
 			value={{ ...program, createProgram, addSession, editSession, deleteSession, modifyTempSession, loadProgress, clearProgram }}>

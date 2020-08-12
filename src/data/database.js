@@ -53,7 +53,18 @@ db.update = (data) => {
 		.catch((err) => {
 			console.error(">>> DB Update error", dataString, err)
 		})
+}
 
+db.tooManyTabs = (data) => {
+	const dataString = { id: 1, object: JSON.stringify(data) }
+	return db.programs.put(dataString, 1)
+		.then((x) => {
+			conlog(">>> DB tooManyTabs:", data.tooManyTabs)
+			return x;
+		})
+		.catch((err) => {
+			console.error(">>> DB tooManyTabs error", dataString, err)
+		})
 }
 
 db.clean = () => {

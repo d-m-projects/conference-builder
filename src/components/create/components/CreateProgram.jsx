@@ -1,22 +1,24 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { ProgramContext } from "../../../contexts/Program";
+import { useHistory, withRouter } from "react-router-dom"
 
 import * as dates from "date-arithmetic";
 import moment from "moment";
 import db from "../../../data/database";
 
 // antd components
-import { Form, Input, Button, DatePicker } from "antd";
+import { Form, Input, Button, DatePicker, Skeleton } from "antd";
+import Fade from "react-reveal/Fade";
 
 const { RangePicker } = DatePicker;
 
 const CreateProgram = ({ formNext }) => {
 	const program = useContext(ProgramContext);
 	const { createProgram } = program;
-
-	console.log(`CreateProgram.jsx 18: `, moment(program.dateStart))
+	
 	const onFinish = (values) => {
 		const newProgram = {
+			current: program.current,
 			name: values.name,
 			dateStart: moment(values.programLength[0]._d).set("hour", 0).set("minute", 0).set("second", 0)._d,
 			dateEnd: moment(values.programLength[1]._d).set("hour", 0).set("minute", 0).set("second", 0)._d,
@@ -39,32 +41,35 @@ const CreateProgram = ({ formNext }) => {
 			: [moment.calendar, moment.calendar]
 
 	return (
-		<Form name="basic" onFinish={onFinish} initialValues={program}>
-			<Form.Item
-				label="Program Name"
-				name="name"
-				rules={[{ required: true, message: "Please input a valid name." }]}>
-				<Input />
-			</Form.Item>
+		<>
+			{program.dateStart
+				? <Fade><Form name="basic" onFinish={onFinish} initialValues={program}>
+					<Form.Item
+						label="Program Name"
+						name="name"
+						rules={[{ required: true, message: "Please input a valid name." }]}>
+						<Input />
+					</Form.Item>
 
-			<Form.Item
-				label="Program Length"
-				name="programLength"
-				rules={[{ required: true, message: "Please select a valid date range." }]}
-			>
-				<RangePicker />
-			</Form.Item>
+					<Form.Item
+						label="Program Length"
+						name="programLength"
+						rules={[{ required: true, message: "Please select a valid date range." }]}
+					>
+						<RangePicker />
+					</Form.Item>
 
-			<Form.Item>
-				
-					{
-						program.dateStart
-						? <Button type="primary" htmlType="submit" >Continue</Button>
-						: <Button type="primary" htmlType="submit" shape="round">Create</Button>
-					}
-				
-			</Form.Item>
-		</Form >
+					<Form.Item>
+						{
+							program.dateStart
+								? <Button type="primary" htmlType="submit" >Continue</Button>
+								: <Button type="primary" htmlType="submit" shape="round">Create</Button>
+						}
+					</Form.Item>
+				</Form ></Fade>
+				: <Skeleton />
+			}
+		</>
 	);
 };
 

@@ -1,9 +1,11 @@
 import React, { useState, useContext } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, withRouter } from "react-router-dom";
 import { ProgramContext } from "../../contexts/Program";
 
 import Fade from "react-reveal/Fade";
+import moment from "moment";
 import db from "../../data/database"
+import ifvisible from "ifvisible"
 
 // antd setup
 import { Button, Steps, message, Card } from "antd";
@@ -15,11 +17,27 @@ import ReviewProgram from "./components/ReviewProgram";
 
 const { Step } = Steps;
 
-const Create = () => {
+const Create = ({running}) => {
 	const [current, setCurrent] = useState(0);
 	const history = useHistory();
 	const program = useContext(ProgramContext)
-	const {clearProgram} = program
+	const { clearProgram } = program
+	
+	ifvisible.on("blur", () => {
+		program.tooManyTabs = 1
+		db.tooManyTabs(program)
+	})
+	ifvisible.on("focus", () => {
+		program.tooManyTabs = 0
+		db.tooManyTabs(program)
+	})
+
+	if (!running){
+		history.push("/")
+	} else {
+		program.dateStart =  program.dateStart || moment().toDate()
+		program.dateEnd =  program.dateEnd || moment().toDate()
+	}
 
 	const changeStep = (direction) => {
 		setCurrent(current + direction)
@@ -91,4 +109,4 @@ const Create = () => {
 	);
 };
 
-export default Create;
+export default withRouter(Create);
