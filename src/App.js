@@ -56,8 +56,8 @@ function App() {
 				if (res.dateStart && !running) {
 					if (res.tooManyTabs) {
 						tooManyTabs()
-						res.tooManyTabs = 0
-						db.tooManyTabs(res)
+						// res.tooManyTabs = 0
+						// db.tooManyTabs(res)
 						return
 					}
 					loadProgress(res)
