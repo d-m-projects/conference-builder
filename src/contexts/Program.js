@@ -5,7 +5,6 @@ import db from "../data/database"
 const ProgramContext = React.createContext();
 
 const defaultProgram = {
-	id: 1,
 	name: "",
 	dateStart: null,
 	dateEnd: null,
@@ -18,15 +17,14 @@ const ProgramProvider = (props) => {
 	const [program, setProgram] = useState(defaultProgram);
 
 	useEffect(() => {
-		console.log("Context Changed", program)
+		conlog("Context Changed", program)
 		if (program.dateStart) {
 			db.update(program)
 				.then((x) => {
-					console.log(`Program.js 23: `)
-					console.dir(x)
+					console.log("Context > DB ", x, program.current)
 				})
 				.catch((err) => {
-					console.log(`Context > DB update failed`, err)
+					console.error("Context > DB update failed", err)
 				})
 		}
 	}, [program]);
@@ -96,6 +94,10 @@ const ProgramProvider = (props) => {
 		setProgram(defaultProgram);
 	}
 
+	const tooManyTabs = () => {
+		
+	}
+
 	return (
 		<ProgramContext.Provider
 			value={{ ...program, createProgram, addSession, editSession, deleteSession, modifyTempSession, loadProgress, clearProgram }}>
@@ -105,3 +107,14 @@ const ProgramProvider = (props) => {
 };
 
 export { ProgramProvider, ProgramContext };
+
+function conlog() {
+	const show = false
+	if (show) {
+		console.log("__Program_")
+		for (const arg in arguments) {
+			console.dir(arguments[arg]);
+		}
+		console.log("^^^^^^^^^^")
+	}
+}

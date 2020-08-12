@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { BrowserRouter as Router} from "react-router-dom";
 import 'normalize.css';
 import './index.css';
 import App from './App';
@@ -9,7 +10,9 @@ import { ProgramProvider } from "./contexts/Program";
 ReactDOM.render(
   // <React.StrictMode>
   <ProgramProvider>
+		<Router>
     <App />
+			</Router>
   </ProgramProvider>,
   // </React.StrictMode>,
   document.getElementById("root")
