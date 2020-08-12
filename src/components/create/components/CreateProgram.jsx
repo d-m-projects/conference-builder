@@ -29,9 +29,7 @@ const CreateProgram = ({ formNext }) => {
 			newProgram.days.push({ date: current, sessions: [] });
 			current = dates.add(current, 1, "day");
 		}
-
 		createProgram(newProgram);
-
 		formNext();
 	};
 
@@ -58,7 +56,13 @@ const CreateProgram = ({ formNext }) => {
 			</Form.Item>
 
 			<Form.Item>
-				<Button type="primary" htmlType="submit" shape="round">Create</Button>
+				
+					{
+						program.dateStart
+						? <Button type="primary" htmlType="submit" >Continue</Button>
+						: <Button type="primary" htmlType="submit" shape="round">Create</Button>
+					}
+				
 			</Form.Item>
 		</Form >
 	);

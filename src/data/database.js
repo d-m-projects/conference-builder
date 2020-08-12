@@ -44,7 +44,6 @@ db.read = (data) => {
 }
 
 db.update = (data) => {
-	conlog("D STOP", data)
 	const dataString = {id: 1, object: JSON.stringify(data)}
 	return db.programs.put(dataString, 1)
 		.then((x) => {
