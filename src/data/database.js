@@ -8,10 +8,10 @@ db.version(1).stores({
 db.start = () => {
 	db.open()
 		.then((x) => {
-			conlog(">>> Opened: ", x.name)
+			conlog(">>> DB Opened: ", x.name)
 		})
 		.catch((err) => {
-			console.error(">>> Open error: ", (err.stack || err))
+			console.error(">>> DB Open error: ", (err.stack || err))
 		})
 }
 
@@ -31,27 +31,27 @@ db.read = (data) => {
 	return db.programs.get(data)
 		.then((x) => {
 			if (x) {
-				x=JSON.parse(x.object)
-				conlog(">>> Read: ", data, x)
+				x = JSON.parse(x.object)
+				conlog(">>> DB Read:", data, x)
 				return x
 			}
 			return 0
 		})
 		.catch((err) => {
-			console.error(">>> Read error: ", err);
+			console.error(">>> DB Read error: ", err);
 		})
 
 }
 
 db.update = (data) => {
-	const dataString = {id: 1, object: JSON.stringify(data)}
+	const dataString = { id: 1, object: JSON.stringify(data) }
 	return db.programs.put(dataString, 1)
 		.then((x) => {
-			conlog(">>>D Updated", x, data)
+			conlog(">>> DB Updated:", x, data)
 			return x;
 		})
 		.catch((err) => {
-			console.error(">>>D Update error", dataString, err)
+			console.error(">>> DB Update error", dataString, err)
 		})
 
 }
@@ -59,10 +59,10 @@ db.update = (data) => {
 db.clean = () => {
 	const action = db.delete()
 		.then((x) => {
-			conlog(">>> Cleaned", x);
+			conlog(">>> DB Cleaned", x);
 		})
 		.catch((err) => {
-			console.error(">>> Clean error:", err);
+			console.error(">>> DB Clean error:", err);
 		})
 
 	return action
@@ -70,9 +70,14 @@ db.clean = () => {
 export default db
 
 function conlog() {
-	console.log("____DB____")
-	for (const arg in arguments) {
-		console.dir(arguments[arg]);
+	const show = false
+	if (show) {
+		console.log("____DB____")
+		for (const arg in arguments) {
+			console.dir(arguments[arg]);
+		}
+		console.log("^^^^^^^^^^")
+	} else {
+		console.log(...arguments)
 	}
-	console.log("^^^^^^^^^^")
 }

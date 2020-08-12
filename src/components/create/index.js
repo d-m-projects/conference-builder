@@ -57,7 +57,7 @@ const Create = () => {
 	];
 
 	const showsteps = (
-		<Steps current={current}>
+		<Steps current={program.current}>
 			{steps.map((item) => (
 				<Step key={item.title} title={item.title} />
 			))}

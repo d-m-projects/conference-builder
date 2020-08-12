@@ -22,6 +22,11 @@ function ProgramEvent({ event }) {
 	const program = useContext(ProgramContext);
 	const { editSession, deleteSession } = program;
 
+	for (const session in program.sessions) {
+		program.sessions[session].start = moment(program.sessions[session].start).toDate()
+		program.sessions[session].end = moment(program.sessions[session].end).toDate()
+	}
+
 	const [showModal, setShowModal] = useState(false);
 
 	function handleDelete(event) {
@@ -103,22 +108,6 @@ function ManageProgram() {
 		};
 	}
 
-	const loadedSessions = [
-		...sessions
-	]
-	for (const session in sessions) {
-		for (const pres in sessions[session].presentations) {
-			loadedSessions[session].presentations[pres].startTime = moment(sessions[session].presentations[pres].startTime)
-			loadedSessions[session].presentations[pres].endTime = moment(sessions[session].presentations[pres].endTime)
-		}
-		loadedSessions[session].start = moment(sessions[session].start)
-		loadedSessions[session].end = moment(sessions[session].end)
-	}
-	// loadedSessions[0].presentations[0].startTime = moment(sessions[0].presentations[0].startTime)
-	// loadedSessions[0].presentations[0].endTime = moment(sessions[0].presentations[0].endTime)
-	// loadedSessions[0].startTime = moment(sessions[0].start)
-	// loadedSessions[0].endTime = moment(sessions[0].end)
-
 	return (
 		<div className="manage-program">
 			{/* ADD SESSION MODAL */}
@@ -131,7 +120,7 @@ function ManageProgram() {
 			<Calendar
 				selectable
 				popup
-				events={loadedSessions}
+				events={sessions}
 				localizer={localizer}
 				style={{ height: 800 }}
 				defaultDate={dateStart}

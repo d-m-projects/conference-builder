@@ -17,7 +17,7 @@ import Foot from "./components/components/Foot";
 import "./App.scss";
 
 // antd setup
-import { /*Breadcrumb, Grid,*/ message, Col, Layout, Row } from "antd";
+import { /*Breadcrumb, Grid,*/ Modal, Button, message, Col, Layout, Row } from "antd";
 import "antd/dist/antd.css";
 
 import "react-big-calendar/lib/sass/styles.scss";
@@ -31,6 +31,17 @@ function App() {
 	const program = useContext(ProgramContext);
 	const { loadProgress, createProgram } = program;
 
+	function continuePrompt() {
+		Modal.warning({
+			title: program.name,
+			content: "You have an unfinished program. Let's continue!",
+			okText: "Continue...",
+			onOk() {
+
+			}
+		});
+	}
+
 	useEffect(() => {
 		db.start()
 		db.read(1)
@@ -38,9 +49,8 @@ function App() {
 				if (res.dateStart && !running) {
 					loadProgress(res)
 					setRunning(1)
+					// continuePrompt() // commented for dev mode
 					message.info("Previous creation progress\nLoaded!");
-					//show prompt
-					console.log(`App.js 44: show prompt`, )
 				} else {
 					console.log(`New Program`)
 				}
