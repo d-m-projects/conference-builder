@@ -15,7 +15,7 @@ const { RangePicker } = DatePicker;
 const CreateProgram = ({ formNext }) => {
 	const program = useContext(ProgramContext);
 	const { createProgram } = program;
-
+	
 	const onFinish = (values) => {
 		const newProgram = {
 			current: program.current,

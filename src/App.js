@@ -52,6 +52,7 @@ function App() {
 					history.push("/create")
 				} else {
 					console.log(`New Program`)
+					setRunning(1)
 				}
 			})
 			.then ((res) => {

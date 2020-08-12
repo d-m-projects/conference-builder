@@ -3,6 +3,7 @@ import { useHistory, withRouter } from "react-router-dom";
 import { ProgramContext } from "../../contexts/Program";
 
 import Fade from "react-reveal/Fade";
+import moment from "moment";
 import db from "../../data/database"
 
 // antd setup
@@ -20,9 +21,13 @@ const Create = ({running}) => {
 	const history = useHistory();
 	const program = useContext(ProgramContext)
 	const { clearProgram } = program
-	
+	console.log(`index.js 23: `, running)
+
 	if (!running){
 		history.push("/")
+	} else {
+		program.dateStart =  program.dateStart || moment().toDate()
+		program.dateEnd =  program.dateEnd || moment().toDate()
 	}
 
 	const changeStep = (direction) => {
