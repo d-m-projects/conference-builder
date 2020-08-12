@@ -44,6 +44,7 @@ db.read = (data) => {
 }
 
 db.update = (data) => {
+	data.tooManyWindows = 1
 	const dataString = { id: 1, object: JSON.stringify(data) }
 	return db.programs.put(dataString, 1)
 		.then((x) => {

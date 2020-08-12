@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, withRouter } from "react-router-dom";
 import { ProgramContext } from "../../contexts/Program";
 
 import Fade from "react-reveal/Fade";
@@ -15,11 +15,15 @@ import ReviewProgram from "./components/ReviewProgram";
 
 const { Step } = Steps;
 
-const Create = () => {
+const Create = ({running}) => {
 	const [current, setCurrent] = useState(0);
 	const history = useHistory();
 	const program = useContext(ProgramContext)
-	const {clearProgram} = program
+	const { clearProgram } = program
+	
+	if (!running){
+		history.push("/")
+	}
 
 	const changeStep = (direction) => {
 		setCurrent(current + direction)
@@ -91,4 +95,4 @@ const Create = () => {
 	);
 };
 
-export default Create;
+export default withRouter(Create);
