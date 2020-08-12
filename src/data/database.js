@@ -15,17 +15,17 @@ db.start = () => {
 		})
 }
 
-db.insert = (data) => {
-	const action = db.programs.add(data)
-		.then((x) => {
-			conlog(">>> Insert: ", x )
-		})
-		.catch((err) => {
-			console.error(">>> Insert error: ", err);
-		})
+// db.insert = (data) => {
+// 	const action = db.programs.add(data)
+// 		.then((x) => {
+// 			conlog(">>> Insert: ", x )
+// 		})
+// 		.catch((err) => {
+// 			console.error(">>> Insert error: ", err);
+// 		})
 
-	return action
-}
+// 	return action
+// }
 
 db.read = (data) => {
 	return db.programs.get(data)
@@ -48,7 +48,7 @@ db.update = (data) => {
 	const dataString = {id: 1, object: JSON.stringify(data)}
 	return db.programs.put(dataString, 1)
 		.then((x) => {
-			conlog(">>>D Updated", x, dataString)
+			conlog(">>>D Updated", x, data)
 			return x;
 		})
 		.catch((err) => {

@@ -21,7 +21,7 @@ const ProgramProvider = (props) => {
 		if (program.dateStart) {
 			db.update(program)
 				.then((x) => {
-					conlog("Context > DB ",x)
+					conlog("Context > DB ",x, program)
 				})
 				.catch((err) => {
 					console.error("Context > DB update failed", err)

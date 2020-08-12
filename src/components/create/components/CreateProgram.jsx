@@ -14,9 +14,10 @@ const CreateProgram = ({ formNext }) => {
 	const program = useContext(ProgramContext);
 	const { createProgram } = program;
 
+	console.log(`CreateProgram.jsx 18: `, moment(program.dateStart))
 	const onFinish = (values) => {
 		const newProgram = {
-			name: values.programName,
+			name: values.name,
 			dateStart: moment(values.programLength[0]._d).set("hour", 0).set("minute", 0).set("second", 0)._d,
 			dateEnd: moment(values.programLength[1]._d).set("hour", 0).set("minute", 0).set("second", 0)._d,
 			days: [],
@@ -34,15 +35,16 @@ const CreateProgram = ({ formNext }) => {
 		formNext();
 	};
 
-	const dateFormat = "ddd MMM D YYYY HH:mm:ss "
-	// Wed Aug 19 2020 00:00:00 GMT-0500 (Central Daylight Time)
+	program.programLength =
+		program.dateStart
+			? [moment(program.dateStart), moment(program.dateEnd)]
+			: [moment.calendar, moment.calendar]
 
 	return (
-		<Form name="basic" onFinish={onFinish}>
+		<Form name="basic" onFinish={onFinish} initialValues={program}>
 			<Form.Item
-				initialValue={program.name || ""}
 				label="Program Name"
-				name="programName"
+				name="name"
 				rules={[{ required: true, message: "Please input a valid name." }]}>
 				<Input />
 			</Form.Item>
@@ -50,19 +52,13 @@ const CreateProgram = ({ formNext }) => {
 			<Form.Item
 				label="Program Length"
 				name="programLength"
-				rules={[{ required: true, message: "Please select a valid date range." }]}>
-				<RangePicker
-					defaultValue={program.dateStart
-						? [moment(program.dateStart), moment(program.dateEnd)]
-						: [moment.calendar, moment.calendar]
-					}
-				/>
+				rules={[{ required: true, message: "Please select a valid date range." }]}
+			>
+				<RangePicker />
 			</Form.Item>
 
 			<Form.Item>
-				<Button type="primary" htmlType="submit" shape="round">
-					Create
-        </Button>
+				<Button type="primary" htmlType="submit" shape="round">Create</Button>
 			</Form.Item>
 		</Form >
 	);

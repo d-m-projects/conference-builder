@@ -27,7 +27,7 @@ const { Content } = Layout;
 // const { useBreakpoint } = Grid;
 // Components
 function App() {
-	const [flag, setFlag] = useState(0)
+	const [running, setRunning] = useState(0)
 	const program = useContext(ProgramContext);
 	const { loadProgress, createProgram } = program;
 
@@ -35,16 +35,14 @@ function App() {
 		db.start()
 		db.read(1)
 			.then((res) => {
-				if (res.id && !flag) {
-					console.log(`App.js 38: `)
-					console.dir(res)
+				if (res.dateStart && !running) {
 					loadProgress(res)
+					setRunning(1)
 					message.info("Previous creation progress\nLoaded!");
 					//show prompt
 					console.log(`App.js 44: show prompt`, )
-					setFlag(1)
 				} else {
-					console.log(`App.js 43: New Program`)
+					console.log(`New Program`)
 				}
 			})
 			.catch((err) => console.error(`App.js 46: `, err))
