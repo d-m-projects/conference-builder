@@ -33,10 +33,19 @@ function App() {
 	const history = useHistory()
 
 	function continuePrompt() {
-		Modal.warning({
+		Modal.info({
 			title: program.name,
 			content: "You have an unfinished program. Let's continue!",
 			okText: "Continue...",
+		});
+	}
+
+	function tooManyTabs() {
+		const modal = Modal.error({
+			title: 'Open in another tab or window.',
+			content: `Please close this tab and try to find the one that is already open. Your progress has not been lost.`,
+			okButtonProps: { disabled: true },
+			okText: "Close other tabs"
 		});
 	}
 
@@ -45,6 +54,12 @@ function App() {
 		db.read(1)
 			.then((res) => {
 				if (res.dateStart && !running) {
+					if (res.tooManyTabs) {
+						tooManyTabs()
+						res.tooManyTabs = 0
+						db.tooManyTabs(res)
+						return
+					}
 					loadProgress(res)
 					setRunning(1)
 					continuePrompt() // commented for dev mode
