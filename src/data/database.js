@@ -15,18 +15,6 @@ db.start = () => {
 		})
 }
 
-// db.insert = (data) => {
-// 	const action = db.programs.add(data)
-// 		.then((x) => {
-// 			conlog(">>> Insert: ", x )
-// 		})
-// 		.catch((err) => {
-// 			console.error(">>> Insert error: ", err);
-// 		})
-
-// 	return action
-// }
-
 db.read = (data) => {
 	return db.programs.get(data)
 		.then((x) => {
@@ -78,6 +66,7 @@ db.clean = () => {
 
 	return action
 }
+
 export default db
 
 function conlog() {
