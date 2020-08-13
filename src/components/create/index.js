@@ -5,7 +5,6 @@ import { ProgramContext } from "../../contexts/Program";
 import Fade from "react-reveal/Fade";
 import moment from "moment";
 import db from "../../data/database"
-import ifvisible from "ifvisible"
 
 // antd setup
 import { Button, Steps, message, Card } from "antd";
@@ -23,21 +22,9 @@ const Create = ({running}) => {
 	const program = useContext(ProgramContext)
 	const { clearProgram } = program
 	
-	ifvisible.on("blur", () => {
-		program.tooManyTabs = 1
-		db.tooManyTabs(program)
-	})
-	ifvisible.on("focus", () => {
-		program.tooManyTabs = 0
-		db.tooManyTabs(program)
-	})
-
 	if (!running){
 		history.push("/")
-	} else {
-		program.dateStart =  program.dateStart || moment().toDate()
-		program.dateEnd =  program.dateEnd || moment().toDate()
-	}
+	} 
 
 	const changeStep = (direction) => {
 		setCurrent(current + direction)
