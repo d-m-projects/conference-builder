@@ -18,15 +18,15 @@ const ProgramProvider = (props) => {
 
 	useEffect(() => {
 		conlog("Context Changed", program)
-		if (program.dateStart) {
-			db.update(program)
-				.then((x) => {
-					console.log("Context > DB ", x, program.current)
-				})
-				.catch((err) => {
-					console.error("Context > DB update failed", err)
-				})
-		}
+		// if (program.dateStart) {
+		// 	db.update(program)
+		// 		.then((x) => {
+		// 			console.log("Context > DB ", x, program.current)
+		// 		})
+		// 		.catch((err) => {
+		// 			console.error("Context > DB update failed", err)
+		// 		})
+		// }
 	}, [program]);
 
 	const createProgram = (programInfo) => {
