@@ -57,8 +57,8 @@ function App() {
 					loadProgress(res)
 					setRunning(1)
 					// continuePrompt() // commented for dev mode
-					message.info("Previous creation progress\nLoaded!");
-					history.push("/create")
+					// message.info("Previous creation progress\nLoaded!");
+					// history.push("/create")
 				} else {
 					console.log(`New Program`)
 					setRunning(1)
