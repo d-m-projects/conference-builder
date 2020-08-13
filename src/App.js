@@ -56,15 +56,10 @@ function App() {
 				if (res.dateStart && !running) {
 					loadProgress(res)
 					setRunning(1)
-					// continuePrompt() // commented for dev mode
-					message.info("Previous creation progress\nLoaded!");
-					history.push("/create")
 				} else {
 					console.log(`New Program`)
 					setRunning(1)
 				}
-			})
-			.then((res) => {
 			})
 			.catch((err) => console.error(`App.js 46: `, err))
 	}, [])
