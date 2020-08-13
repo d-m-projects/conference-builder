@@ -54,58 +54,38 @@ function App() {
 		db.read(1)
 			.then((res) => {
 				if (res.dateStart && !running) {
-					if (res.tooManyTabs) {
-						tooManyTabs()
-						// res.tooManyTabs = 0
-						// db.tooManyTabs(res)
-						return
-					}
 					loadProgress(res)
 					setRunning(1)
-					continuePrompt() // commented for dev mode
-					// message.info("Previous creation progress\nLoaded!");
-					history.push("/create")
 				} else {
 					console.log(`New Program`)
 					setRunning(1)
 				}
 			})
-			.then ((res) => {
-			})
 			.catch((err) => console.error(`App.js 46: `, err))
-
 	}, [])
 
-	//   const screens = useBreakpoint(); // for setting up responsiveness
 	return (
-
-			<Layout className="layout" theme="light">
-				<Row>
-					<Col span={24}>
-						<Head />
-						<Content style={{ margin: "50px" }}>
-							{/* <Breadcrumb style={{ margin: '16px 0' }}>
-								<Breadcrumb.Item>Home</Breadcrumb.Item>
-								<Breadcrumb.Item>List</Breadcrumb.Item>
-								<Breadcrumb.Item>App</Breadcrumb.Item>
-							</Breadcrumb> */}
-							<div style={{ backgroundColor: "white", padding: "20px" }}>
-								<Switch>
-									<Route exact path="/" component={LandingPage} />
-									{/* <Route path="/create" component={Create} running={running} /> */}
-									<Route path="/create">
-										<Create running={running} />
-									</Route>
-									<Route path="/dashboard" component={Dashboard} />
-									<Route path="/file" component={File} />
-								</Switch>
-							</div>
-						</Content>
-						<Foot />
-					</Col>
-				</Row>
-			</Layout>
-
+		<Layout className="layout" theme="light">
+			<Row>
+				<Col span={24}>
+					<Head />
+					<Content style={{ margin: "50px" }}>
+						<div style={{ backgroundColor: "white", padding: "20px" }}>
+							<Switch>
+								<Route exact path="/" component={LandingPage} />
+								{/* <Route path="/create" component={Create} running={running} /> */}
+								<Route path="/create">
+									<Create running={running} />
+								</Route>
+								<Route path="/dashboard" component={Dashboard} />
+								<Route path="/file" component={File} />
+							</Switch>
+						</div>
+					</Content>
+					<Foot />
+				</Col>
+			</Row>
+		</Layout>
 	);
 }
 

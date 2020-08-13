@@ -8,8 +8,6 @@ import 'antd/dist/antd.css';
 import './Nav.scss';
 
 
-//Components
-
 const Nav = () => {
 	const [current, setcurrent] = useState({ current: "home" })
 

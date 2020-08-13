@@ -9,9 +9,6 @@ import './Head.scss';
 // antd setup
 const { Header } = Layout
 
-//Components
-
-
 function Head() {
 	return (
 		<Header>

@@ -15,23 +15,11 @@ db.start = () => {
 		})
 }
 
-// db.insert = (data) => {
-// 	const action = db.programs.add(data)
-// 		.then((x) => {
-// 			conlog(">>> Insert: ", x )
-// 		})
-// 		.catch((err) => {
-// 			console.error(">>> Insert error: ", err);
-// 		})
-
-// 	return action
-// }
-
 db.read = (data) => {
 	return db.programs.get(data)
 		.then((x) => {
 			if (x) {
-				x = JSON.parse(x.object)
+				// x = JSON.parse(x.object)
 				conlog(">>> DB Read:", data, x)
 				return x
 			}
@@ -40,30 +28,17 @@ db.read = (data) => {
 		.catch((err) => {
 			console.error(">>> DB Read error: ", err);
 		})
-
 }
 
 db.update = (data) => {
-	const dataString = { id: 1, object: JSON.stringify(data) }
-	return db.programs.put(dataString, 1)
+	// const dataString = { id: 1, object: JSON.stringify(data) }
+	return db.programs.put(data, 1)
 		.then((x) => {
 			conlog(">>> DB Updated:", x, data)
 			return x;
 		})
 		.catch((err) => {
-			console.error(">>> DB Update error", dataString, err)
-		})
-}
-
-db.tooManyTabs = (data) => {
-	const dataString = { id: 1, object: JSON.stringify(data) }
-	return db.programs.put(dataString, 1)
-		.then((x) => {
-			conlog(">>> DB tooManyTabs:", data.tooManyTabs)
-			return x;
-		})
-		.catch((err) => {
-			console.error(">>> DB tooManyTabs error", dataString, err)
+			console.error(">>> DB Update error", data, err)
 		})
 }
 
@@ -78,6 +53,7 @@ db.clean = () => {
 
 	return action
 }
+
 export default db
 
 function conlog() {
