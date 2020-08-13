@@ -64,19 +64,12 @@ function App() {
 			.catch((err) => console.error(`App.js 46: `, err))
 	}, [])
 
-	//   const screens = useBreakpoint(); // for setting up responsiveness
 	return (
-
 		<Layout className="layout" theme="light">
 			<Row>
 				<Col span={24}>
 					<Head />
 					<Content style={{ margin: "50px" }}>
-						{/* <Breadcrumb style={{ margin: '16px 0' }}>
-								<Breadcrumb.Item>Home</Breadcrumb.Item>
-								<Breadcrumb.Item>List</Breadcrumb.Item>
-								<Breadcrumb.Item>App</Breadcrumb.Item>
-							</Breadcrumb> */}
 						<div style={{ backgroundColor: "white", padding: "20px" }}>
 							<Switch>
 								<Route exact path="/" component={LandingPage} />
@@ -93,7 +86,6 @@ function App() {
 				</Col>
 			</Row>
 		</Layout>
-
 	);
 }
 

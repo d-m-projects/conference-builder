@@ -1,10 +1,8 @@
 import React, { useContext, useState, useEffect } from "react";
 import { ProgramContext } from "../../../contexts/Program";
-import { useHistory, withRouter } from "react-router-dom"
 
 import * as dates from "date-arithmetic";
 import moment from "moment";
-import db from "../../../data/database";
 
 // antd components
 import { Form, Input, Button, DatePicker, Skeleton } from "antd";
