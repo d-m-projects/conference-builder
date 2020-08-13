@@ -13,7 +13,7 @@ const { RangePicker } = DatePicker;
 const CreateProgram = ({ formNext }) => {
 	const program = useContext(ProgramContext);
 	const { createProgram } = program;
-	
+
 	const onFinish = (values) => {
 		const newProgram = {
 			current: program.current,
@@ -40,33 +40,30 @@ const CreateProgram = ({ formNext }) => {
 
 	return (
 		<>
-			{program.dateStart
-				? <Fade><Form name="basic" onFinish={onFinish} initialValues={program}>
-					<Form.Item
-						label="Program Name"
-						name="name"
-						rules={[{ required: true, message: "Please input a valid name." }]}>
-						<Input />
-					</Form.Item>
+			<Fade><Form name="basic" onFinish={onFinish} initialValues={program}>
+				<Form.Item
+					label="Program Name"
+					name="name"
+					rules={[{ required: true, message: "Please input a valid name." }]}>
+					<Input />
+				</Form.Item>
 
-					<Form.Item
-						label="Program Length"
-						name="programLength"
-						rules={[{ required: true, message: "Please select a valid date range." }]}
-					>
-						<RangePicker />
-					</Form.Item>
+				<Form.Item
+					label="Program Length"
+					name="programLength"
+					rules={[{ required: true, message: "Please select a valid date range." }]}
+				>
+					<RangePicker />
+				</Form.Item>
 
-					<Form.Item>
-						{
-							program.dateStart
-								? <Button type="primary" htmlType="submit" >Continue</Button>
-								: <Button type="primary" htmlType="submit" shape="round">Create</Button>
-						}
-					</Form.Item>
-				</Form ></Fade>
-				: <Skeleton />
-			}
+				<Form.Item>
+					{
+						program.dateStart
+							? <Button type="primary" htmlType="submit" >Continue</Button>
+							: <Button type="primary" htmlType="submit" shape="round">Create</Button>
+					}
+				</Form.Item>
+			</Form ></Fade>
 		</>
 	);
 };
