@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 
 import { Row, Col, Button, Steps, message, Card, Space } from "antd";
 import { EditOutlined, EllipsisOutlined, SettingOutlined } from '@ant-design/icons';
@@ -8,7 +8,8 @@ import data from "./data"
 const { Meta } = Card
 
 const File = () => {
-	//   const screens = useBreakpoint(); // for setting up responsiveness
+	// to flex column count responsively
+	// https://usehooks.com/useMedia/
 
 	return (
 		<>
