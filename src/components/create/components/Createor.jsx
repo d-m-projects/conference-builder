@@ -54,7 +54,7 @@ const Createor = ({ formNext }) => {
 			title: 'Date',
 			dataIndex: 'date',
 			key: 'date',
-			width: 100,
+			width: 150,
 		},
 		{
 			title: 'Time',
