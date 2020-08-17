@@ -13,6 +13,7 @@ const defaultProgram = {
 	nextSessionId: 0,
 	tempSession: {},
 }
+
 const ProgramProvider = (props) => {
 	const [program, setProgram] = useState(defaultProgram);
 
