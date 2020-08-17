@@ -49,20 +49,20 @@ function App() {
 		});
 	}
 
-	useEffect(() => {
-		db.start()
-		db.read(1)
-			.then((res) => {
-				if (res.dateStart && !running) {
-					loadProgress(res)
-					setRunning(1)
-				} else {
-					console.log(`New Program`)
-					setRunning(1)
-				}
-			})
-			.catch((err) => console.error(`App.js 46: `, err))
-	}, [])
+	// useEffect(() => {
+	// 	db.start()
+	// 	db.read(1)
+	// 		.then((res) => {
+	// 			if (res.dateStart && !running) {
+	// 				loadProgress(res)
+	// 				setRunning(1)
+	// 			} else {
+	// 				console.log(`New Program`)
+	// 				setRunning(1)
+	// 			}
+	// 		})
+	// 		.catch((err) => console.error(`App.js 46: `, err))
+	// }, [])
 
 	return (
 		<Layout className="layout" theme="light">
