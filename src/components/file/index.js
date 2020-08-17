@@ -3,8 +3,9 @@ import { ProgramContext } from "../../contexts/Program";
 
 // antd components
 import { Row, Col, Button, Steps, message, Card, Space } from "antd";
-import { EditOutlined, EllipsisOutlined, SettingOutlined } from '@ant-design/icons';
+import { EditOutlined, DownloadOutlined } from '@ant-design/icons';
 
+import moment from "moment";
 import db from "../../data/database"
 import data from "./data" // test data for scaffold
 
@@ -13,7 +14,11 @@ const { Meta } = Card
 const File = () => {
 	const [fileman, setFileman] = useState([])
 	const program = useContext(ProgramContext);
-	console.log(`index.js 16: `, fileman)
+
+	const doEditClick = (id) => {
+		console.log(`index.js 19: `, id)
+	}
+
 	useEffect(() => {
 		const getall = async () => {
 			setFileman(await db.readAll())
@@ -26,17 +31,17 @@ const File = () => {
 		// https://usehooks.com/useMedia/
 		<>
 			<Row gutter={[10, 10]}>
-				{data.map(item =>
+				{fileman.map((item, i) =>
 					<Col span={8} key={item.id}>
-						<Card
-
+						<Card key={item.id}
 							actions={[
-								<EditOutlined key="edit" />,
+								<EditOutlined key={i} onClick={() => doEditClick(item.id)} />,
+								<DownloadOutlined key={item.id} />,
 							]}
 							title={item.name}
 						>
-							<p>Begin: {item.dateStart}</p>
-							<p>End: {item.dateEnd}</p>
+							<p>Begin: {moment(item.dateStart).format("ddd, MMM Do Y")}</p>
+							<p>End: {moment(item.dateEnd).format("ddd, MMM Do Y")}</p>
 						</Card>
 					</Col>
 				)}
