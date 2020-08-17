@@ -18,15 +18,27 @@ const ProgramProvider = (props) => {
 
 	useEffect(() => {
 		conlog("Context Changed", program)
-		// if (program.dateStart) {
-		// 	db.update(program)
-		// 		.then((x) => {
-		// 			console.log("Context > DB ", x, program.current)
-		// 		})
-		// 		.catch((err) => {
-		// 			console.error("Context > DB update failed", err)
-		// 		})
-		// }
+		if (program.id && program.dateStart) {
+			db.update(program)
+				.then((x) => {
+					// program.id = x
+					console.log("Context > DB Updated ", x)
+				})
+				.catch((err) => {
+					console.error("Context > DB Update failed", err)
+				})
+		} else if (!program.id && program.dateStart) {
+			db.insert(program)
+				.then((x) => {
+					setProgram({...program, id: x })
+					console.log("Context > DB Inserted. ID:", x)
+				})
+				.catch((err) => {
+					console.error("Context > DB Insert failed", err)
+				})
+		} else {
+			console.log(`Program.js 39: Missing program.dateStart.`, )
+		}
 	}, [program]);
 
 	const createProgram = (programInfo) => {
@@ -95,7 +107,7 @@ const ProgramProvider = (props) => {
 	}
 
 	const tooManyTabs = () => {
-		
+
 	}
 
 	return (
