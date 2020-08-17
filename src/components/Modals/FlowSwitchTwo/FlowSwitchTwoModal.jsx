@@ -6,13 +6,13 @@ import { Button } from "antd";
 
 import GenericModal from "../GenericModal/GenericModal";
 
-function FlowSwitchOneModal(props) {
+function FlowSwitchTwoModal(props) {
   const { isVisible, setVisibility } = props;
 
   const history = useHistory();
 
-  const handleCreateSession = () => {
-    console.log("User selected 'create session'");
+  const handleReviewProgram = () => {
+    console.log("User selected 'review program'");
     history.push("/");
 
     setVisibility(false);
@@ -46,16 +46,16 @@ function FlowSwitchOneModal(props) {
         content: [
           <>
             <h3>Option A</h3>
-            <p>Save current session and create another for this program.</p>
-            <Button type="primary" onClick={handleCreateSession}>
-              Create Session
+            <p>Save current presentation and add another.</p>
+            <Button type="primary" onClick={handleAddPresentation}>
+              Add Presentation
             </Button>
           </>,
           <>
             <h3>Option B</h3>
-            <p>Save current session and add one or more presentations to it.</p>
-            <Button type="primary" onClick={handleAddPresentation}>
-              Add Presentation
+            <p>Save and view entire program / agenda.</p>
+            <Button type="primary" onClick={handleReviewProgram}>
+              Review Program
             </Button>
           </>,
         ],
@@ -69,4 +69,4 @@ function FlowSwitchOneModal(props) {
   );
 }
 
-export default FlowSwitchOneModal;
+export default FlowSwitchTwoModal;
