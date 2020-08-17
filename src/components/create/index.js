@@ -22,9 +22,9 @@ const Create = ({running}) => {
 	const program = useContext(ProgramContext)
 	const { clearProgram } = program
 	
-	if (!running){
-		history.push("/")
-	} 
+	// if (!running){
+	// 	history.push("/")
+	// } 
 
 	const changeStep = (direction) => {
 		setCurrent(current + direction)

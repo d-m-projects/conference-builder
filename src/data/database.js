@@ -2,7 +2,7 @@ import Dexie from "dexie"
 
 const db = new Dexie("programs_db")
 db.version(1).stores({
-	programs: "id"
+	programs: "++id"
 })
 
 db.start = () => {
@@ -19,7 +19,7 @@ db.read = (data) => {
 	return db.programs.get(data)
 		.then((x) => {
 			if (x) {
-				// x = JSON.parse(x.object)
+				x = JSON.parse(x.object)
 				conlog(">>> DB Read:", data, x)
 				return x
 			}
@@ -30,15 +30,28 @@ db.read = (data) => {
 		})
 }
 
-db.update = (data) => {
-	// const dataString = { id: 1, object: JSON.stringify(data) }
-	return db.programs.put(data, 1)
+db.insert = (data) => {
+	const dataString = JSON.parse(JSON.stringify(data))
+	return db.programs.add(dataString)
 		.then((x) => {
-			conlog(">>> DB Updated:", x, data)
+			conlog(">>> DB Added:", x, dataString)
 			return x;
 		})
 		.catch((err) => {
-			console.error(">>> DB Update error", data, err)
+			console.error(">>> DB Add error", dataString, err)
+		})
+}
+
+db.update = (data) => {
+	const dataString = JSON.parse(JSON.stringify(data))
+	return db.programs.put(dataString)
+		.then((x) => {
+			conlog(">>> DB Updated:", x, dataString)
+			return x;
+		})
+		.catch((err) => {
+			console.error(">>> DB Update error", err, dataString)
+			console.warn(">>> DB Update error", err.inner.message)
 		})
 }
 
