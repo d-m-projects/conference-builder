@@ -30,6 +30,10 @@ db.read = (data) => {
 		})
 }
 
+db.readAll = async (data) => {
+	return db.programs.where("id").above(0).toArray()
+}
+
 db.insert = (data) => {
 	const dataString = JSON.parse(JSON.stringify(data))
 	return db.programs.add(dataString)
