@@ -31,7 +31,7 @@ db.read = (data) => {
 }
 
 db.insert = (data) => {
-	const dataString = { object: JSON.stringify(data) }
+	const dataString = JSON.parse(JSON.stringify(data))
 	return db.programs.add(dataString)
 		.then((x) => {
 			conlog(">>> DB Added:", x, dataString)
@@ -43,7 +43,7 @@ db.insert = (data) => {
 }
 
 db.update = (data) => {
-	const dataString = { id: data.id, object: JSON.stringify(data) }
+	const dataString = JSON.parse(JSON.stringify(data))
 	return db.programs.put(dataString)
 		.then((x) => {
 			conlog(">>> DB Updated:", x, dataString)
