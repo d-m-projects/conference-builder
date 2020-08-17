@@ -1,0 +1,46 @@
+.generic-modal-content {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+
+  margin: 10px auto;
+  padding: 10px 0;
+}
+
+.generic-modal-option-a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  width: 45%;
+
+  border-right: 1px solid black;
+
+  margin: 5px;
+
+  button {
+    margin: 5px auto;
+  }
+}
+
+.generic-modal-option-b {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  width: 45%;
+
+  margin: 5px;
+
+  button {
+    margin: 5px auto;
+  }
+}
+
+.generic-modal-footer {
+  text-align: center;
+}
