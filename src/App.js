@@ -10,6 +10,7 @@ import Dashboard from "./components/dashboard/";
 import Create from "./components/create/";
 import File from "./components/file/";
 import LandingPage from "./components/landing-page";
+import ProgramPage from "./components/program/ProgramPage";
 import Head from "./components/components/Head";
 import Foot from "./components/components/Foot";
 
@@ -65,7 +66,7 @@ function App() {
 	}, [])
 
 	return (
-		<Layout className="layout" theme="light">
+    <Layout className="layout" theme="light">
 			<Row>
 				<Col span={24}>
 					<Head />
@@ -77,6 +78,7 @@ function App() {
 								<Route path="/create">
 									<Create running={running} />
 								</Route>
+                <Route path="/program" component={ProgramPage} />
 								<Route path="/dashboard" component={Dashboard} />
 								<Route path="/file" component={File} />
 							</Switch>
