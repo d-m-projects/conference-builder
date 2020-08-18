@@ -92,8 +92,8 @@ const ProgramProvider = (props) => {
 	};
 
 	const clearProgram = () => {
-		db.clean();
-		setProgram(defaultProgram);
+		// db.clean();
+		// setProgram(defaultProgram);
 	}
 
 	const tooManyTabs = () => {

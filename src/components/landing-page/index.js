@@ -1,6 +1,4 @@
-
-import DownYamlButton from './downYamlButton',
-
+import DownYamlButton from "./downYamlButton";
 
 import React, { useState } from "react";
 import Fade from "react-reveal/Fade";
@@ -16,8 +14,8 @@ const LandingPage = () => {
 
   return (
     <Fade bottom>
-      <div>
-        <p>This is the LandingPage! </p>
+      {/* <div>
+       
 
         <Button type="primary" onClick={() => setModalVisible(true)}>
           Click to open first modal
@@ -29,17 +27,19 @@ const LandingPage = () => {
         <Button type="primary" onClick={() => setModalVisible1(true)}>
           Click to open second modal
         </Button>
-      </div>
+      </div> */}
 
-	return (
-		<Fade bottom>
-			<div>
-			<DownYamlButton/>
-				<p>This is the LandingPage!</p>
-			
-			</div>
-      <FlowSwitchOneModal isVisible={modalVisible} setVisibility={setModalVisible} />
-      <FlowSwitchTwoModal isVisible={modalVisible1} setVisibility={setModalVisible1} />
+      <div>
+        <DownYamlButton />
+      </div>
+      {/* <FlowSwitchOneModal
+        isVisible={modalVisible}
+        setVisibility={setModalVisible}
+      />
+      <FlowSwitchTwoModal
+        isVisible={modalVisible1}
+        setVisibility={setModalVisible1}
+      /> */}
     </Fade>
   );
 };

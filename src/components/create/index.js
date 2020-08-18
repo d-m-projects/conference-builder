@@ -41,9 +41,9 @@ const Create = ({running}) => {
 
 	const doSubmit = () => {
 		message.success("Processing complete!");
-		clearProgram();
+		// clearProgram();
 		history.push("/");
-		window.location.reload();
+		// window.location.reload();
 	};
 
 	const steps = [
