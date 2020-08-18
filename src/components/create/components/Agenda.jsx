@@ -7,10 +7,13 @@ import moment from "moment";
 // antd components
 import { Form, Input, Button, DatePicker, Skeleton, Table } from "antd";
 import Fade from "react-reveal/Fade";
+import { agenda, modified } from "./events"
+
+const { Column } = Table
 
 const { RangePicker } = DatePicker;
 
-const Createor = ({ formNext }) => {
+const Agenda = ({ formNext }) => {
 	/* 	const program = useContext(ProgramContext);
 		const { createProgram } = program;
 	
@@ -33,7 +36,8 @@ const Createor = ({ formNext }) => {
 			formNext();
 		}; */
 	console.log(`Createor.jsx 35: `,)
-	const expandedRowRender = () => {
+
+	const Sessions = () => {
 		console.log(`Createor.jsx 37: `,)
 		const columns = [
 			{ title: "Title", width: 200, dataIndex: "title", key: "title" },
@@ -49,71 +53,31 @@ const Createor = ({ formNext }) => {
 		return <Table size={"small"} bordered columns={columns} dataSource={data} pagination={false} />;
 	}
 
-	const columns = [
-		{
-			title: 'Date',
-			dataIndex: 'date',
-			key: 'date',
-			width: 150,
-		},
-		{
-			title: 'Time',
-			dataIndex: 'time',
-			key: 'time',
-			width: 75,
-		},
-		{
-			title: 'event',
-			dataIndex: 'event',
-			key: 'event',
-		},
-	]
-
-	const agenda = [
-		{
-			key: '1',
-			date: "19-Oct-2020",
-			time: "13:00",
-			timeEnd: "14:00",
-			event: "impactful",
-			tags: ["Lebbie Theobalds", "Moss Jowling",],
-		},
-		{
-			key: '2',
-			date: "20-Oct-2020",
-			time: "14:00",
-			timeEnd: "15:00",
-			event: "impactful",
-			tags: ["Tera Faldoe", "Hyacintha Quiddihy", "Janine Laraway"],
-		},
-		{
-			key: '3',
-			date: "21-Oct-2020",
-			time: "15:00",
-			timeEnd: "13:00",
-			event: "impactful",
-			tags: ["Artemas Ramsby", "Catarina Millington",],
-		},
-	];
+	const days = modified.days
 
 	return (
 		// <Fade>
-		<Table
-			columns={columns}
-			dataSource={agenda}
-			expandable={{
-				expandedRowRender,
-				// defaultExpandAllRows: true,
-				// expandIcon: ({ expanded, onExpand, record }) => { }, //  Icon expanding  https://codesandbox.io/s/cool-field-bh118?file=/index.js:1486-1536
-			}}
-		/>
+		<Table dataSource={days}>
+			<Column title="Date" dataIndex="date" key="date"
+				render={(date, sessions) => (
+					<>
+						<p>{date, console.log(`Agenda.jsx 64: `, )}</p>
+						{/* <Table dataSource={sessions}>
+							<Column title="name" dataIndex="dateStart" key="id" />
+						</Table> */}
+						<Sessions />
+					</>
+				)}
+			/>
+		</Table>
 		// </Fade>
 	)
 };
 
-export default Createor;
+export default Agenda;
 
 
 
 // ["Moss Jowling","Tera Faldoe","Hyacintha Quiddihy","Janine Laraway","Darryl Fardo","Niccolo Knill","Artemas Ramsby","Catarina Millington","Munroe Haskey","Phillipp Fyrth","Ricca Leary","Antonetta Fidelli","Oran Cawt","Susie Connett","Sibelle Mechic","Auria Lopes","Zola Lambdon","Emelina Bayston","Garrick Rolfini","Dael Collier"]
 // ["Keylex","Toughjoyfax","Temp","Lotlux","Veribet","Keylex","Bitchip","Konklab","Cardguard","Voyatouch", "Ventosanzap","Sonair", "Daltfresh", "Redhold", "Quo Lux", "Transcof", "Viva", "Zaam-Dox", "Aerified", "Alpha",]
+

@@ -10,7 +10,7 @@ import db from "../../data/database"
 import { Button, Steps, message, Card } from "antd";
 import "antd/dist/antd.css";
 
-import Createor from "./components/Createor";
+import Agenda from "./components/Agenda";
 import CreateProgram from "./components/CreateProgram";
 import ManageProgram from "./components/ManageProgram";
 import ReviewProgram from "./components/ReviewProgram";
@@ -23,10 +23,6 @@ const Create = ({running}) => {
 	const program = useContext(ProgramContext)
 	const { clearProgram } = program
 	
-	// if (!running){
-	// 	history.push("/")
-	// } 
-
 	const changeStep = (direction) => {
 		setCurrent(current + direction)
 		program.current = current
@@ -50,7 +46,7 @@ const Create = ({running}) => {
 	const steps = [
 		{
 			title: "SCAFFOLD",
-			content: <Createor formNext={next} />,
+			content: <Agenda formNext={next} />,
 		},
 		{
 			title: "Create Program",
