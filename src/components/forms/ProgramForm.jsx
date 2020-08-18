@@ -2,63 +2,70 @@ import React, { useContext } from "react";
 import { ProgramContext } from "../../contexts/Program";
 
 import * as dates from "date-arithmetic";
-import moment from "moment";
 
-import { Form, Input, Button, DatePicker } from "antd";
+import { VIEW } from "./FormManager";
+
+import { Form, Input, Button, DatePicker, message } from "antd";
 import "./styles.scss";
 
 const { RangePicker } = DatePicker;
 
-function ProgramForm() {
+function ProgramForm(props) {
+  const { setFormView } = props;
+
   const program = useContext(ProgramContext);
   const { createProgram } = program;
 
   const onFinish = (values) => {
-    console.log("Form submit", values);
-
     const newProgram = {
-      name: values.name,
-      dateStart: moment(values.programLength[0]._d).set("hour", 0).set("minute", 0).set("second", 0)._d,
-      dateEnd: moment(values.programLength[1]._d).set("hour", 0).set("minute", 0).set("second", 0)._d,
+      name: values.programName,
+      dateStart: values.programLength[0].second(0)._d,
+      dateEnd: values.programLength[1].second(0)._d,
       days: [],
     };
 
     let current = newProgram.dateStart;
 
     while (dates.lte(current, newProgram.dateEnd, "day")) {
-      newProgram.days.push({ date: current, sessions: [] });
+      newProgram.days.push({ date: current });
       current = dates.add(current, 1, "day");
     }
+
     createProgram(newProgram);
+
+    setFormView(VIEW.SESSION);
+
+    message.success(`Program '${values.programName}' created!`);
   };
 
   return (
-    <div className="form-container">
-      <Form name="programForm" onFinish={onFinish} initialValues={program} layout="vertical">
-        <Form.Item label="Program Name" name="name" rules={[{ required: true, message: "Please input a valid name." }]}>
-          <Input />
-        </Form.Item>
+    <Form name="programForm" onFinish={onFinish} initialValues={program} layout="vertical">
+      <Form.Item
+        label="Program Name"
+        name="programName"
+        rules={[{ required: true, message: "Input a valid name for this program." }]}>
+        <Input />
+      </Form.Item>
 
-        <Form.Item
-          label="Program Start & End Dates"
-          name="programLength"
-          rules={[{ required: true, message: "Please select a valid date range." }]}>
-          <RangePicker />
-        </Form.Item>
+      <Form.Item
+        label="Program Start & End Dates"
+        name="programLength"
+        rules={[{ required: true, message: "Input a date range for this program." }]}>
+        <RangePicker showTime={{ format: "HH:mm" }} format="YYYY-MM-DD HH:mm" />
+      </Form.Item>
 
-        <Form.Item>
-          {program.dateStart ? (
-            <Button type="primary" htmlType="submit">
-              Continue
-            </Button>
-          ) : (
-            <Button type="primary" htmlType="submit" shape="round">
-              Create
-            </Button>
-          )}
-        </Form.Item>
-      </Form>
-    </div>
+      <Form.Item>
+        {program.dateStart ? (
+          <Button type="primary" htmlType="submit">
+            Continue
+          </Button>
+        ) : (
+          <Button type="primary" htmlType="submit">
+            Create
+          </Button>
+        )}
+      </Form.Item>
+    </Form>
   );
 }
 
