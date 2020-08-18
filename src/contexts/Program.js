@@ -42,7 +42,6 @@ const ProgramProvider = (props) => {
 	}, [program]);
 
 	const createProgram = (programInfo) => {
-
 		setProgram({
 			...program,
 			name: programInfo.name,
@@ -70,10 +69,6 @@ const ProgramProvider = (props) => {
 		});
 	};
 
-	// const editSession = (session) => {
-	// 	// TODO Add functionality to edit existing session
-	// };
-
 	const deleteSession = (session) => {
 		setProgram({
 			...program,
@@ -84,10 +79,6 @@ const ProgramProvider = (props) => {
 			}),
 		});
 	};
-
-	const loadProgress = (programInfo) => {
-		setProgram(programInfo);
-	}
 
 	const editSession = (modifiedSession) => {
 		setProgram({
@@ -100,19 +91,20 @@ const ProgramProvider = (props) => {
 			}),
 		});
 	};
+	
+	const loadProgram = async (id) => {
+		const read = db.read(id)
+		setProgram(await read);
+	}
 
 	const clearProgram = () => {
 		db.clean();
 		setProgram(defaultProgram);
 	}
 
-	const tooManyTabs = () => {
-
-	}
-
 	return (
 		<ProgramContext.Provider
-			value={{ ...program, createProgram, addSession, editSession, deleteSession, modifyTempSession, loadProgress, clearProgram }}>
+			value={{ ...program, createProgram, addSession, editSession, deleteSession, modifyTempSession, loadProgram }}>
 			{props.children}
 		</ProgramContext.Provider>
 	);

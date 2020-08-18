@@ -1,0 +1,22 @@
+const data = [{"id":1,"name":"COLCHICUM AUTUMNALE","dateStart":"5/30/2020","dateEnd":"7/29/2020","days":2},
+{"id":2,"name":"Ibuprofen","dateStart":"4/9/2020","dateEnd":"1/26/2020","days":6},
+{"id":3,"name":"Mango","dateStart":"4/6/2020","dateEnd":"2/17/2020","days":9},
+{"id":4,"name":"Arizona Ash","dateStart":"6/12/2020","dateEnd":"6/27/2020","days":9},
+{"id":5,"name":"Hydromorphone Hydrochloride","dateStart":"10/28/2019","dateEnd":"2/5/2020","days":6},
+{"id":6,"name":"spironolactone","dateStart":"10/14/2019","dateEnd":"7/3/2020","days":7},
+{"id":7,"name":"Menthol","dateStart":"5/13/2020","dateEnd":"2/9/2020","days":8},
+{"id":8,"name":"Scorodite Saccharum Special Order","dateStart":"1/22/2020","dateEnd":"11/25/2019","days":4},
+{"id":9,"name":"Flumazenil","dateStart":"12/24/2019","dateEnd":"11/6/2019","days":4},
+{"id":10,"name":"Imipramine Hydrochloride","dateStart":"12/6/2019","dateEnd":"2/23/2020","days":8},
+{"id":11,"name":"Salicylic Acid","dateStart":"6/5/2020","dateEnd":"11/24/2019","days":2},
+{"id":12,"name":"PLERIXAFOR","dateStart":"9/22/2019","dateEnd":"3/3/2020","days":11},
+{"id":13,"name":"Venlafaxine","dateStart":"1/11/2020","dateEnd":"6/17/2020","days":5},
+{"id":14,"name":"Acetaminophen, Dextromethorphan HBr, Doxylamine succinate, Phenylephrine HCl","dateStart":"9/13/2019","dateEnd":"4/24/2020","days":8},
+{"id":15,"name":"Methimazole","dateStart":"5/22/2020","dateEnd":"1/12/2020","days":12},
+{"id":16,"name":"Fluconazole","dateStart":"9/29/2019","dateEnd":"12/7/2019","days":14},
+{"id":17,"name":"antithrombin III","dateStart":"6/26/2020","dateEnd":"1/1/2020","days":8},
+{"id":18,"name":"Levothyroxine Sodium","dateStart":"3/22/2020","dateEnd":"7/6/2020","days":1},
+{"id":19,"name":"Cetylpyridinium chloride","dateStart":"4/25/2020","dateEnd":"6/18/2020","days":5},
+{"id":20,"name":"Divalproex Sodium","dateStart":"1/17/2020","dateEnd":"1/5/2020","days":3}]
+
+export default data

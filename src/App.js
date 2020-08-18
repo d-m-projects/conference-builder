@@ -29,8 +29,7 @@ const { Content } = Layout;
 function App() {
 	const [running, setRunning] = useState(0)
 	const program = useContext(ProgramContext);
-	const { loadProgress, createProgram } = program;
-	const history = useHistory()
+	const { createProgram } = program;
 
 	function continuePrompt() {
 		Modal.info({

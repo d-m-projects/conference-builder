@@ -19,7 +19,7 @@ db.read = (data) => {
 	return db.programs.get(data)
 		.then((x) => {
 			if (x) {
-				x = JSON.parse(x.object)
+				// x = JSON.parse(x.object)
 				conlog(">>> DB Read:", data, x)
 				return x
 			}
@@ -28,6 +28,10 @@ db.read = (data) => {
 		.catch((err) => {
 			console.error(">>> DB Read error: ", err);
 		})
+}
+
+db.readAll = async (data) => {
+	return db.programs.where("id").above(0).toArray()
 }
 
 db.insert = (data) => {
