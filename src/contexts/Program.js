@@ -1,120 +1,102 @@
 import React, { useState, useEffect } from "react";
 
-import db from "../data/database"
+import db from "../data/database";
 
 const ProgramContext = React.createContext();
 
 const defaultProgram = {
-	name: "",
-	dateStart: null,
-	dateEnd: null,
-	days: [],
-	sessions: [],
-	nextSessionId: 0,
-	tempSession: {},
-}
+  name: "",
+  dateStart: null,
+  dateEnd: null,
+  days: [],
+  sessions: [],
+  nextSessionId: 0,
+};
 const ProgramProvider = (props) => {
-	const [program, setProgram] = useState(defaultProgram);
+  const [program, setProgram] = useState(defaultProgram);
 
-	useEffect(() => {
-		conlog("Context Changed", program)
-		// if (program.dateStart) {
-		// 	db.update(program)
-		// 		.then((x) => {
-		// 			console.log("Context > DB ", x, program.current)
-		// 		})
-		// 		.catch((err) => {
-		// 			console.error("Context > DB update failed", err)
-		// 		})
-		// }
-	}, [program]);
+  useEffect(() => {
+    conlog("Context Changed", program);
+    // if (program.dateStart) {
+    // 	db.update(program)
+    // 		.then((x) => {
+    // 			console.log("Context > DB ", x, program.current)
+    // 		})
+    // 		.catch((err) => {
+    // 			console.error("Context > DB update failed", err)
+    // 		})
+    // }
+  }, [program]);
 
-	const createProgram = (programInfo) => {
+  const createProgram = (newProgram) => {
+    setProgram({
+      ...program,
+      name: newProgram.name,
+      dateStart: newProgram.dateStart,
+      dateEnd: newProgram.dateEnd,
+      days: newProgram.days,
+    });
+  };
 
-		setProgram({
-			...program,
-			name: programInfo.name,
-			dateStart: programInfo.dateStart,
-			dateEnd: programInfo.dateEnd,
-			days: programInfo.days,
-		});
-	};
+  const createSession = (newSession) => {
+    setProgram({
+      ...program,
+      sessions: [...program.sessions, { ...newSession, id: program.nextSessionId }],
+      nextSessionId: program.nextSessionId + 1,
+    });
+  };
 
-	const modifyTempSession = (session) => {
-		setProgram({
-			...program,
-			tempSession: {
-				...program.tempSession,
-				...session,
-			},
-		});
-	};
+  const deleteSession = (sessionId) => {
+    setProgram({
+      ...program,
+      sessions: program.sessions.filter((session) => {
+        if (sessionId !== session.id) {
+          return true;
+        }
+      }),
+    });
+  };
 
-	const addSession = (session) => {
-		setProgram({
-			...program,
-			sessions: [...program.sessions, { ...session, id: program.nextSessionId }],
-			nextSessionId: program.nextSessionId + 1,
-		});
-	};
+  const loadProgress = (programInfo) => {
+    setProgram(programInfo);
+  };
 
-	// const editSession = (session) => {
-	// 	// TODO Add functionality to edit existing session
-	// };
+  const editSession = (modifiedSession) => {
+    setProgram({
+      ...program,
+      sessions: program.sessions.map((session) => {
+        if (session.id === modifiedSession.id) {
+          return modifiedSession;
+        }
+        return session;
+      }),
+    });
+  };
 
-	const deleteSession = (session) => {
-		setProgram({
-			...program,
-			sessions: program.sessions.filter((event) => {
-				if (event.id !== session.id) {
-					return true;
-				}
-			}),
-		});
-	};
+  const clearProgram = () => {
+    db.clean();
+    setProgram(defaultProgram);
+  };
 
-	const loadProgress = (programInfo) => {
-		setProgram(programInfo);
-	}
+  const tooManyTabs = () => {};
 
-	const editSession = (modifiedSession) => {
-		setProgram({
-			...program,
-			sessions: program.sessions.map((session) => {
-				if (session.id === modifiedSession.id) {
-					return modifiedSession;
-				}
-				return session;
-			}),
-		});
-	};
-
-	const clearProgram = () => {
-		db.clean();
-		setProgram(defaultProgram);
-	}
-
-	const tooManyTabs = () => {
-		
-	}
-
-	return (
-		<ProgramContext.Provider
-			value={{ ...program, createProgram, addSession, editSession, deleteSession, modifyTempSession, loadProgress, clearProgram }}>
-			{props.children}
-		</ProgramContext.Provider>
-	);
+  return (
+    <ProgramContext.Provider
+      value={{ ...program, createProgram, createSession, editSession, deleteSession, loadProgress, clearProgram }}>
+      {props.children}
+    </ProgramContext.Provider>
+  );
 };
 
 export { ProgramProvider, ProgramContext };
 
 function conlog() {
-	const show = false
-	if (show) {
-		console.log("__Program_")
-		for (const arg in arguments) {
-			console.dir(arguments[arg]);
-		}
-		console.log("^^^^^^^^^^")
-	}
+  const show = true;
+  if (show) {
+    console.log("__Program_");
+    for (const arg in arguments) {
+      console.dir(arguments[arg]);
+    }
+    console.log("^^^^^^^^^^");
+  }
 }
