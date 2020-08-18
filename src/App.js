@@ -64,7 +64,7 @@ function App() {
 	// }, [])
 
 	return (
-		<Layout className="layout" theme="light">
+		<Layout className="layout" theme="light" style={{width:"1200px", margin: "0 auto"}}>
 			<Row>
 				<Col span={24}>
 					<Head />

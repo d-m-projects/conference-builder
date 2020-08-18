@@ -10,6 +10,7 @@ import db from "../../data/database"
 import { Button, Steps, message, Card } from "antd";
 import "antd/dist/antd.css";
 
+import Createor from "./components/Createor";
 import CreateProgram from "./components/CreateProgram";
 import ManageProgram from "./components/ManageProgram";
 import ReviewProgram from "./components/ReviewProgram";
@@ -48,6 +49,10 @@ const Create = ({running}) => {
 
 	const steps = [
 		{
+			title: "SCAFFOLD",
+			content: <Createor formNext={next} />,
+		},
+		{
 			title: "Create Program",
 			content: <CreateProgram formNext={next} />,
 		},
@@ -80,11 +85,17 @@ const Create = ({running}) => {
 						</Button>
 					)}
 					{current < steps.length - 1 &&
-						(current === 0 ? null : (
+						// SHOW Prev/Next on Step One.
 							<Button type="primary" onClick={() => next()}>
 								Next
 							</Button>
-						))}
+						}
+						{/* FOR BLOCKING "Next" button on the Step One.
+						 (current === 0 ? null : (
+							<Button type="primary" onClick={() => next()}>
+								Next
+							</Button>
+						))} */}
 					{current === steps.length - 1 && (
 						<Button type="primary" onClick={doSubmit}>
 							Submit
@@ -96,4 +107,4 @@ const Create = ({running}) => {
 	);
 };
 
-export default withRouter(Create);
+export default Create;
