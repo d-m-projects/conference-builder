@@ -77,7 +77,7 @@ export const agenda = {
 
 export const modified = {
 	name: "Cardguard",
-	dateStart: "2020-08-18T13:00:00.00Z",
+	dateStart: "2020-08-18T8:00:00.00Z",
 	dateEnd: "2020-08-21T22:00:00.00Z",
 	days: [
 		{
@@ -150,7 +150,7 @@ export const modified = {
 			],
 		},
 		{
-			date: "2020-08-21T13:00:00.00Z",
+			date: "2020-08-21T13:33:00.00Z",
 			sessions: [
 			],
 		},
