@@ -11,8 +11,9 @@ const VIEW = {
   REVIEW: 3,
 };
 
-function FormManager() {
-  const [formView, setFormView] = useState(VIEW.PROGRAM);
+function FormManager(props) {
+  const { initialView } = props;
+  const [formView, setFormView] = useState(initialView ? initialView : VIEW.PROGRAM);
 
   const getFormComponentForView = () => {
     switch (formView) {
