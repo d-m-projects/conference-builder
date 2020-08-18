@@ -19,7 +19,7 @@ db.read = (data) => {
 	return db.programs.get(data)
 		.then((x) => {
 			if (x) {
-				x = JSON.parse(x.object)
+				// x = JSON.parse(x.object)
 				conlog(">>> DB Read:", data, x)
 				return x
 			}

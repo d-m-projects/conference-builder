@@ -91,6 +91,11 @@ const ProgramProvider = (props) => {
 			}),
 		});
 	};
+	
+	const loadProgram = async (id) => {
+		const read = db.read(id)
+		setProgram(await read);
+	}
 
 	const clearProgram = () => {
 		db.clean();
@@ -99,7 +104,7 @@ const ProgramProvider = (props) => {
 
 	return (
 		<ProgramContext.Provider
-			value={{ ...program, createProgram, addSession, editSession, deleteSession, modifyTempSession, clearProgram }}>
+			value={{ ...program, createProgram, addSession, editSession, deleteSession, modifyTempSession, loadProgram }}>
 			{props.children}
 		</ProgramContext.Provider>
 	);

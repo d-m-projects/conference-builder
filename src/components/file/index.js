@@ -1,5 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { ProgramContext } from "../../contexts/Program";
+import { useHistory } from "react-router-dom";
+
 
 // antd components
 import { Row, Col, Button, Steps, message, Card, Space } from "antd";
@@ -14,9 +16,16 @@ const { Meta } = Card
 const File = () => {
 	const [fileman, setFileman] = useState([])
 	const program = useContext(ProgramContext);
+	const { loadProgram } = program
+	const history = useHistory()
 
-	const doEditClick = (id) => {
-		console.log(`index.js 19: `, id)
+	const doEditClick = async (id) => {
+		await loadProgram(id)
+		history.push("/create");
+	}
+
+	const doDownloadClick = async (id) => {
+		console.log(`index.js 28: download click id `, id)
 	}
 
 	useEffect(() => {
@@ -35,8 +44,8 @@ const File = () => {
 					<Col span={8} key={item.id}>
 						<Card key={item.id}
 							actions={[
-								<EditOutlined key={i} onClick={() => doEditClick(item.id)} />,
-								<DownloadOutlined key={item.id} />,
+								<EditOutlined onClick={() => doEditClick(item.id)} />,
+								<DownloadOutlined onClick={() => doDownloadClick(item.id)}  />,
 							]}
 							title={item.name}
 						>
