@@ -15,6 +15,9 @@ const { RangePicker } = DatePicker;
 
 
 const Presentations = ({ presentations }) => {
+	// 3rd level. descendent of `sessions`.
+	// concerned with `presentations` nested data.
+
 	// console.log(`Agenda.jsx 19: `, presentations)
 
 	const columns = [
@@ -35,6 +38,9 @@ const Presentations = ({ presentations }) => {
 }
 
 const Sessions = ({ sessions }) => {
+	// 2nd level. descendent of `days`.
+	// concerned with `sessions` and passing down `presentations` nested data.
+
 	console.log(`Agenda.jsx 37: `, sessions)
 
 	const columns = [
@@ -63,6 +69,8 @@ const Sessions = ({ sessions }) => {
 }
 
 const Agenda = ({ formNext }) => {
+	// Top level of the agenda
+	//  concerned with `days` and passing down `sessions` nested data.
 
 	return (
 		// <Fade>
@@ -81,20 +89,3 @@ const Agenda = ({ formNext }) => {
 };
 
 export default Agenda;
-
-// const Sessions = () => {
-// 	console.log(`Createor.jsx 37: `,)
-// 	const columns = [
-// 		{ title: "Title", width: 200, dataIndex: "title", key: "title" },
-// 		{ title: "Presenters", dataIndex: "presenters", key: "presenters" },
-// 	]
-// 	const data = [
-// 		{ "key": 1, "title": "Tempsoft", "presenters": "Cariotta Frankish" },
-// 		{ "key": 2, "title": "Y-find", "presenters": "Nikolos Yesenev" },
-// 		{ "key": 3, "title": "Bitchip", "presenters": "Jessey Adin" },
-// 		{ "key": 4, "title": "Bytecard", "presenters": "Doll Thirlwall" },
-// 		{ "key": 5, "title": "Holdlamis", "presenters": "Fawne Paule" },
-// 	]
-// 	return <Table size={"small"} bordered columns={columns} dataSource={data} pagination={false} />;
-// }
-
