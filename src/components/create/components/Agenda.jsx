@@ -14,9 +14,9 @@ const { Column } = Table
 const { RangePicker } = DatePicker;
 
 
-const Presentations = ({ presentations}) => {
-	console.log(`Agenda.jsx 19: `, presentations)
-	
+const Presentations = ({ presentations }) => {
+	// console.log(`Agenda.jsx 19: `, presentations)
+
 	const columns = [
 		// would it be easier to do columns like this?
 		// instead of imported JSX components?
@@ -28,8 +28,8 @@ const Presentations = ({ presentations}) => {
 	]
 
 	return (
-		<Table style={{ marginLeft: "20px" }} dataSource={presentations.presentations} pagination={false}>
-			<Column title="Presentation" dataIndex="name" key="name" />
+		<Table showHeader={false} size="small" style={{ marginLeft: "20px" }} dataSource={presentations.presentations} pagination={false} key={moment().unix()}>
+			<Column title="Presentation" dataIndex="name" key="name" key={moment().unix()} />
 		</Table>
 	)
 }
@@ -45,19 +45,19 @@ const Sessions = ({ sessions }) => {
 			dataIndex: "name",
 			key: "id"
 		},
-		
+
 	]
-	
+
 	return (
-		<Table style={{ marginLeft: "20px" }} dataSource={sessions.sessions} pagination={false}>
-			<Column title="Session Name" dataIndex="name" key="id"
-				render={(date, presentations) => (
+		<Table showHeader={false} size="small" style={{ marginLeft: "20px" }} dataSource={sessions.sessions} pagination={false} key={moment().unix()}>
+			<Column title="Session Name" dataIndex="dateStart" key={moment().unix()}
+				render={(dateStart, presentations) => (
 					<>
-						<p>{date}</p>
-						<Presentations presentations={presentations} />
+						<p>{moment(dateStart).format("HH:mm")}</p>
+						<Presentations presentations={presentations} key={moment().unix()} />
 					</>
 				)}
-				/>
+			/>
 		</Table>
 	)
 }
@@ -66,12 +66,12 @@ const Agenda = ({ formNext }) => {
 
 	return (
 		// <Fade>
-		<Table dataSource={modified.days} pagination={false}>
-			<Column title="Date" dataIndex="date" key="date"
+		<Table showHeader={false} size="small" dataSource={modified.days} pagination={false} key={moment().unix()}>
+			<Column title="Date" dataIndex="date" key={moment().unix()}
 				render={(date, sessions) => (
 					<>
-						<p>{date}</p>
-						<Sessions sessions={sessions} />
+						<p>{moment(date).format("ddd, MMM Do Y")}</p>
+						<Sessions sessions={sessions} key={moment().unix()} />
 					</>
 				)}
 			/>

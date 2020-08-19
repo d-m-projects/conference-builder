@@ -71,7 +71,7 @@ const Create = ({running}) => {
 	);
 
 	return (
-		<Card title={showsteps}>
+		<Card title={showsteps} key={moment().unix()}>
 			<Fade>
 				<div className="steps-content">{steps[current].content}</div>
 				<div className="steps-action">
