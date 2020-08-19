@@ -19,8 +19,8 @@ function ProgramForm(props) {
   const onFinish = (values) => {
     const newProgram = {
       name: values.programName,
-      dateStart: values.programLength[0].second(0)._d,
-      dateEnd: values.programLength[1].second(0)._d,
+      dateStart: values.programLength[0].second(0).millisecond(0)._d,
+      dateEnd: values.programLength[1].second(0).millisecond(0)._d,
       days: [],
     };
 
