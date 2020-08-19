@@ -41,7 +41,7 @@ const Sessions = ({ sessions }) => {
 	// 2nd level. descendent of `days`.
 	// concerned with `sessions` and passing down `presentations` nested data.
 
-	console.log(`Agenda.jsx 37: `, sessions)
+	// console.log(`Agenda.jsx 37: `, sessions)
 
 	const columns = [
 		// would it be easier to do columns like this?
@@ -59,6 +59,7 @@ const Sessions = ({ sessions }) => {
 			<Column title="Session Name" dataIndex="dateStart" key={moment().unix()}
 				render={(dateStart, presentations) => (
 					<>
+						{console.log(`Agenda.jsx 62: `, presentations)}
 						<p>{moment(dateStart).format("HH:mm")}</p>
 						<Presentations presentations={presentations} key={moment().unix()} />
 					</>
