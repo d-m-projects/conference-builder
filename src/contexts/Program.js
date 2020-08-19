@@ -13,6 +13,7 @@ const defaultProgram = {
   days: [],
   sessions: [],
   nextSessionId: 0,
+  selectedSessionId: 0,
   globalPresenters: [],
 };
 
@@ -55,15 +56,18 @@ const ProgramProvider = (props) => {
   };
 
   const createSession = (newSession) => {
+    const sessionId = program.nextSessionId;
+
     setProgram({
       ...program,
       days: program.days.map((day) => {
         if (moment(day.date).dayOfYear() === moment(newSession.dateStart).dayOfYear()) {
-          return { ...day, sessions: [...day.sessions, { ...newSession, id: program.nextSessionId }] };
+          return { ...day, sessions: [...day.sessions, { ...newSession, id: sessionId }] };
         }
         return day;
       }),
       nextSessionId: program.nextSessionId + 1,
+      selectedSessionId: sessionId,
     });
   };
 
@@ -93,12 +97,15 @@ const ProgramProvider = (props) => {
   const createPresentation = (sessionId, newPresentation) => {
     setProgram({
       ...program,
-      sessions: program.sessions.map((session) => {
-        if (session.id === sessionId) {
-          session.presentations.push(newPresentation);
-        }
+      days: program.days.map((day) => {
+        day.sessions.map((session) => {
+          if (session.id === sessionId) {
+            session.presentations.push(newPresentation);
+          }
 
-        return session;
+          return session;
+        });
+        return day;
       }),
     });
   };
