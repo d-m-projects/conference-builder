@@ -14,9 +14,12 @@ function SessionForm() {
   const formSubmit = (values) => {
     createSession({
       name: values.sessionName,
+
       // Store datetime as string, not instance of moment
       dateStart: values.sessionLength[0].second(0)._d,
       dateEnd: values.sessionLength[1].second(0)._d,
+
+      presentations: [],
     });
 
     form.resetFields();
@@ -30,7 +33,8 @@ function SessionForm() {
         className="session-form"
         onFinish={formSubmit}
         autoComplete="off"
-        layout="vertical">
+        layout="vertical"
+        hideRequiredMark>
         {/* SESSION NAME */}
         <Form.Item
           label="Session Name"

@@ -27,7 +27,7 @@ function ProgramForm(props) {
     let current = newProgram.dateStart;
 
     while (dates.lte(current, newProgram.dateEnd, "day")) {
-      newProgram.days.push({ date: current });
+      newProgram.days.push({ date: current, sessions: [] });
       current = dates.add(current, 1, "day");
     }
 
@@ -39,7 +39,7 @@ function ProgramForm(props) {
   };
 
   return (
-    <Form name="programForm" onFinish={onFinish} initialValues={program} layout="vertical">
+    <Form name="programForm" onFinish={onFinish} initialValues={program} layout="vertical" hideRequiredMark>
       <Form.Item
         label="Program Name"
         name="programName"
