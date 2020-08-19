@@ -11,7 +11,6 @@ const defaultProgram = {
   dateStart: null,
   dateEnd: null,
   days: [],
-  sessions: [],
   nextSessionId: 0,
   selectedSessionId: 0,
   globalPresenters: [],

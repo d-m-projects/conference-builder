@@ -20,8 +20,6 @@ function FlowSwitchTwoModal(props) {
   };
 
   const handleAddPresentation = () => {
-    history.push("/");
-
     setFormView(VIEW.PRESENTATION);
 
     setVisibility(false);
