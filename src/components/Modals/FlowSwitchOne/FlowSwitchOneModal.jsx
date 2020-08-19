@@ -6,27 +6,26 @@ import { Button } from "antd";
 
 import GenericModal from "../GenericModal/GenericModal";
 
+import { VIEW } from "../../forms/FormManager";
+
 function FlowSwitchOneModal(props) {
-  const { isVisible, setVisibility } = props;
+  const { isVisible, setVisibility, setFormView } = props;
 
   const history = useHistory();
 
   const handleCreateSession = () => {
-    console.log("User selected 'create session'");
-    history.push("/");
+    setFormView(VIEW.SESSION);
 
     setVisibility(false);
   };
 
   const handleAddPresentation = () => {
-    console.log("User selected 'add presentation'");
-    history.push("/");
+    setFormView(VIEW.PRESENTATION);
 
     setVisibility(false);
   };
 
   const handleHome = () => {
-    console.log("User selected 'home'");
     history.push("/");
 
     setVisibility(false);
@@ -42,7 +41,7 @@ function FlowSwitchOneModal(props) {
         //   setVisibility(false);
         // },
 
-        title: "What would you like to do?",
+        title: "What would you like to do next?",
         content: [
           <>
             <h3>Option A</h3>
