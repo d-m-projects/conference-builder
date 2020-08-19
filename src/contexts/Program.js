@@ -21,15 +21,27 @@ const ProgramProvider = (props) => {
 
   useEffect(() => {
     conlog("Context Changed", program);
-    // if (program.dateStart) {
-    // 	db.update(program)
-    // 		.then((x) => {
-    // 			console.log("Context > DB ", x, program.current)
-    // 		})
-    // 		.catch((err) => {
-    // 			console.error("Context > DB update failed", err)
-    // 		})
-    // }
+    if (program.id && program.dateStart) {
+      db.update(program)
+        .then((x) => {
+          // program.id = x
+          console.log("Context > DB Updated ", x);
+        })
+        .catch((err) => {
+          console.error("Context > DB Update failed", err);
+        });
+    } else if (!program.id && program.dateStart) {
+      db.insert(program)
+        .then((x) => {
+          setProgram({ ...program, id: x });
+          console.log("Context > DB Inserted. ID:", x);
+        })
+        .catch((err) => {
+          console.error("Context > DB Insert failed", err);
+        });
+    } else {
+      console.log(`Program.js 39: Missing program.dateStart.`);
+    }
   }, [program]);
 
   const createProgram = (newProgram) => {
@@ -55,26 +67,26 @@ const ProgramProvider = (props) => {
     });
   };
 
-  const editSession = (modifiedSession) => {
+  const deleteSession = (session) => {
     // setProgram({
-    //   ...program,
-    //   sessions: program.sessions.map((session) => {
-    //     if (session.id === modifiedSession.id) {
-    //       return modifiedSession;
-    //     }
-    //     return session;
-    //   }),
+    // 	...program,
+    // 	sessions: program.sessions.filter((event) => {
+    // 		if (event.id !== session.id) {
+    // 			return true;
+    // 		}
+    // 	}),
     // });
   };
 
-  const deleteSession = (sessionId) => {
+  const editSession = (modifiedSession) => {
     // setProgram({
-    //   ...program,
-    //   sessions: program.sessions.filter((session) => {
-    //     if (sessionId !== session.id) {
-    //       return true;
-    //     }
-    //   }),
+    // 	...program,
+    // 	sessions: program.sessions.map((session) => {
+    // 		if (session.id === modifiedSession.id) {
+    // 			return modifiedSession;
+    // 		}
+    // 		return session;
+    // 	}),
     // });
   };
 
@@ -139,16 +151,15 @@ const ProgramProvider = (props) => {
     }
   };
 
-  const loadProgress = (programInfo) => {
-    setProgram(programInfo);
+  const loadProgram = async (id) => {
+    const read = db.read(id);
+    setProgram(await read);
   };
 
   const clearProgram = () => {
     db.clean();
     setProgram(defaultProgram);
   };
-
-  const tooManyTabs = () => {};
 
   return (
     <ProgramContext.Provider
@@ -161,7 +172,7 @@ const ProgramProvider = (props) => {
         createPresentation,
         addGlobalPresenter,
         deleteGlobalPresenter,
-        loadProgress,
+        loadProgram,
         clearProgram,
       }}>
       {props.children}
