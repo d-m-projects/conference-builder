@@ -157,6 +157,86 @@ export const modified = {
 	],
 };
 
+export const newest = 
+	{
+		"name": "YEET",
+		"dateStart": "2020-08-19T18:22:00.000Z",
+		"dateEnd": "2020-08-21T18:22:00.000Z",
+		"days": [
+			{
+				"date": "2020-08-19T18:22:00.000Z",
+				"sessions": [
+
+				]
+			},
+			{
+				"date": "2020-08-20T18:22:00.000Z",
+				"sessions": [
+					{
+						"name": "My session",
+						"dateStart": "2020-08-20T18:41:00.578Z",
+						"dateEnd": "2020-08-20T22:41:00.578Z",
+						"presentations": [
+							{
+								"name": "My presentation",
+								"dateStart": "2020-08-19T18:42:00.000Z",
+								"dateEnd": "2020-08-19T20:00:00.000Z",
+								"presenters": [
+									"Bob, MD",
+									"Stonks"
+								],
+								"creditTypes": [
+									"ABC",
+									"gg"
+								],
+								"creditAmounts": [
+									"1",
+									"2"
+								]
+							},
+							{
+								"name": "dfgdfgdfg",
+								"dateStart": "2020-08-19T18:43:00.000Z",
+								"dateEnd": "2020-08-19T20:00:00.000Z",
+								"presenters": [
+									"Bob, MD"
+								],
+								"creditTypes": [
+									"ABC",
+									"gg",
+									"abc"
+								],
+								"creditAmounts": [
+									"1",
+									"2",
+									"2"
+								]
+							}
+						],
+						"id": 0
+					}
+				]
+			},
+			{
+				"date": "2020-08-21T18:22:00.000Z",
+				"sessions": [
+
+				]
+			}
+		],
+		"sessions": [
+
+		],
+		"nextSessionId": 1,
+		"selectedSessionId": 0,
+		"globalPresenters": [
+			"Bob, MD",
+			"Stonks"
+		],
+		"id": 10
+	}
+
+
 export default agenda;
 
 

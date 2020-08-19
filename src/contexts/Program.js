@@ -39,6 +39,7 @@ const ProgramProvider = (props) => {
 		} else {
 			console.log(`Program.js 39: Missing program.dateStart.`, )
 		}
+		// debugger
 	}, [program]);
 
 	const createProgram = (programInfo) => {
@@ -102,9 +103,25 @@ const ProgramProvider = (props) => {
 		setProgram(defaultProgram);
 	}
 
+	const injectDB = (x) => {
+		// 
+		// Call this method in your code somewhere to put a sample object in the DB.
+		// 
+		// Either pass in a well-shaped program object to inject specific data,
+		// OR allow it to use the object defined at the bottom of this file.
+		// 
+		db.insert(x || injection)
+			.then((x) => {
+				console.log("DB Injection. ID:", x)
+			})
+			.catch((err) => {
+				console.error("DB Injection failed", err)
+			})
+	}
+
 	return (
 		<ProgramContext.Provider
-			value={{ ...program, createProgram, addSession, editSession, deleteSession, modifyTempSession, loadProgram }}>
+			value={{ ...program, createProgram, addSession, editSession, deleteSession, modifyTempSession, loadProgram, injectDB}}>
 			{props.children}
 		</ProgramContext.Provider>
 	);
@@ -122,3 +139,86 @@ function conlog() {
 		console.log("^^^^^^^^^^")
 	}
 }
+
+// use var here to ensure hoisting
+var injection = {
+	name: "Default DB Injection",
+	dateStart: "2020-08-18T8:00:00.00Z",
+	dateEnd: "2020-08-21T22:00:00.00Z",
+	days: [
+		{
+			date: "2020-08-18T13:01:00.00Z",
+			sessions: [
+				{
+					name: "Toughjoyfax",
+					dateStart: "2020-08-18T16:00:00.00Z",
+					dateEnd: "2020-08-18T19:00:00.00Z",
+					presentations: [
+						{
+							name: "Lotlux",
+							presenters: ["Moss Jowling", "Tera Faldoe"],
+							creditTypes: ["AMA", "ATE"],
+							creditValues: [0.25, 0.25],
+						},
+						{
+							name: "Veribet",
+							presenters: ["Hyacintha Quiddihy", "Janine Laraway", "Darryl Fardo"],
+							creditTypes: ["AMA", "ATE"],
+							creditValues: [0.25, 0.25],
+						},
+					],
+					id: 0,
+				},
+				{
+					name: "Keylex",
+					dateStart: "2020-08-18T17:00:00.00Z",
+					dateEnd: "2020-08-18T19:00:00.00Z",
+					presentations: [
+						{
+							name: "Konklab",
+							presenters: ["Niccolo Knill", "Artemas Ramsby", "Catarina Millington", "Munroe Haskey"],
+							creditTypes: ["AMA"],
+							creditValues: [0.5,],
+						},
+					],
+					id: 1,
+				},
+			]
+		},
+		{
+			date: "2020-08-19T13:11:00.00Z",
+			sessions: [
+				{
+					name: "Aerified",
+					dateStart: "2020-08-19T12:00:00.00Z",
+					dateEnd: "2020-08-19T13:00:00.00Z",
+					presentations: [
+						{
+							name: "Zaam-Dox",
+							presenters: ["Phillipp Fyrth", "Ricca Leary"],
+							creditTypes: ["AFAIC"],
+							creditValues: [0.25, 0.25],
+						},
+						{
+							name: "Transcof",
+							presenters: ["Antonetta Fidelli", "Oran Cawt"],
+							creditTypes: ["Lunch", "TIL"],
+							creditValues: [0.25, 0.25],
+						},
+					],
+					id: 2,
+				},
+			],
+		},
+		{
+			date: "2020-08-20T13:22:00.00Z",
+			sessions: [
+			],
+		},
+		{
+			date: "2020-08-21T13:33:00.00Z",
+			sessions: [
+			],
+		},
+	],
+};
