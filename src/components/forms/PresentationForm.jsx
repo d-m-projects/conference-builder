@@ -1,17 +1,25 @@
 import React, { useState, useEffect, useContext } from "react";
 import { ProgramContext } from "../../contexts/Program";
 
-import { Form, Input, Button, DatePicker, Select } from "antd";
+import FlowSwitchTwoModal from "../Modals/FlowSwitchTwo/FlowSwitchTwoModal";
+
+import { Form, Input, Button, DatePicker, Select, message } from "antd";
 import "./styles.scss";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 function PresentationForm(props) {
-  const { sessionId } = props;
+  const { setFormView } = props;
 
   const program = useContext(ProgramContext);
-  const { createPresentation, addGlobalPresenter, deleteGlobalPresenter, globalPresenters } = program;
+  const {
+    selectedSessionId,
+    createPresentation,
+    addGlobalPresenter,
+    deleteGlobalPresenter,
+    globalPresenters,
+  } = program;
 
   // State for dynamic presenters
   const [presenters, setPresenters] = useState([]);
@@ -22,6 +30,9 @@ function PresentationForm(props) {
 
   // Friendly strings for list to render credits
   const [credits, setCredits] = useState([]);
+
+  // Modal
+  const [modalVisible, setModalVisible] = useState(false);
 
   const [form] = Form.useForm();
 
@@ -59,7 +70,20 @@ function PresentationForm(props) {
         },
       ]);
     } else {
-      console.log("Submit\n", { ...values, presenters, creditTypes, creditAmounts, sessionId });
+      createPresentation(selectedSessionId, {
+        name: values.presentationName,
+        dateStart: values.presentationLength[0].second(0).millisecond(0)._d,
+        dateEnd: values.presentationLength[1].second(0).millisecond(0)._d,
+        presenters: presenters,
+        creditTypes: creditTypes,
+        creditAmounts: creditAmounts,
+      });
+
+      message.success(`Presentation ${values.presentationName} created!`);
+
+      setTimeout(() => {
+        setModalVisible(true);
+      }, 200);
 
       // Clear form data and old state
       setCredits([]);
@@ -145,95 +169,98 @@ function PresentationForm(props) {
   */
 
   return (
-    <div className="presentation-form-container">
-      <Form
-        form={form}
-        name="presentationForm"
-        initialValues={{
-          creditAmount: 0,
-        }}
-        onFinish={formSubmit}
-        autoComplete="off"
-        layout={"vertical"}
-        hideRequiredMark>
-        {/* PRESENTATION NAME */}
-        <Form.Item
-          label="Presentation Name"
-          name="presentationName"
-          rules={[{ required: true, message: "Input a name for this presentation." }]}>
-          <Input />
-        </Form.Item>
+    <>
+      <FlowSwitchTwoModal isVisible={modalVisible} setVisibility={setModalVisible} setFormView={setFormView} />
+      <div className="presentation-form-container">
+        <Form
+          form={form}
+          name="presentationForm"
+          initialValues={{
+            creditAmount: 0,
+          }}
+          onFinish={formSubmit}
+          autoComplete="off"
+          layout={"vertical"}
+          hideRequiredMark>
+          {/* PRESENTATION NAME */}
+          <Form.Item
+            label="Presentation Name"
+            name="presentationName"
+            rules={[{ required: true, message: "Input a name for this presentation." }]}>
+            <Input />
+          </Form.Item>
 
-        {/* PRESENTATION TIME RANGE */}
-        <Form.Item
-          label="Presentation Start & End Times"
-          name="presentationLength"
-          rules={[{ required: true, message: "Input a time range for this presentation." }]}>
-          <RangePicker showTime={{ format: "HH:mm" }} format="YYYY-MM-DD HH:mm" />
-        </Form.Item>
+          {/* PRESENTATION TIME RANGE */}
+          <Form.Item
+            label="Presentation Start & End Times"
+            name="presentationLength"
+            rules={[{ required: true, message: "Input a time range for this presentation." }]}>
+            <RangePicker showTime={{ format: "HH:mm" }} format="YYYY-MM-DD HH:mm" />
+          </Form.Item>
 
-        {/* PRESENTER LIST */}
-        <Form.Item label="Current Presenter List" name="presenterList">
-          <Select
-            mode="multiple"
-            onChange={removePresenter}
-            placeholder="Presenters previously used can be selected here.">
-            {globalPresenters.map((presenter, idx) => {
-              return (
-                <Option key={idx} value={presenter}>
-                  {presenter}
-                </Option>
-              );
-            })}
-          </Select>
-        </Form.Item>
+          {/* PRESENTER LIST */}
+          <Form.Item label="Current Presenter List" name="presenterList">
+            <Select
+              mode="multiple"
+              onChange={removePresenter}
+              placeholder="Presenters previously used can be selected here.">
+              {globalPresenters.map((presenter, idx) => {
+                return (
+                  <Option key={idx} value={presenter}>
+                    {presenter}
+                  </Option>
+                );
+              })}
+            </Select>
+          </Form.Item>
 
-        {/* PRESENTER INPUT */}
-        <Form.Item label="Presenter" name="presenter">
-          <Input />
-        </Form.Item>
+          {/* PRESENTER INPUT */}
+          <Form.Item label="Presenter" name="presenter">
+            <Input />
+          </Form.Item>
 
-        <Form.Item>
-          <Button type="primary" htmlType="button" onClick={addPresenter}>
-            Add Presenter
-          </Button>
-        </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="button" onClick={addPresenter}>
+              Add Presenter
+            </Button>
+          </Form.Item>
 
-        {/* CREDIT LIST */}
-        <Form.Item label="Current Credits" name="creditList">
-          <Select mode="multiple" onChange={removeCredit} placeholder="Credits will display here as they are added.">
-            {credits.map((credit, idx) => {
-              return (
-                <Option key={idx} value={credit}>
-                  {credit}
-                </Option>
-              );
-            })}
-          </Select>
-        </Form.Item>
+          {/* CREDIT LIST */}
+          <Form.Item label="Current Credits" name="creditList">
+            <Select mode="multiple" onChange={removeCredit} placeholder="Credits will display here as they are added.">
+              {credits.map((credit, idx) => {
+                return (
+                  <Option key={idx} value={credit}>
+                    {credit}
+                  </Option>
+                );
+              })}
+            </Select>
+          </Form.Item>
 
-        {/* CREDIT TYPE / AMOUNT INPUTS */}
-        <Form.Item label="Credit Type" name="creditType">
-          <Input />
-        </Form.Item>
-        <Form.Item label="Credit Amount" name="creditAmount">
-          <Input type="number" />
-        </Form.Item>
+          {/* CREDIT TYPE / AMOUNT INPUTS */}
+          <Form.Item label="Credit Type" name="creditType">
+            <Input />
+          </Form.Item>
+          <Form.Item label="Credit Amount" name="creditAmount">
+            <Input type="number" />
+          </Form.Item>
 
-        <Form.Item>
-          <Button type="primary" htmlType="button" onClick={addCredit}>
-            Add Credit
-          </Button>
-        </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="button" onClick={addCredit}>
+              Add Credit
+            </Button>
+          </Form.Item>
 
-        {/* SUBMIT */}
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Add Presentation
-          </Button>
-        </Form.Item>
-      </Form>
-    </div>
+          {/* SUBMIT */}
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Add Presentation
+            </Button>
+          </Form.Item>
+        </Form>
+      </div>
+    </>
   );
 }
 
