@@ -15,10 +15,16 @@ const Agenda = () => {
 
 	const program = useContext(ProgramContext);
 
+	const programdata = (p) => {
+		p.programDateString = `(${moment(p.dateStart).format("MMM DD")} - ${moment(p.dateEnd).format("MMM DD")})`
+		return p
+	}
+
 	return (
 		program.dateStart
 			? <>
 				<p>Program Name: {program.name}</p>
+				<p>{programdata(program).programDateString}</p>
 				<Table showHeader={false} size="small" dataSource={program.days} pagination={false} key={moment().unix()}>
 					<Column title="Date" dataIndex="date" key={moment().unix()}
 						render={(dataIndex, singleDay, i) => (

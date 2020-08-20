@@ -202,7 +202,8 @@ const ProgramProvider = (props) => {
         addGlobalPresenter,
         deleteGlobalPresenter,
         loadProgram,
-        clearProgram,
+		clearProgram,
+		injectDB,
       }}>
       {props.children}
     </ProgramContext.Provider>
@@ -225,8 +226,8 @@ function conlog() {
 // use var here to ensure hoisting
 var injection = {
 	name: "Default DB Injection",
-	dateStart: "2020-08-18T8:00:00.00Z",
-	dateEnd: "2020-08-21T22:00:00.00Z",
+	dateStart: "2020-08-25T05:00:00.000Z",
+	dateEnd: "2020-08-27T15:00:00.000Z",
 	days: [
 		{
 			date: "2020-08-18T13:01:00.00Z",
