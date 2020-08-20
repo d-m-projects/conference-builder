@@ -17,16 +17,20 @@ const Agenda = () => {
 
 	return (
 		program.dateStart
-			? <Table showHeader={false} size="small" dataSource={program.days} pagination={false} key={moment().unix()}>
-				<Column title="Date" dataIndex="date" key={moment().unix()}
-					render={(dataIndex, singleDay, i) => (
-						<>
-							<p>Program Day: {moment(dataIndex).format("ddd, MMM Do Y")}</p>
-							<Sessions props={singleDay} key={moment().unix()} />
-						</>
-					)}
-				/>
-			</Table>
+			? <>
+				<p>Program Name: {program.name}</p>
+				<Table showHeader={false} size="small" dataSource={program.days} pagination={false} key={moment().unix()}>
+					<Column title="Date" dataIndex="date" key={moment().unix()}
+						render={(dataIndex, singleDay, i) => (
+							<>
+								<p>Program Day: {moment(dataIndex).format("ddd, MMM Do Y")}</p>
+								<Sessions props={singleDay} key={moment().unix()} />
+							</>
+						)}
+					/>
+				</Table>
+			</>
+
 			: <Skeleton />
 	)
 };

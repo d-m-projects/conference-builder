@@ -65,7 +65,7 @@ function App() {
 	// }, [])
 
 	return (
-    <Layout className="layout" theme="light">
+		<Layout className="layout" theme="light">
 			<Row>
 				<Col span={24}>
 					<Head />
@@ -75,10 +75,10 @@ function App() {
 								<Route exact path="/" component={LandingPage} />
 								{/* <Route path="/create" component={Create} running={running} /> */}
 								<Route path="/create">
-									{/* <Create running={running} /> */}
-                  <ProgramPage />
+									<Create running={running} />
+									{/* <ProgramPage /> */}
 								</Route>
-                <Route path="/program" component={ProgramPage} />
+								<Route path="/program" component={ProgramPage} />
 								<Route path="/dashboard" component={Dashboard} />
 								<Route path="/file" component={File} />
 							</Switch>

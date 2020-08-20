@@ -14,7 +14,9 @@ import data from "./data" // test data for scaffold
 const { Meta } = Card
 
 const File = () => {
-	const [fileman, setFileman] = useState([])
+	const [fileman, setFileman] = useState([
+
+	])
 	const program = useContext(ProgramContext);
 	const { loadProgram } = program
 	const history = useHistory()
@@ -29,8 +31,13 @@ const File = () => {
 	}
 
 	useEffect(() => {
+		const defaultFileman = {
+			name: "",
+			dateStart: null,
+			dateEnd: null,
+		}
 		const getall = async () => {
-			setFileman(await db.readAll())
+			setFileman([defaultFileman, ...(await db.readAll())])
 		}
 		getall()
 	}, [])
@@ -42,10 +49,11 @@ const File = () => {
 			<Row gutter={[10, 10]}>
 				{fileman.map((item, i) =>
 					<Col span={8} key={item.id}>
+						{i === 0 ? console.log(`index.js 53: `, fileman) : null}
 						<Card key={item.id}
 							actions={[
 								<EditOutlined onClick={() => doEditClick(item.id)} />,
-								<DownloadOutlined onClick={() => doDownloadClick(item.id)}  />,
+								<DownloadOutlined onClick={() => doDownloadClick(item.id)} />,
 							]}
 							title={item.name}
 						>
