@@ -75,7 +75,8 @@ function App() {
 								<Route exact path="/" component={LandingPage} />
 								{/* <Route path="/create" component={Create} running={running} /> */}
 								<Route path="/create">
-									<Create running={running} />
+									{/* <Create running={running} /> */}
+                  <ProgramPage />
 								</Route>
                 <Route path="/program" component={ProgramPage} />
 								<Route path="/dashboard" component={Dashboard} />

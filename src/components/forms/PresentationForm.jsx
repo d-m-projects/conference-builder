@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import { ProgramContext } from "../../contexts/Program";
 
+import moment from "moment";
+
 import FlowSwitchTwoModal from "../Modals/FlowSwitchTwo/FlowSwitchTwoModal";
 
 import { Form, Input, Button, DatePicker, Select, message } from "antd";
@@ -15,6 +17,7 @@ function PresentationForm(props) {
   const program = useContext(ProgramContext);
   const {
     selectedSessionId,
+    getSessionById,
     createPresentation,
     addGlobalPresenter,
     deleteGlobalPresenter,
@@ -54,6 +57,15 @@ function PresentationForm(props) {
     form.setFieldsValue({ creditList: credits });
   }, [credits]);
 
+  const validPresentationDateRange = (start, end) => {
+    const session = getSessionById(selectedSessionId);
+
+    if (start.isBefore(moment(session.dateStart)) || end.isAfter(moment(session.dateEnd))) {
+      return false;
+    }
+    return true;
+  };
+
   const formSubmit = (values) => {
     if (presenters.length === 0) {
       form.setFields([
@@ -70,25 +82,39 @@ function PresentationForm(props) {
         },
       ]);
     } else {
-      createPresentation(selectedSessionId, {
-        name: values.presentationName,
-        dateStart: values.presentationLength[0].second(0).millisecond(0)._d,
-        dateEnd: values.presentationLength[1].second(0).millisecond(0)._d,
-        presenters: presenters,
-        creditTypes: creditTypes,
-        creditAmounts: creditAmounts,
-      });
+      const start = values.presentationLength[0].second(0).millisecond(0);
+      const end = values.presentationLength[1].second(0).millisecond(0);
 
-      message.success(`Presentation ${values.presentationName} created!`);
+      if (validPresentationDateRange(start, end)) {
+        createPresentation(selectedSessionId, {
+          name: values.presentationName,
+          dateStart: start._d,
+          dateEnd: end._d,
+          presenters: presenters,
+          creditTypes: creditTypes,
+          creditAmounts: creditAmounts,
+        });
 
-      setTimeout(() => {
-        setModalVisible(true);
-      }, 200);
+        message.success(`Presentation ${values.presentationName} created!`);
 
-      // Clear form data and old state
-      setCredits([]);
-      setPresenters([]);
-      form.resetFields();
+        setTimeout(() => {
+          setModalVisible(true);
+        }, 200);
+
+        // Clear form data and old state
+        setCredits([]);
+        setPresenters([]);
+        form.resetFields();
+      } else {
+        message.error("Presentation date range is outside the bounds of current session.", 5);
+
+        form.setFields([
+          {
+            name: "presentationLength",
+            errors: ["Date range outside bounds of current session."],
+          },
+        ]);
+      }
     }
   };
 
@@ -195,7 +221,7 @@ function PresentationForm(props) {
             label="Presentation Start & End Times"
             name="presentationLength"
             rules={[{ required: true, message: "Input a time range for this presentation." }]}>
-            <RangePicker showTime={{ format: "HH:mm" }} format="YYYY-MM-DD HH:mm" />
+            <RangePicker showTime={{ format: "HH:mm" }} format="YYYY-MM-DD HH:mm" minuteStep={5} />
           </Form.Item>
 
           {/* PRESENTER LIST */}
