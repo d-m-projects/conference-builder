@@ -4,21 +4,23 @@ import { useHistory } from "react-router-dom";
 
 
 // antd components
-import { Row, Col, Button, Steps, message, Card, Space } from "antd";
-import { EditOutlined, DownloadOutlined } from '@ant-design/icons';
+import { Row, Col, DatePicker, message, Card, Form, Input, Space, Button } from "antd";
+import { EditOutlined, DownloadOutlined, DoubleRightOutlined } from '@ant-design/icons';
 
+import * as dates from "date-arithmetic";
 import moment from "moment";
 import db from "../../data/database"
-import data from "./data" // test data for scaffold
+// import data from "./data" // test data for scaffold
 
 const { Meta } = Card
+const { RangePicker } = DatePicker;
 
 const File = () => {
 	const [fileman, setFileman] = useState([
 
 	])
 	const program = useContext(ProgramContext);
-	const { loadProgram } = program
+	const { loadProgram, createProgram } = program
 	const history = useHistory()
 
 	const doEditClick = async (id) => {
@@ -28,6 +30,29 @@ const File = () => {
 
 	const doDownloadClick = async (id) => {
 		console.log(`index.js 28: download click id `, id)
+	}
+
+	const onFinish = async (values) => {
+		console.log(`index.js 35: `, values)
+		const newProgram = {
+			name: values.programName,
+			dateStart: values.programLength[0].second(0).millisecond(0)._d,
+			dateEnd: values.programLength[1].second(0).millisecond(0)._d,
+			days: [],
+		};
+
+		let current = newProgram.dateStart;
+
+		while (dates.lte(current, newProgram.dateEnd, "day")) {
+			newProgram.days.push({ date: current, sessions: [] });
+			current = dates.add(current, 1, "day");
+		}
+
+		createProgram(newProgram);
+
+		setFormView(VIEW.SESSION);
+
+		message.success(`Program '${values.programName}' Started!`);
 	}
 
 	useEffect(() => {
@@ -42,6 +67,35 @@ const File = () => {
 		getall()
 	}, [])
 
+	const CreateCard = () => {
+		return (
+			<Form onFinish={onFinish}>
+				<Card key="0" title="Create New Program" >
+					<Space direction="vertical" >
+						<Form.Item
+							name="name"
+							rules={[{ required: true, message: "Please input a valid name." }]}>
+							<Input placeholder="New Program Name" />
+						</Form.Item>
+
+						<Form.Item
+							name="programLength"
+							rules={[{ required: true, message: "Please select a valid date range." }]}
+						>
+							<RangePicker
+								showTime={{ format: "HH:mm" }} format="YYYY-MM-DD HH:mm" minuteStep={15}
+							/>
+						</Form.Item>
+						<Form.Item >
+							<Button style={{ float: "right" }} type="primary" htmlType="submit" shape="round" >Create<DoubleRightOutlined /></Button>
+						</Form.Item>
+
+					</Space>
+				</Card>
+			</Form>
+		)
+	}
+
 	return (
 		// to flex column count responsively
 		// https://usehooks.com/useMedia/
@@ -49,17 +103,20 @@ const File = () => {
 			<Row gutter={[10, 10]}>
 				{fileman.map((item, i) =>
 					<Col span={8} key={item.id}>
-						{i === 0 ? console.log(`index.js 53: `, fileman) : null}
-						<Card key={item.id}
-							actions={[
-								<EditOutlined onClick={() => doEditClick(item.id)} />,
-								<DownloadOutlined onClick={() => doDownloadClick(item.id)} />,
-							]}
-							title={item.name}
-						>
-							<p>Begin: {moment(item.dateStart).format("ddd, MMM Do Y")}</p>
-							<p>End: {moment(item.dateEnd).format("ddd, MMM Do Y")}</p>
-						</Card>
+						{
+							i === 0
+								? <CreateCard />
+								: <Card key={item.id}
+									actions={[
+										<EditOutlined onClick={() => doEditClick(item.id)} />,
+										<DownloadOutlined onClick={() => doDownloadClick(item.id)} />,
+									]}
+									title={item.name}
+								>
+									<p>Begin: {moment(item.dateStart).format("ddd, MMM Do Y")}</p>
+									<p>End: {moment(item.dateEnd).format("ddd, MMM Do Y")}</p>
+								</Card>
+						}
 					</Col>
 				)}
 			</Row>
