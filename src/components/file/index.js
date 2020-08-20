@@ -26,7 +26,7 @@ const File = () => {
 
 	const doEditClick = async (id) => {
 		await loadProgram(id)
-		history.push("/create");
+		history.push("/create", { initialView: VIEW.REVIEW });
 	}
 
 	const doDownloadClick = async (id) => {

@@ -76,7 +76,7 @@ function App() {
 								<Route exact path="/" component={LandingPage} />
 								<Route path="/create">
 									{/* <Create running={running} /> */}
-									<FormManager initialView={0} />
+									<FormManager />
 								</Route>
 								<Route path="/program" component={FormManager} />
 								{/* <Route path="/form" component={FormManager} /> */}
