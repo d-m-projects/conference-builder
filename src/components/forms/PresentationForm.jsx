@@ -195,7 +195,7 @@ function PresentationForm(props) {
             label="Presentation Start & End Times"
             name="presentationLength"
             rules={[{ required: true, message: "Input a time range for this presentation." }]}>
-            <RangePicker showTime={{ format: "HH:mm" }} format="YYYY-MM-DD HH:mm" />
+            <RangePicker showTime={{ format: "HH:mm" }} format="YYYY-MM-DD HH:mm" minuteStep={5} />
           </Form.Item>
 
           {/* PRESENTER LIST */}

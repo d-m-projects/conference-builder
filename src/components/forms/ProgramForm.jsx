@@ -51,7 +51,7 @@ function ProgramForm(props) {
         label="Program Start & End Dates"
         name="programLength"
         rules={[{ required: true, message: "Input a date range for this program." }]}>
-        <RangePicker showTime={{ format: "HH:mm" }} format="YYYY-MM-DD HH:mm" />
+        <RangePicker showTime={{ format: "HH:mm" }} format="YYYY-MM-DD HH:mm" minuteStep={5} />
       </Form.Item>
 
       <Form.Item>
