@@ -2,7 +2,6 @@ import React, { useContext, useState, useEffect } from "react";
 import { ProgramContext } from "../../contexts/Program";
 import { useHistory } from "react-router-dom";
 
-
 // antd components
 import { Row, Col, DatePicker, message, Card, Form, Input, Space, Button } from "antd";
 import { EditOutlined, DownloadOutlined, DoubleRightOutlined } from '@ant-design/icons';
@@ -11,6 +10,8 @@ import * as dates from "date-arithmetic";
 import moment from "moment";
 import db from "../../data/database"
 // import data from "./data" // test data for scaffold
+
+import FormManager, { VIEW } from "../forms/FormManager";
 
 const { Meta } = Card
 const { RangePicker } = DatePicker;
@@ -50,7 +51,8 @@ const File = () => {
 
 		createProgram(newProgram);
 
-		setFormView(VIEW.SESSION);
+		// setFormView(VIEW.SESSION);
+		history.push("/create", { initialView: VIEW.SESSION})
 
 		message.success(`Program '${values.programName}' Started!`);
 	}
@@ -62,7 +64,9 @@ const File = () => {
 			dateEnd: null,
 		}
 		const getall = async () => {
-			setFileman([defaultFileman, ...(await db.readAll())])
+			let ret = await db.readAll()
+			ret.sort((x, y) => (x.dateStart > y.dateStart) ? -1 : 1)
+			setFileman([defaultFileman, ...ret])
 		}
 		getall()
 	}, [])
@@ -73,11 +77,10 @@ const File = () => {
 				<Card key="0" title="Create New Program" >
 					<Space direction="vertical" >
 						<Form.Item
-							name="name"
+							name="programName"
 							rules={[{ required: true, message: "Please input a valid name." }]}>
 							<Input placeholder="New Program Name" />
 						</Form.Item>
-
 						<Form.Item
 							name="programLength"
 							rules={[{ required: true, message: "Please select a valid date range." }]}

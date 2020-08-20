@@ -1,11 +1,11 @@
 import React, { useContext, useState, useEffect } from "react";
-import { ProgramContext } from "../../../contexts/Program";
+import { ProgramContext } from "../../contexts/Program";
 
 import moment from "moment";
 
 // antd components
 import { Skeleton, Table } from "antd";
-import { newest, modified } from "./events"
+import { newest, modified } from "../create/components/events"
 
 const { Column } = Table
 
