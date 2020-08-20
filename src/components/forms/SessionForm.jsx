@@ -1,6 +1,8 @@
 import React, { useState, useContext } from "react";
 import { ProgramContext } from "../../contexts/Program";
 
+import moment from "moment";
+
 import { Form, Input, DatePicker, Button, message } from "antd";
 
 import FlowSwitchOneModal from "../Modals/FlowSwitchOne/FlowSwitchOneModal";
@@ -12,29 +14,51 @@ function SessionForm(props) {
 
   const program = useContext(ProgramContext);
   const { createSession } = program;
+  const programDateRange = [program.dateStart, program.dateEnd];
 
   const [modalVisible, setModalVisible] = useState(false);
 
   const [form] = Form.useForm();
 
+  const validSessionDateRange = (start, end) => {
+    if (start.isBefore(moment(programDateRange[0])) || end.isAfter(moment(programDateRange[1]))) {
+      return false;
+    }
+    return true;
+  };
+
   const formSubmit = (values) => {
-    createSession({
-      name: values.sessionName,
+    const start = values.sessionLength[0].second(0).millisecond(0);
+    const end = values.sessionLength[1].second(0).millisecond(0);
 
-      // Store datetime as string, not instance of moment
-      dateStart: values.sessionLength[0].second(0)._d,
-      dateEnd: values.sessionLength[1].second(0)._d,
+    if (validSessionDateRange(start, end)) {
+      createSession({
+        name: values.sessionName,
 
-      presentations: [],
-    });
+        // Store datetime as string, not instance of moment
+        dateStart: start._d,
+        dateEnd: end._d,
 
-    message.success(`Session ${values.sessionName} created!`);
+        presentations: [],
+      });
 
-    setTimeout(() => {
-      setModalVisible(true);
-    }, 200);
+      message.success(`Session ${values.sessionName} created!`);
 
-    form.resetFields();
+      setTimeout(() => {
+        setModalVisible(true);
+      }, 200);
+
+      form.resetFields();
+    } else {
+      message.error("Session date range is outside the bounds of current program.", 5);
+
+      form.setFields([
+        {
+          name: "sessionLength",
+          errors: ["Date range outside bounds of current program."],
+        },
+      ]);
+    }
   };
 
   return (

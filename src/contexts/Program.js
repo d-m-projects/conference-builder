@@ -157,6 +157,12 @@ const ProgramProvider = (props) => {
     }
   };
 
+  const getSessionById = (sessionId) => {
+    // Currently impossible to have an invalid ID so there will be no errors with this.
+    const day = program.days.find((day) => day.sessions.find((session) => session.id === sessionId));
+    return day.sessions[0];
+  };
+
 	const injectDB = (x) => {
 		// 
 		// Call this method in your code somewhere to put a sample object in the DB.
@@ -189,6 +195,7 @@ const ProgramProvider = (props) => {
         ...program,
         createProgram,
         createSession,
+        getSessionById,
         editSession,
         deleteSession,
         createPresentation,
