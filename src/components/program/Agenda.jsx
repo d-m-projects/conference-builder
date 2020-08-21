@@ -1,11 +1,11 @@
 import React, { useContext, useState, useEffect } from "react";
-import { ProgramContext } from "../../../contexts/Program";
+import { ProgramContext } from "../../contexts/Program";
 
 import moment from "moment";
 
 // antd components
 import { Skeleton, Table } from "antd";
-import { newest, modified } from "./events"
+import { newest, modified } from "../create/components/events"
 
 const { Column } = Table
 
@@ -15,18 +15,28 @@ const Agenda = () => {
 
 	const program = useContext(ProgramContext);
 
+	const programdata = (p) => {
+		p.programDateString = `(${moment(p.dateStart).format("MMM DD")} - ${moment(p.dateEnd).format("MMM DD")})`
+		return p
+	}
+
 	return (
 		program.dateStart
-			? <Table showHeader={false} size="small" dataSource={program.days} pagination={false} key={moment().unix()}>
-				<Column title="Date" dataIndex="date" key={moment().unix()}
-					render={(dataIndex, singleDay, i) => (
-						<>
-							<p>Program Day: {moment(dataIndex).format("ddd, MMM Do Y")}</p>
-							<Sessions props={singleDay} key={moment().unix()} />
-						</>
-					)}
-				/>
-			</Table>
+			? <>
+				<p>Program Name: {program.name}</p>
+				<p>{programdata(program).programDateString}</p>
+				<Table showHeader={false} size="small" dataSource={program.days} pagination={false} key={moment().unix()}>
+					<Column title="Date" dataIndex="date" key={moment().unix()}
+						render={(dataIndex, singleDay, i) => (
+							<>
+								<p>Program Day: {moment(dataIndex).format("ddd, MMM Do Y")}</p>
+								<Sessions props={singleDay} key={moment().unix()} />
+							</>
+						)}
+					/>
+				</Table>
+			</>
+
 			: <Skeleton />
 	)
 };
