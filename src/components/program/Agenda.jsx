@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { ProgramContext } from "../../contexts/Program";
+import { useLocation } from "react-router-dom";
 
 import moment from "moment";
 
@@ -12,6 +13,9 @@ const { Column } = Table
 const Agenda = () => {
 	// Top level of the agenda
 	//  concerned with `days` and passing down `sessions` nested data.
+	const location = useLocation()
+	const initialView = location.state.initialView;
+	console.log(`Agenda.jsx 18: `, initialView)
 
 	const program = useContext(ProgramContext);
 

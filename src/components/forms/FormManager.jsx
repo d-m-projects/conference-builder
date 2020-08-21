@@ -15,7 +15,6 @@ const VIEW = {
 
 function FormManager(props) {
 	const location = useLocation()
-	console.log(`FormManager.jsx 17: `, location.state)
 	const initialView = location.state.initialView;
 	const [formView, setFormView] = useState(initialView ? initialView : VIEW.PROGRAM);
 
