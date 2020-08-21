@@ -11,7 +11,7 @@ import Create from "./components/create/";
 import File from "./components/file/";
 import LandingPage from "./components/landing-page";
 import ProgramPage from "./components/program/ProgramPage";
-import FormManager from "./components/forms/FormManager";
+import Agenda from "./components/program/Agenda";
 import Head from "./components/components/Head";
 import Foot from "./components/components/Foot";
 
@@ -74,12 +74,8 @@ function App() {
 						<div style={{ backgroundColor: "white", padding: "20px" }}>
 							<Switch>
 								<Route exact path="/" component={LandingPage} />
-								<Route path="/create">
-									{/* <Create running={running} /> */}
-									<FormManager />
-								</Route>
-								<Route path="/program" component={FormManager} />
-								{/* <Route path="/form" component={FormManager} /> */}
+								<Route path="/review" component={Agenda} />
+								<Route path="/program" component={ProgramPage} />
 								<Route path="/dashboard" component={Dashboard} />
 								<Route path="/file" component={File} />
 							</Switch>
