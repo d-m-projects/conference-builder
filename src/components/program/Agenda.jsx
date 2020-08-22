@@ -8,16 +8,32 @@ import moment from "moment";
 import { Skeleton, Table } from "antd";
 import { newest, modified } from "../create/components/events"
 
+// Components
+import FormManager, { VIEW } from "../forms/FormManager";
+
+// Dev test data
+import injection from "../../data/testdata"
+
 const { Column } = Table
 
-const Agenda = () => {
+const Agenda = (props) => {
 	// Top level of the agenda
-	//  concerned with `days` and passing down `sessions` nested data.
+	// concerned with `days` and passing down `sessions` nested data.
 	const location = useLocation()
-	const initialView = location.state.initialView;
-	console.log(`Agenda.jsx 18: `, initialView)
+	let {initialView} = props
+	location.state ? initialView = location.state.initialView : initialView = VIEW.PROGRAM
+
+	console.log(`Agenda.jsx 18: `, props)
 
 	const program = useContext(ProgramContext);
+
+	// DEV ONLY (by darrin)
+	// if `program` is empty, fill it with example data for visualization.
+	// Use when you need complete data in `program`
+	// (so you don't have to enter it manually)
+	if (!program.dateStart) {
+		program.injectTestData()
+	}
 
 	const programdata = (p) => {
 		p.programDateString = `(${moment(p.dateStart).format("MMM DD")} - ${moment(p.dateEnd).format("MMM DD")})`

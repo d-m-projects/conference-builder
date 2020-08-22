@@ -19,7 +19,7 @@ import Foot from "./components/components/Foot";
 import "./App.scss";
 
 // antd setup
-import { /*Breadcrumb, Grid,*/ Modal, Button, message, Col, Layout, Row } from "antd";
+import { Modal, Button, message, Col, Layout, Row } from "antd";
 import "antd/dist/antd.css";
 
 import "react-big-calendar/lib/sass/styles.scss";
@@ -77,7 +77,7 @@ function App() {
 								<Route path="/review" component={Agenda} />
 								<Route path="/program" component={ProgramPage} />
 								<Route path="/dashboard" component={Dashboard} />
-								<Route path="/file" component={File} />
+								<Route path="/manager" component={File} />
 							</Switch>
 						</div>
 					</Content>

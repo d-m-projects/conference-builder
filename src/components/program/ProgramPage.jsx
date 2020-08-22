@@ -5,10 +5,15 @@ import { useLocation } from "react-router-dom";
 import FormManager, { VIEW } from "../forms/FormManager";
 import Agenda from "./Agenda"
 
+// antd setup
+import { Modal, Button, message, Col, Layout, Row } from "antd";
+
+
 function ProgramPage(props) {
 	const location = useLocation()
-	const initialView = location.state.initialView;
-	const [formView, setFormView] = useState(initialView ? initialView : VIEW.PROGRAM);
+	let initialView
+	location.state ? initialView = location.state.initialView : initialView = VIEW.PROGRAM
+	const [formView, setFormView] = useState(initialView);
 
 	return (
 		<>
