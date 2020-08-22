@@ -6,7 +6,7 @@ import FormManager, { VIEW } from "../forms/FormManager";
 import Agenda from "./Agenda"
 
 // antd setup
-import { Modal, Button, message, Col, Layout, Row } from "antd";
+import { Space, message, Col, Row } from "antd";
 
 
 function ProgramPage(props) {
@@ -16,14 +16,14 @@ function ProgramPage(props) {
 	const [formView, setFormView] = useState(initialView);
 
 	return (
-		<>
-			<div>
+		<Row gutter={28}>
+			<Col span={12}>
 				<FormManager initialView={formView} />
-			</div>
-			<div>
+			</Col>
+			<Col span={12}>
 				<Agenda initialView={formView} />
-			</div>
-		</>
+			</Col>
+		</Row>
 	);
 }
 

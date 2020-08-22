@@ -6,7 +6,7 @@ import moment from "moment";
 import FlowSwitchTwoModal from "../Modals/FlowSwitchTwo/FlowSwitchTwoModal";
 
 import { Form, Input, Button, DatePicker, Select, message } from "antd";
-import "./styles.scss";
+// import "./styles.scss";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;

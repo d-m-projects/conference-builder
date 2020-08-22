@@ -6,7 +6,7 @@ import * as dates from "date-arithmetic";
 import { VIEW } from "./FormManager";
 
 import { Form, Input, Button, DatePicker, message } from "antd";
-import "./styles.scss";
+// import "./styles.scss";
 
 const { RangePicker } = DatePicker;
 
