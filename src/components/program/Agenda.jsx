@@ -1,31 +1,52 @@
 import React, { useContext, useState, useEffect } from "react";
 import { ProgramContext } from "../../contexts/Program";
+import { useLocation } from "react-router-dom";
 
 import moment from "moment";
 
 // antd components
-import { Skeleton, Table } from "antd";
+import { Skeleton, Table, Card, Button } from "antd";
 import { newest, modified } from "../create/components/events"
+
+// Components
+import FormManager, { VIEW } from "../forms/FormManager";
+
+// Dev test data
+import injection from "../../data/testdata"
+
 
 const { Column } = Table
 
-const Agenda = () => {
+const Agenda = (props) => {
 	// Top level of the agenda
-	//  concerned with `days` and passing down `sessions` nested data.
+	// concerned with `days` and passing down `sessions` nested data.
+	const location = useLocation()
+	let {initialView} = props
+	location.state ? initialView = location.state.initialView : initialView = VIEW.PROGRAM
+
+	console.log(`Agenda.jsx 18: `, props)
 
 	const program = useContext(ProgramContext);
 
+	// DEV ONLY (by darrin)
+	// if `program` is empty, fill it with example data for visualization.
+	// Use when you need complete data in `program`
+	// (so you don't have to enter it manually)
+	if (!program.dateStart) {
+		program.injectTestData()
+	}
+
 	const programdata = (p) => {
-		p.programDateString = `(${moment(p.dateStart).format("MMM DD")} - ${moment(p.dateEnd).format("MMM DD")})`
-		return p
+		const programDateString = `${moment(p.dateStart).format("MMM DD")} - ${moment(p.dateEnd).format("MMM DD")}`
+		return (
+			<Button type="text" style={{ margin: 0, padding: 0 }}>{programDateString}</Button>
+		)
 	}
 
 	return (
 		program.dateStart
-			? <>
-				<p>Program Name: {program.name}</p>
-				<p>{programdata(program).programDateString}</p>
-				<Table showHeader={false} size="small" dataSource={program.days} pagination={false} key={moment().unix()}>
+			? <Card title={program.name} extra={programdata(program)}>
+				<Table className="program-agenda" showHeader={false} size="small" dataSource={program.days} pagination={false} key={moment().unix()}>
 					<Column title="Date" dataIndex="date" key={moment().unix()}
 						render={(dataIndex, singleDay, i) => (
 							<>
@@ -35,7 +56,7 @@ const Agenda = () => {
 						)}
 					/>
 				</Table>
-			</>
+			</Card>
 
 			: <Skeleton />
 	)
@@ -51,7 +72,7 @@ const Sessions = ({ props }) => {
 	}
 
 	return (
-		<Table showHeader={false} size="small" style={{ marginLeft: "20px" }} dataSource={props.sessions} pagination={false} key={moment().unix()}>
+		<Table className="program-session" showHeader={false} size="small" style={{ marginLeft: "20px" }} dataSource={props.sessions} pagination={false} key={moment().unix()}>
 			<Column title="Session Name" dataIndex="dateStart" key={moment().unix()}
 				render={(dataIndex, single, i) => (
 					<>
@@ -69,7 +90,7 @@ const Presentations = ({ props }) => {
 	// concerned with `presentations` nested data.
 
 	return (
-		<Table showHeader={false} size="small" style={{ marginLeft: "20px" }} dataSource={props.presentations} pagination={false} key={moment().unix()}>
+		<Table className={`program-presentation`} showHeader={false} size="small" style={{ marginLeft: "20px" }} dataSource={props.presentations} pagination={false} key={moment().unix()}>
 			<Column title="Presentation" dataIndex="name" key="name" key={moment().unix()}
 				render={(dataIndex, single, i) => (
 					<>

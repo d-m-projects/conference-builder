@@ -11,16 +11,16 @@ import Create from "./components/create/";
 import File from "./components/file/";
 import LandingPage from "./components/landing-page";
 import ProgramPage from "./components/program/ProgramPage";
-import FormManager from "./components/forms/FormManager";
+import Agenda from "./components/program/Agenda";
 import Head from "./components/components/Head";
 import Foot from "./components/components/Foot";
 
-//Style
-import "./App.scss";
-
 // antd setup
-import { /*Breadcrumb, Grid,*/ Modal, Button, message, Col, Layout, Row } from "antd";
+import { Modal, Button, message, Col, Layout, Row } from "antd";
 import "antd/dist/antd.css";
+
+// Local styles overwriting antd
+import "./App.scss";
 
 import "react-big-calendar/lib/sass/styles.scss";
 
@@ -48,7 +48,7 @@ function App() {
 			okButtonProps: { disabled: true },
 			okText: "Close other tabs"
 		});
-	}
+	} 
 
 	// useEffect(() => {
 	// 	db.start()
@@ -74,14 +74,10 @@ function App() {
 						<div style={{ backgroundColor: "white", padding: "20px" }}>
 							<Switch>
 								<Route exact path="/" component={LandingPage} />
-								<Route path="/create">
-									{/* <Create running={running} /> */}
-									<FormManager />
-								</Route>
-								<Route path="/program" component={FormManager} />
-								{/* <Route path="/form" component={FormManager} /> */}
+								<Route path="/review" component={Agenda} />
+								<Route path="/program" component={ProgramPage} />
 								<Route path="/dashboard" component={Dashboard} />
-								<Route path="/file" component={File} />
+								<Route path="/manager" component={File} />
 							</Switch>
 						</div>
 					</Content>

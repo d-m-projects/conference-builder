@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
 
 import ProgramForm from "./ProgramForm";
 import SessionForm from "./SessionForm";
@@ -14,9 +13,7 @@ const VIEW = {
 };
 
 function FormManager(props) {
-	const location = useLocation()
-	console.log(`FormManager.jsx 17: `, location.state)
-	const initialView = location.state.initialView;
+	const {initialView }= props
 	const [formView, setFormView] = useState(initialView ? initialView : VIEW.PROGRAM);
 
 	const getFormComponentForView = () => {

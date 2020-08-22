@@ -26,7 +26,7 @@ const File = () => {
 
 	const doEditClick = async (id) => {
 		await loadProgram(id)
-		history.push("/create", { initialView: VIEW.REVIEW });
+		history.push("/review", { initialView: VIEW.REVIEW });
 	}
 
 	const doDownloadClick = async (id) => {
@@ -51,8 +51,7 @@ const File = () => {
 
 		createProgram(newProgram);
 
-		// setFormView(VIEW.SESSION);
-		history.push("/create", { initialView: VIEW.SESSION})
+		history.push("/program", { initialView: VIEW.SESSION })
 
 		message.success(`Program '${values.programName}' Started!`);
 	}
