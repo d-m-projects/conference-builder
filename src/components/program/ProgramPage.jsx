@@ -6,7 +6,8 @@ import FormManager, { VIEW } from "../forms/FormManager";
 import Agenda from "./Agenda"
 
 // antd setup
-import { Space, message, Col, Row } from "antd";
+import { Popover, Button, Col, Row, Card } from "antd";
+import { InfoCircleTwoTone } from '@ant-design/icons';
 
 
 function ProgramPage(props) {
@@ -15,11 +16,33 @@ function ProgramPage(props) {
 	location.state ? initialView = location.state.initialView : initialView = VIEW.PROGRAM
 	const [formView, setFormView] = useState(initialView);
 
+	const infoBlock = () => {
+		const text = (
+			<>
+				<p>Info goes here.</p>
+				<p>It could be something long and rambling</p>
+				<ul>
+					<li>the weather</li>
+					<li>the Chefs won the Super Bowl</li>
+					<li>Go Chefs</li>
+				</ul>
+				<p>Or just a short 2 line reminder.</p>
+			</>
+		)
+		return (
+			<Popover content={text} title="Note" trigger="click">
+				<Button type="text"><InfoCircleTwoTone /></Button>
+			</Popover>
+		)
+	}
+
 	return (
-		<Row gutter={28}>
-			<Col span={12}>
-				<FormManager initialView={formView} />
-			</Col>
+		<Row gutter={28} justify="space-between">
+				<Col span={12}>
+			<Card title="Program Data" extra={infoBlock()}>
+					<FormManager initialView={formView} />
+			</Card>
+				</Col>
 			<Col span={12}>
 				<Agenda initialView={formView} />
 			</Col>

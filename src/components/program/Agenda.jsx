@@ -5,7 +5,7 @@ import { useLocation } from "react-router-dom";
 import moment from "moment";
 
 // antd components
-import { Skeleton, Table } from "antd";
+import { Skeleton, Table, Card, Button } from "antd";
 import { newest, modified } from "../create/components/events"
 
 // Components
@@ -36,15 +36,17 @@ const Agenda = (props) => {
 	}
 
 	const programdata = (p) => {
-		p.programDateString = `(${moment(p.dateStart).format("MMM DD")} - ${moment(p.dateEnd).format("MMM DD")})`
-		return p
+		const programDateString = `${moment(p.dateStart).format("MMM DD")} - ${moment(p.dateEnd).format("MMM DD")}`
+		return (
+			<Button type="text" style={{ margin: 0, padding: 0 }}>{programDateString}</Button>
+		)
 	}
+
+	const titledata = ``
 
 	return (
 		program.dateStart
-			? <>
-				<p>Program Name: {program.name}</p>
-				<p>{programdata(program).programDateString}</p>
+			? <Card title={program.name} extra={programdata(program)}>
 				<Table showHeader={false} size="small" dataSource={program.days} pagination={false} key={moment().unix()}>
 					<Column title="Date" dataIndex="date" key={moment().unix()}
 						render={(dataIndex, singleDay, i) => (
@@ -55,7 +57,7 @@ const Agenda = (props) => {
 						)}
 					/>
 				</Table>
-			</>
+			</Card>
 
 			: <Skeleton />
 	)
