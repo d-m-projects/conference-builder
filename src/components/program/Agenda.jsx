@@ -14,6 +14,7 @@ import FormManager, { VIEW } from "../forms/FormManager";
 // Dev test data
 import injection from "../../data/testdata"
 
+
 const { Column } = Table
 
 const Agenda = (props) => {
@@ -42,12 +43,10 @@ const Agenda = (props) => {
 		)
 	}
 
-	const titledata = ``
-
 	return (
 		program.dateStart
 			? <Card title={program.name} extra={programdata(program)}>
-				<Table showHeader={false} size="small" dataSource={program.days} pagination={false} key={moment().unix()}>
+				<Table className="program-agenda" showHeader={false} size="small" dataSource={program.days} pagination={false} key={moment().unix()}>
 					<Column title="Date" dataIndex="date" key={moment().unix()}
 						render={(dataIndex, singleDay, i) => (
 							<>
@@ -73,7 +72,7 @@ const Sessions = ({ props }) => {
 	}
 
 	return (
-		<Table showHeader={false} size="small" style={{ marginLeft: "20px" }} dataSource={props.sessions} pagination={false} key={moment().unix()}>
+		<Table className="program-session" showHeader={false} size="small" style={{ marginLeft: "20px" }} dataSource={props.sessions} pagination={false} key={moment().unix()}>
 			<Column title="Session Name" dataIndex="dateStart" key={moment().unix()}
 				render={(dataIndex, single, i) => (
 					<>
@@ -91,7 +90,7 @@ const Presentations = ({ props }) => {
 	// concerned with `presentations` nested data.
 
 	return (
-		<Table showHeader={false} size="small" style={{ marginLeft: "20px" }} dataSource={props.presentations} pagination={false} key={moment().unix()}>
+		<Table className={`program-presentation`} showHeader={false} size="small" style={{ marginLeft: "20px" }} dataSource={props.presentations} pagination={false} key={moment().unix()}>
 			<Column title="Presentation" dataIndex="name" key="name" key={moment().unix()}
 				render={(dataIndex, single, i) => (
 					<>

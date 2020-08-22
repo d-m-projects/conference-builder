@@ -38,12 +38,12 @@ function ProgramPage(props) {
 
 	return (
 		<Row gutter={28} justify="space-between">
-				<Col span={12}>
-			<Card title="Program Data" extra={infoBlock()}>
-					<FormManager initialView={formView} />
-			</Card>
-				</Col>
 			<Col span={12}>
+				<Card title="Program Data" extra={infoBlock()}>
+					<FormManager initialView={formView} />
+				</Card>
+			</Col>
+			<Col className="agendaView" span={12}>
 				<Agenda initialView={formView} />
 			</Col>
 		</Row>

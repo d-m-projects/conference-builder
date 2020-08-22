@@ -15,12 +15,12 @@ import Agenda from "./components/program/Agenda";
 import Head from "./components/components/Head";
 import Foot from "./components/components/Foot";
 
-//Style
-import "./App.scss";
-
 // antd setup
 import { Modal, Button, message, Col, Layout, Row } from "antd";
 import "antd/dist/antd.css";
+
+// Local styles overwriting antd
+import "./App.scss";
 
 import "react-big-calendar/lib/sass/styles.scss";
 
@@ -48,7 +48,7 @@ function App() {
 			okButtonProps: { disabled: true },
 			okText: "Close other tabs"
 		});
-	}
+	} 
 
 	// useEffect(() => {
 	// 	db.start()
