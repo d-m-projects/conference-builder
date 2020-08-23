@@ -10,6 +10,7 @@ import db from "../../data/database"
 import { Button, Steps, message, Card } from "antd";
 import "antd/dist/antd.css";
 
+// import Agenda from "../program/Agenda";
 import CreateProgram from "./components/CreateProgram";
 import ManageProgram from "./components/ManageProgram";
 import ReviewProgram from "./components/ReviewProgram";
@@ -22,10 +23,6 @@ const Create = ({running}) => {
 	const program = useContext(ProgramContext)
 	const { clearProgram } = program
 	
-	// if (!running){
-	// 	history.push("/")
-	// } 
-
 	const changeStep = (direction) => {
 		setCurrent(current + direction)
 		program.current = current
@@ -47,6 +44,10 @@ const Create = ({running}) => {
 	};
 
 	const steps = [
+		{
+			title: "SCAFFOLD",
+			// content: <Agenda formNext={next} />,
+		},
 		{
 			title: "Create Program",
 			content: <CreateProgram formNext={next} />,
@@ -70,7 +71,7 @@ const Create = ({running}) => {
 	);
 
 	return (
-		<Card title={showsteps}>
+		<Card title={showsteps} key={moment().unix()}>
 			<Fade>
 				<div className="steps-content">{steps[current].content}</div>
 				<div className="steps-action">
@@ -80,11 +81,17 @@ const Create = ({running}) => {
 						</Button>
 					)}
 					{current < steps.length - 1 &&
-						(current === 0 ? null : (
+						// SHOW Prev/Next on Step One.
 							<Button type="primary" onClick={() => next()}>
 								Next
 							</Button>
-						))}
+						}
+						{/* FOR BLOCKING "Next" button on the Step One.
+						 (current === 0 ? null : (
+							<Button type="primary" onClick={() => next()}>
+								Next
+							</Button>
+						))} */}
 					{current === steps.length - 1 && (
 						<Button type="primary" onClick={doSubmit}>
 							Submit
@@ -96,4 +103,4 @@ const Create = ({running}) => {
 	);
 };
 
-export default withRouter(Create);
+export default Create;

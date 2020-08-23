@@ -22,10 +22,7 @@ const Nav = () => {
 				<Link to="/">Home</Link>
 			</Menu.Item>
 			<Menu.Item key="calendar" icon={<CalendarOutlined />}>
-				<Link to="/create">Create</Link>
-			</Menu.Item>
-			<Menu.Item key="file" icon={<SaveOutlined />}>
-				<Link to="/file">File</Link>
+				<Link to="/manager">Programs</Link>
 			</Menu.Item>
 		</Menu>
 	);

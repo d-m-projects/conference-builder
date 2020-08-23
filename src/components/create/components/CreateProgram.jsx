@@ -36,7 +36,8 @@ const CreateProgram = ({ formNext }) => {
 
 	useEffect(() => {
 		if (!program.id ) {
-			db.start()
+			// db.start()
+			console.log(`CreateProgram.jsx 40: No program id`, )
 		}
 	}, [])
 
