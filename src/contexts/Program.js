@@ -53,7 +53,8 @@ const ProgramProvider = (props) => {
 			name: newProgram.name,
 			dateStart: newProgram.dateStart,
 			dateEnd: newProgram.dateEnd,
-			days: newProgram.days,
+      days: newProgram.days,
+      globalPresenters: []
 		});
 	};
 
