@@ -14,7 +14,7 @@ function FlowSwitchTwoModal(props) {
   const history = useHistory();
 
   const handleReviewProgram = () => {
-    history.push("/");
+    history.push("/review");
 
     setVisibility(false);
   };

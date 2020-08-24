@@ -28,11 +28,10 @@ function PresentationForm(props) {
   const [presenters, setPresenters] = useState([]);
 
   // State for dynamic credits
-  const [creditTypes, setCreditTypes] = useState([]);
-  const [creditAmounts, setCreditAmounts] = useState([]);
+  const [credits, setCredits] = useState({});
 
   // Friendly strings for list to render credits
-  const [credits, setCredits] = useState([]);
+  const [creditsList, setCreditsList] = useState([]);
 
   // Modal
   const [modalVisible, setModalVisible] = useState(false);
@@ -41,21 +40,18 @@ function PresentationForm(props) {
 
   // List data render handling
   useEffect(() => {
-    // Additionally clear input
-    form.setFieldsValue({ presenter: "" });
-
-    form.setFieldsValue({ presenterList: presenters });
+    // Clear presenter input, update list select state
+    form.setFieldsValue({ presenter: "", presenterList: presenters });
   }, [presenters]);
 
   useEffect(() => {
-    // Additionally clear inputs
+    // Clear credit fields, update list select state
     form.setFieldsValue({
       creditType: "",
       creditAmount: 0,
+      creditList: creditsList,
     });
-
-    form.setFieldsValue({ creditList: credits });
-  }, [credits]);
+  }, [creditsList]);
 
   const validPresentationDateRange = (start, end) => {
     const session = getSessionById(selectedSessionId);
@@ -67,6 +63,8 @@ function PresentationForm(props) {
   };
 
   const formSubmit = (values) => {
+    // Error handling for select inputs on form submit
+    // We need 1 presenter and 1 credit type minimum
     if (presenters.length === 0) {
       form.setFields([
         {
@@ -74,7 +72,7 @@ function PresentationForm(props) {
           errors: ["Must have atleast 1 presenter."],
         },
       ]);
-    } else if (credits.length === 0) {
+    } else if (Object.keys(credits).length === 0) {
       form.setFields([
         {
           name: "creditList",
@@ -82,6 +80,7 @@ function PresentationForm(props) {
         },
       ]);
     } else {
+      // Submit form
       const start = values.presentationLength[0].second(0).millisecond(0);
       const end = values.presentationLength[1].second(0).millisecond(0);
 
@@ -91,8 +90,7 @@ function PresentationForm(props) {
           dateStart: start._d,
           dateEnd: end._d,
           presenters: presenters,
-          creditTypes: creditTypes,
-          creditAmounts: creditAmounts,
+          credits: credits,
         });
 
         message.success(`Presentation ${values.presentationName} created!`);
@@ -101,9 +99,11 @@ function PresentationForm(props) {
           setModalVisible(true);
         }, 200);
 
-        // Clear form data and old state
-        setCredits([]);
+        // Clear form data and old state in case user wants to add another presentation
+        setCredits({});
         setPresenters([]);
+        setCreditsList([]);
+
         form.resetFields();
       } else {
         message.error("Presentation date range is outside the bounds of current session.", 5);
@@ -145,7 +145,7 @@ function PresentationForm(props) {
   };
 
   const addCredit = () => {
-    // HELPER FUNCS
+    // HELPER FUNC
     const clearErrors = () => {
       form.setFields([
         {
@@ -162,13 +162,15 @@ function PresentationForm(props) {
     const creditType = form.getFieldValue("creditType");
     const creditAmount = form.getFieldValue("creditAmount");
 
+    const newCredit = {};
+    newCredit[creditType] = creditAmount;
+
     if (creditType && creditAmount) {
       clearErrors();
 
-      setCreditTypes([...creditTypes, creditType]);
-      setCreditAmounts([...creditAmounts, creditAmount]);
+      setCredits({ ...credits, ...newCredit });
 
-      setCredits([...credits, `${creditType} | ${creditAmount}`]);
+      setCreditsList([...creditsList, `${creditType} | ${creditAmount}`]);
     } else {
       form.setFields([
         {
@@ -224,22 +226,6 @@ function PresentationForm(props) {
             <RangePicker showTime={{ format: "HH:mm" }} format="YYYY-MM-DD HH:mm" minuteStep={5} />
           </Form.Item>
 
-          {/* PRESENTER LIST */}
-          <Form.Item label="Current Presenter List" name="presenterList">
-            <Select
-              mode="multiple"
-              onChange={removePresenter}
-              placeholder="Presenters previously used can be selected here.">
-              {globalPresenters.map((presenter, idx) => {
-                return (
-                  <Option key={idx} value={presenter}>
-                    {presenter}
-                  </Option>
-                );
-              })}
-            </Select>
-          </Form.Item>
-
           {/* PRESENTER INPUT */}
           <Form.Item label="Presenter" name="presenter">
             <Input />
@@ -251,13 +237,16 @@ function PresentationForm(props) {
             </Button>
           </Form.Item>
 
-          {/* CREDIT LIST */}
-          <Form.Item label="Current Credits" name="creditList">
-            <Select mode="multiple" onChange={removeCredit} placeholder="Credits will display here as they are added.">
-              {credits.map((credit, idx) => {
+          {/* PRESENTER LIST */}
+          <Form.Item label="Current Presenter List" name="presenterList">
+            <Select
+              mode="multiple"
+              onChange={removePresenter}
+              placeholder="Presenters previously used can be selected here.">
+              {globalPresenters.map((presenter, idx) => {
                 return (
-                  <Option key={idx} value={credit}>
-                    {credit}
+                  <Option key={idx} value={presenter}>
+                    {presenter}
                   </Option>
                 );
               })}
@@ -276,6 +265,19 @@ function PresentationForm(props) {
             <Button type="primary" htmlType="button" onClick={addCredit}>
               Add Credit
             </Button>
+          </Form.Item>
+
+          {/* CREDIT LIST */}
+          <Form.Item label="Current Credits" name="creditList">
+            <Select mode="multiple" onChange={removeCredit} placeholder="Credits will display here as they are added.">
+              {creditsList.map((credit, idx) => {
+                return (
+                  <Option key={idx} value={credit}>
+                    {credit}
+                  </Option>
+                );
+              })}
+            </Select>
           </Form.Item>
 
           {/* SUBMIT */}
