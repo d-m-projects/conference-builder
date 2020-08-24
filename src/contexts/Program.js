@@ -23,7 +23,7 @@ const ProgramProvider = (props) => {
 	const [program, setProgram] = useState(defaultProgram);
 
 	useEffect(() => {
-		conlog("Context Changed", program);
+		console.log("Context Changed", program);
 		if (program.id && program.dateStart) {
 			db.update(program)
 				.then((x) => {
@@ -97,6 +97,7 @@ const ProgramProvider = (props) => {
 	};
 
 	const createPresentation = (sessionId, newPresentation) => {
+    console.log("Create Presentation for sessionId", sessionId, newPresentation)
 		setProgram({
 			...program,
 			days: program.days.map((day) => {
@@ -161,9 +162,22 @@ const ProgramProvider = (props) => {
 	};
 
 	const getSessionById = (sessionId) => {
-		// Currently impossible to have an invalid ID so there will be no errors with this.
-		const day = program.days.find((day) => day.sessions.find((session) => session.id === sessionId));
-		return day.sessions[0];
+    let foundSession = null;
+
+    program.days.some(day => {
+      return day.sessions.some(session => {
+        if (session.id === sessionId){
+          foundSession = session;
+          return true;
+        }
+      });
+    });
+
+    if (foundSession) {
+      return foundSession;
+    } else {
+      console.log("If you see this then either you broke session ids or are searching for an invalid one...");
+    }
 	};
 
 	const injectDB = (x) => {
