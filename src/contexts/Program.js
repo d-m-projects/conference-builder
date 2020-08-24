@@ -23,7 +23,7 @@ const ProgramProvider = (props) => {
 	const [program, setProgram] = useState(defaultProgram);
 
 	useEffect(() => {
-		console.log("Context Changed", program);
+		conlog("Context Changed", program);
 		if (program.id && program.dateStart) {
 			db.update(program)
 				.then((x) => {
@@ -97,7 +97,6 @@ const ProgramProvider = (props) => {
 	};
 
 	const createPresentation = (sessionId, newPresentation) => {
-    console.log("Create Presentation for sessionId", sessionId, newPresentation)
 		setProgram({
 			...program,
 			days: program.days.map((day) => {
