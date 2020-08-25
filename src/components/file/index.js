@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 
 // antd components
 import { Row, Col, DatePicker, message, Card, Form, Input, Space, Button } from "antd";
-import { EditOutlined, DownloadOutlined, DoubleRightOutlined } from '@ant-design/icons';
+import { EditOutlined, DownloadOutlined, DoubleRightOutlined, CopyOutlined } from '@ant-design/icons';
 
 import * as dates from "date-arithmetic";
 import moment from "moment";
@@ -30,6 +30,10 @@ const File = () => {
 	}
 
 	const doDownloadClick = async (id) => {
+		console.log(`index.js 28: download click id `, id)
+	}
+
+	const doYamlCopyClick = async (id) => {
 		console.log(`index.js 28: download click id `, id)
 	}
 
@@ -112,6 +116,7 @@ const File = () => {
 									actions={[
 										<EditOutlined onClick={() => doEditClick(item.id)} />,
 										<DownloadOutlined onClick={() => doDownloadClick(item.id)} />,
+										<CopyOutlined onClick={() => doDownloadClick(item.id)} />,
 									]}
 									title={item.name}
 								>
