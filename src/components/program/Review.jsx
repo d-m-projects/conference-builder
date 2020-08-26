@@ -60,16 +60,9 @@ const Review = (props) => {
 	return (
 		program.dateStart
 			? <Card title={program.name} extra={programdata(program).programToFrom}>
-				<List
-					dataSource={program.days}
-					renderItem={day => (
-						<List.Item>
-							<List.Item.Meta
-								description={<Sessions className="program-agenda" props={{ sessions: day.sessions, dayHeader: programdata(day).programDateString }} />}
-							/>
-						</List.Item>
-					)}
-				/>
+				{program.days.map(day => (
+					<Sessions className="program-agenda" props={{ sessions: day.sessions, dayHeader: programdata(day).programDateString }} />
+				))}
 			</Card>
 			: <Skeleton />
 	)
@@ -85,18 +78,24 @@ const Sessions = ({ props }) => {
 	}
 	console.log(`Review.jsx 99: `, props)
 	return (
-		<List
-			size="small"
-			dataSource={props.sessions}
-			header={props.dayHeader}
-			renderItem={session => (
-				<List.Item>
-					<List.Item.Meta
-						description={<Presentations className={`program-session`} props={{ pres: session.presentations, sessionHeader: sessiondata(session).sessionsDateString }} />}
-					/>
-				</List.Item>
-			)}
-		/>
+		<>
+			<div>{props.dayHeader}</div>
+			{props.sessions.map( session => (
+				<Presentations className={`program-session`} props={{ pres: session.presentations, sessionHeader: sessiondata(session).sessionsDateString }} />
+			))}
+		</>
+		// <List
+		// 	size="small"
+		// 	dataSource={props.sessions}
+		// 	header={props.dayHeader}
+		// 	renderItem={session => (
+		// 		<List.Item>
+		// 			<List.Item.Meta
+		// 				description={<Presentations className={`program-session`} props={{ pres: session.presentations, sessionHeader: sessiondata(session).sessionsDateString }} />}
+		// 			/>
+		// 		</List.Item>
+		// 	)}
+		// />
 	)
 }
 
