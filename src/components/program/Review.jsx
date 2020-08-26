@@ -57,37 +57,19 @@ const Review = (props) => {
 		return p
 	}
 
-	// onBeforeCapture={onBeforeCapture}
-	// onBeforeDragStart={onBeforeDragStart}
-	// onDragStart={onDragStart}
-	// onDragUpdate={onDragUpdate}
-	// {provided.placeholder}
 	return (
 		program.dateStart
 			? <Card title={program.name} extra={programdata(program).programToFrom}>
-				<DragDropContext onDragEnd={onDragEnd}>
-					<Droppable droppableId="topDrop" >
-						<List
-							dataSource={program.days}
-							renderItem={day => (
-								<Draggable draggableId={day.date} index={`number`} key={day.date}>
-									{(provided, snapshot) => (
-										<List.Item
-											ref={(node) => provided.innerRef(ReactDOM.findDOMNode(node))}
-											{...provided.droppableProps}
-											{...provided.dragHandleProps}
-										>
-											<List.Item.Meta
-												// title={}
-												description={<Sessions className="program-agenda" props={{ sessions: day.sessions, dayHeader: programdata(day).programDateString }} />}
-											/>
-										</List.Item>
-									)}
-								</Draggable>
-							)}
-						/>
-					</Droppable>
-				</DragDropContext>
+				<List
+					dataSource={program.days}
+					renderItem={day => (
+						<List.Item>
+							<List.Item.Meta
+								description={<Sessions className="program-agenda" props={{ sessions: day.sessions, dayHeader: programdata(day).programDateString }} />}
+							/>
+						</List.Item>
+					)}
+				/>
 			</Card>
 			: <Skeleton />
 	)
@@ -103,22 +85,18 @@ const Sessions = ({ props }) => {
 	}
 	console.log(`Review.jsx 99: `, props)
 	return (
-		// <Droppable droppableId={props.name}>
 		<List
 			size="small"
 			dataSource={props.sessions}
 			header={props.dayHeader}
 			renderItem={session => (
-				// <Draggable draggableId={session.name}>
 				<List.Item>
 					<List.Item.Meta
 						description={<Presentations className={`program-session`} props={{ pres: session.presentations, sessionHeader: sessiondata(session).sessionsDateString }} />}
 					/>
 				</List.Item>
-				// </Draggable>
 			)}
 		/>
-		// </Droppable>
 	)
 }
 
