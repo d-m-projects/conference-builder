@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, ReactDOM } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { ProgramContext } from "../../contexts/Program";
 import { useLocation } from "react-router-dom";
 
@@ -7,7 +7,6 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 // antd components
 import { Skeleton, Table, Card, Button, List } from "antd";
-import { newest, modified } from "../create/components/events"
 
 // Components
 import FormManager, { VIEW } from "../forms/FormManager";
@@ -15,9 +14,7 @@ import FormManager, { VIEW } from "../forms/FormManager";
 // Dev test data
 import injection from "../../data/testdata"
 
-
 const { Column } = Table
-
 
 const getDraggableItemStyle = (isDragging, draggableStyle) => ({
 	// some basic styles to make the items look a bit nicer
@@ -136,14 +133,14 @@ const Sessions = ({ props }) => {
 			{props.sessions.map((session, index) => (
 				<Draggable key={session.name} draggableId={session.name} index={index}>
 					{(provided, snapshot) => (
-						<div
+						<p
 							ref={provided.innerRef}
 							{...provided.draggableProps}
 							{...provided.dragHandleProps}
 							style={getDraggableItemStyle(snapshot.isDragging, provided.draggableProps.style)}
 						>
 							<Presentations className={`program-session`} props={{ pres: session.presentations, sessionHeader: sessiondata(session).sessionsDateString }} />
-						</div>
+						</p>
 					)}
 				</Draggable>
 			))}

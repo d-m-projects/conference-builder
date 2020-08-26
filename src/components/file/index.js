@@ -11,9 +11,8 @@ import moment from "moment";
 import db from "../../data/database"
 // import data from "./data" // test data for scaffold
 
-import FormManager, { VIEW } from "../forms/FormManager";
+import { VIEW } from "../forms/FormManager";
 
-const { Meta } = Card
 const { RangePicker } = DatePicker;
 
 const File = () => {
@@ -72,8 +71,8 @@ const File = () => {
 
 	const CreateCard = () => {
 		return (
-			<Form onFinish={onFinish}>
-				<Card key="0" title="Create New Program" >
+			<Form onFinish={onFinish} key="0">
+				<Card title="Create New Program" >
 					<Space direction="vertical" >
 						<Form.Item
 							name="programName"
@@ -104,11 +103,11 @@ const File = () => {
 		<>
 			<Row gutter={[10, 10]}>
 				{fileman.map((item, i) =>
-					<Col span={8} key={item.id}>
+					<Col span={8} key={i}>
 						{
 							i === 0
 								? <CreateCard />
-								: <Card key={item.id}
+								: <Card key={i}
 									actions={[
 										<EditOutlined onClick={() => doEditClick(item.id)} />,
 										<DownloadOutlined onClick={() => doDownloadClick(item.id)} />,
