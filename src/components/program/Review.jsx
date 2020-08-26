@@ -70,28 +70,20 @@ const Review = (props) => {
 						<List
 							dataSource={program.days}
 							renderItem={day => (
-								<div>
-									<Draggable draggableId={day.date} index={`number`} key={day.date}>
-										<div>
-											{(provided, snapshot) => (
-												<div>
-													<List.Item
-														ref={(node) => provided.innerRef(ReactDOM.findDOMNode(node))}
-														{...provided.droppableProps}
-														{...provided.dragHandleProps}
-													>
-														<div>
-															<List.Item.Meta
-																// title={}
-																description={<Sessions className="program-agenda" props={{ sessions: day.sessions, dayHeader: programdata(day).programDateString }} />}
-															/>
-														</div>
-													</List.Item>
-												</div>
-											)}
-										</div>
-									</Draggable>
-								</div>
+								<Draggable draggableId={day.date} index={`number`} key={day.date}>
+									{(provided, snapshot) => (
+										<List.Item
+											ref={(node) => provided.innerRef(ReactDOM.findDOMNode(node))}
+											{...provided.droppableProps}
+											{...provided.dragHandleProps}
+										>
+											<List.Item.Meta
+												// title={}
+												description={<Sessions className="program-agenda" props={{ sessions: day.sessions, dayHeader: programdata(day).programDateString }} />}
+											/>
+										</List.Item>
+									)}
+								</Draggable>
 							)}
 						/>
 					</Droppable>
