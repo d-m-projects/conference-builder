@@ -10,13 +10,14 @@ import injection from "../data/testdata"
 const ProgramContext = React.createContext();
 
 const defaultProgram = {
-	name: "",
-	dateStart: null,
-	dateEnd: null,
-	days: [],
-	nextSessionId: 0,
-	selectedSessionId: 0,
-	globalPresenters: [],
+  name: "",
+  dateStart: null,
+  dateEnd: null,
+  days: [],
+  nextSessionId: 0,
+  selectedSessionId: 0,
+  globalPresenters: [],
+  nextPresenterId: 0,
 };
 
 const ProgramProvider = (props) => {
@@ -54,119 +55,114 @@ const ProgramProvider = (props) => {
 			dateStart: newProgram.dateStart,
 			dateEnd: newProgram.dateEnd,
       days: newProgram.days,
+      nextSessionId: 0,
+      nextPresenterId: 0,
+      selectedSessionId: 0,
       globalPresenters: []
 		});
 	};
 
 	const createSession = (newSession) => {
-		const sessionId = program.nextSessionId;
+    /*
+      1. Create a new session object and insert into program day
+      2. Inc session id counter and set new session as target for presentations by default
+    */
 
-		setProgram({
-			...program,
-			days: program.days.map((day) => {
-				if (moment(day.date).dayOfYear() === moment(newSession.dateStart).dayOfYear()) {
-					return { ...day, sessions: [...day.sessions, { ...newSession, id: sessionId }] };
-				}
-				return day;
-			}),
-			nextSessionId: program.nextSessionId + 1,
-			selectedSessionId: sessionId,
-		});
-	};
+    const sessionId = program.nextSessionId;
 
-	const deleteSession = (session) => {
-		// setProgram({
-		// 	...program,
-		// 	sessions: program.sessions.filter((event) => {
-		// 		if (event.id !== session.id) {
-		// 			return true;
-		// 		}
-		// 	}),
-		// });
-	};
+    setProgram({
+      ...program,
+      days: program.days.map((day) => {
+        if (moment(day.date).dayOfYear() === moment(newSession.dateStart).dayOfYear()) {
+          return { ...day, sessions: [...day.sessions, { ...newSession, id: sessionId }] };
+        }
+        return day;
+      }),
+      nextSessionId: program.nextSessionId + 1,
+      selectedSessionId: sessionId,
+    });
+  };
 
-	const editSession = (modifiedSession) => {
-		// setProgram({
-		// 	...program,
-		// 	sessions: program.sessions.map((session) => {
-		// 		if (session.id === modifiedSession.id) {
-		// 			return modifiedSession;
-		// 		}
-		// 		return session;
-		// 	}),
-		// });
-	};
+  const createPresentation = (sessionId, presentation) => {
+    // Add presentation to session by id
 
-	const createPresentation = (sessionId, newPresentation) => {
-		setProgram({
-			...program,
-			days: program.days.map((day) => {
-				day.sessions.map((session) => {
-					if (session.id === sessionId) {
-						session.presentations.push(newPresentation);
-					}
+    setProgram({
+      ...program,
+      days: program.days.map((day) => {
+        day.sessions.map((session) => {
+          if (session.id === sessionId) {
+            session.presentations.push(presentation);
+          }
 
-					return session;
-				});
-				return day;
-			}),
-		});
-	};
+          return session;
+        });
+        return day;
+      }),
+    });
+  };
 
-	const addGlobalPresenter = (presenter) => {
-		setProgram({
-			...program,
-			globalPresenters: [...program.globalPresenters, presenter],
-		});
-	};
+  const addGlobalPresenter = (presenter) => {
+    // Will add a presenter to the global list if he/she doesn't already exist.
+    const alreadyExists = program.globalPresenters.includes(presenter);
 
-	const deleteGlobalPresenter = (presenter, force = false) => {
-		/*
-		  Can only remove a global presenter if they aren't listed
-		  anywhere else in the program
-		*/
+    if (alreadyExists) return;
 
-		// Deletion helper func
-		const remove = () => {
-			setProgram({
-				...program,
-				globalPresenters: program.globalPresenters.filter((p) => {
-					if (p !== presenter) {
-						return true;
-					}
-				}),
-			});
-		};
+    setProgram({
+      ...program,
+      globalPresenters: [...program.globalPresenters, presenter],
+      nextPresenterId: program.nextPresenterId + 1,
+    });
+  };
 
-		// Checking
-		if (force) {
-			remove();
-		} else {
-			let inUse = false;
+  const deleteGlobalPresenter = (presenter, force = false) => {
+    /*
+      Deletes a presenter from the global list if he/she isn't in use elsewhere in the program by default.
+      force = true -> overrides this and will always delete name from list.
+    */
 
-			// Go thru all presentations and see if presenter is used elsewhere
-			program.days.forEach((day) => {
-				day.sessions.forEach((session) => {
-					session.presentations.forEach((presentation) => {
-						if (presentation.presenters.includes(presenter)) {
-							inUse = true;
-						}
-					});
-				});
-			});
+    // Deletion helper func
+    const remove = () => {
+      setProgram({
+        ...program,
+        globalPresenters: program.globalPresenters.filter((p) => (p !== presenter ? true : false)),
+      });
+    };
 
-			if (!inUse) {
-				remove();
-			}
-		}
-	};
+    if (force) {
+      remove();
+    } else {
+      // Determine if presenter in use elsewhere in program
+      // Using .some will break the looping on first truthy return so it's faster
+      const inUse = program.days.some((day) => {
+        return day.sessions.some((session) => {
+          return session.presentations.some((presentation) =>
+            presentation.presenters.includes(presenter) ? true : false
+          );
+        });
+      });
 
-	const getSessionById = (sessionId) => {
+      if (!inUse) {
+        remove();
+      }
+    }
+  };
+
+  const getNextPresenterId = () => {
+    // Getter for a unique presenter id.
+    const id = program.nextPresenterId;
+
+    setProgram({ ...program, nextPresenterId: program.nextPresenterId + 1 });
+
+    return id;
+  };
+
+  const getSessionById = (sessionId) => {
     let foundSession = null;
 
-    program.days.some(day => {
-      return day.sessions.some(session => {
-        if (session.id === sessionId){
+    // Using .some will break the looping on first truthy return so it's faster
+    program.days.some((day) => {
+      return day.sessions.some((session) => {
+        if (session.id === sessionId) {
           foundSession = session;
           return true;
         }
@@ -178,7 +174,7 @@ const ProgramProvider = (props) => {
     } else {
       console.log("If you see this then either you broke session ids or are searching for an invalid one...");
     }
-	};
+  };
 
 	const injectDB = (x) => {
 		// 
@@ -227,9 +223,8 @@ const ProgramProvider = (props) => {
 				createProgram,
 				createSession,
 				getSessionById,
-				editSession,
-				deleteSession,
-				createPresentation,
+        createPresentation,
+        getNextPresenterId,
 				addGlobalPresenter,
 				deleteGlobalPresenter,
 				loadProgram,
