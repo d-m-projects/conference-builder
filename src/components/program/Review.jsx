@@ -36,20 +36,40 @@ const Review = (props) => {
 	// }
 
 	const onBeforeCapture = (e) => {
-		console.log(`Review.jsx 39: `, e)
+		console.log(`cap: `, e)
 	};
 	const onBeforeDragStart = (e) => {
-		console.log(`Review.jsx 42: `, e)
+		console.log(`prestart: `, e)
 	};
 	const onDragStart = (e) => {
-		console.log(`Review.jsx 45: `, e)
+		console.log(`start: `, e)
 	};
 	const onDragUpdate = (e) => {
-		console.log(`Review.jsx 48: `, e)
+		console.log(`update: `, e)
 	};
 	const onDragEnd = (e) => {
-		console.log(`Review.jsx 51: `, e)
+		console.log(`end: `, e)
 	};
+
+	const getDraggableItemStyle = (isDragging, draggableStyle) => ({
+		// some basic styles to make the items look a bit nicer
+		userSelect: "none",
+		padding: 16,
+		marginBottom: 16,
+
+		// change background colour if dragging
+		background: isDragging ? "lightgreen" : "white",
+		boxShadow: "0 0 3px 1px rgba(40, 40, 40, 0.35)",
+
+		// styles we need to apply on draggables
+		...draggableStyle,
+	});
+
+	// This is the style for the container that holds the draggables
+	const getListStyle = () => ({
+		padding: 8,
+		width: "100%",
+	});
 
 	const programdata = (p) => {
 		p.programDateString = `Program Day: ${moment(p.date).format("ddd, MMM Do Y")}`
@@ -60,9 +80,41 @@ const Review = (props) => {
 	return (
 		program.dateStart
 			? <Card title={program.name} extra={programdata(program).programToFrom}>
-				{program.days.map(day => (
-					<Sessions className="program-agenda" props={{ sessions: day.sessions, dayHeader: programdata(day).programDateString }} />
-				))}
+				<DragDropContext
+					onBeforeCapture={onBeforeCapture}
+					onBeforeDragStart={onBeforeDragStart}
+					onDragStart={onDragStart}
+					onDragUpdate={onDragUpdate}
+					onDragEnd={onDragEnd}
+				>
+					<Droppable droppableId="droppable">
+						{(provided, snapshot) => (
+							<div
+								{...provided.droppableProps}
+								ref={provided.innerRef}
+								style={getListStyle(snapshot.isDraggingOver)}
+							>
+								{program.days.map((day, index) => (
+									<Draggable key={day.date} draggableId={day.date} index={index}>
+										{(provided, snapshot) => (
+											<div
+												className="program-agenda"
+												props={{ sessions: day.sessions, dayHeader: programdata(day).programDateString }}
+												ref={provided.innerRef}
+												{...provided.draggableProps}
+												{...provided.dragHandleProps}
+												style={getDraggableItemStyle(snapshot.isDragging, provided.draggableProps.style)}
+											>
+												<h1>{day.date}</h1>
+											</div>
+										)}
+									</Draggable>
+								))}
+								{provided.placeholder}
+							</div>
+						)}
+					</Droppable>
+				</DragDropContext>
 			</Card>
 			: <Skeleton />
 	)
@@ -78,7 +130,7 @@ const Sessions = ({ props }) => {
 	}
 	console.log(`Review.jsx 99: `, props)
 	return (
-		<div style={{marginLeft: "10px",border:"1px solid green"}}>
+		<div style={{ marginLeft: "10px", border: "1px solid green" }}>
 			<div>{props.dayHeader}</div>
 			{props.sessions.map(session => (
 				<Presentations className={`program-session`} props={{ pres: session.presentations, sessionHeader: sessiondata(session).sessionsDateString }} />
@@ -92,7 +144,7 @@ const Presentations = ({ props }) => {
 	// concerned with `presentations` nested data.
 
 	return (
-		<div style={{marginLeft: "10px",border:"1px solid red"}}>
+		<div style={{ marginLeft: "10px", border: "" }}>
 			{props.pres.map(pres => (
 				<div className={`program-presentation`}>{pres.name}</div>
 			))}
