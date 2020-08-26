@@ -61,20 +61,19 @@ const Review = (props) => {
 		program.dateStart
 			? <Card title={program.name} extra={programdata(program).programToFrom}>
 				<DragDropContext
-				// onBeforeCapture={onBeforeCapture}
-				// onBeforeDragStart={onBeforeDragStart}
-				// onDragStart={onDragStart}
-				// onDragUpdate={onDragUpdate}
-				// onDragEnd={onDragEnd}
+					onBeforeCapture={onBeforeCapture}
+					onBeforeDragStart={onBeforeDragStart}
+					onDragStart={onDragStart}
+					onDragUpdate={onDragUpdate}
+					onDragEnd={onDragEnd}
 				>
 					<Droppable droppableId="topDrop" >
-						{provided => (
-
+						{(provided, snapshot) => (
 							<List ref={provided.innerRef} {...provided.droppableProps}
 								dataSource={program.days}
 								renderItem={day => (
 									<>
-										<Draggable draggableId={day.date}>
+										<Draggable draggableId={day.date} index={`number`} key={day.date}>
 											<List.Item>
 												<List.Item.Meta
 													// title={}
@@ -82,9 +81,9 @@ const Review = (props) => {
 												/>
 											</List.Item>
 										</Draggable>
-										{provided.placeholder}
 									</>
 								)}
+								{provided.placeholder}
 							/>
 						)}
 					</Droppable>
