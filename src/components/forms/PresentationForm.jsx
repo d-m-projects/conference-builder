@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
 import { ProgramContext } from "../../contexts/Program";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 import moment from "moment";
 
 import FlowSwitchTwoModal from "../Modals/FlowSwitchTwo/FlowSwitchTwoModal";
 
-import { Form, Input, Button, DatePicker, Select, message } from "antd";
-// import "./styles.scss";
+import { Form, Input, Button, DatePicker, Select, message, Drawer, Empty, Tag } from "antd";
+import "./styles.scss";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -22,6 +23,7 @@ function PresentationForm(props) {
     addGlobalPresenter,
     deleteGlobalPresenter,
     globalPresenters,
+    getNextPresenterId,
   } = program;
 
   // State for dynamic presenters
@@ -36,16 +38,25 @@ function PresentationForm(props) {
   // Modal
   const [modalVisible, setModalVisible] = useState(false);
 
+  // Drawer
+  const [visible, setVisible] = useState(false);
+
   const [form] = Form.useForm();
 
   // List data render handling
   useEffect(() => {
-    // Clear presenter input, update list select state
-    form.setFieldsValue({ presenter: "", presenterList: presenters });
+    // List only renders array of strings so extract them from presenters state
+    const names = presenters.map((presenter) => {
+      return presenter.name;
+    });
+
+    form.setFieldsValue({ presenter: "", presenterList: names });
+
+    console.log("Local Presenter List", presenters);
   }, [presenters]);
 
   useEffect(() => {
-    // Clear credit fields, update list select state
+    // Clear credit fields & update credit list select state
     form.setFieldsValue({
       creditType: "",
       creditAmount: 0,
@@ -53,16 +64,17 @@ function PresentationForm(props) {
     });
   }, [creditsList]);
 
-  const validPresentationDateRange = (start, end) => {
-    const session = getSessionById(selectedSessionId);
-
-    if (start.isBefore(moment(session.dateStart)) || end.isAfter(moment(session.dateEnd))) {
-      return false;
-    }
-    return true;
-  };
-
   const formSubmit = (values) => {
+    // Date range validation helper func
+    const isValidPresentationDateRange = (start, end) => {
+      const session = getSessionById(selectedSessionId);
+
+      if (start.isBefore(moment(session.dateStart)) || end.isAfter(moment(session.dateEnd))) {
+        return false;
+      }
+      return true;
+    };
+
     // Error handling for select inputs on form submit
     // We need 1 presenter and 1 credit type minimum
     if (presenters.length === 0) {
@@ -80,16 +92,16 @@ function PresentationForm(props) {
         },
       ]);
     } else {
-      // Submit form
+      // Use mix of form data & state from inputs to create a new presentation
       const start = values.presentationLength[0].second(0).millisecond(0);
       const end = values.presentationLength[1].second(0).millisecond(0);
 
-      if (validPresentationDateRange(start, end)) {
+      if (isValidPresentationDateRange(start, end)) {
         createPresentation(selectedSessionId, {
           name: values.presentationName,
           dateStart: start._d,
           dateEnd: end._d,
-          presenters: presenters,
+          presenters: presenters.map((presenter) => presenter.name),
           credits: credits,
         });
 
@@ -120,28 +132,25 @@ function PresentationForm(props) {
 
   const addPresenter = () => {
     /*
-      1. Any presenter not in global list will be added automatically.
-      2. Adds to local presenter list for this presentation.
+      1. Add presenter to global list if applicable
+      2. Add presenter to presentation
     */
+
     if (form.getFieldValue("presenter")) {
-      const newPresenter = form.getFieldValue("presenter");
+      const presenter = form.getFieldValue("presenter");
 
-      addGlobalPresenter(newPresenter);
+      setPresenters([...presenters, { name: presenter, id: String(getNextPresenterId()) }]);
 
-      setPresenters([...presenters, newPresenter]);
+      console.log("Add presenter local & global", presenter);
+      addGlobalPresenter(presenter);
+    } else {
+      form.setFields([
+        {
+          name: "presenter",
+          errors: ["Must include a presenter to add."],
+        },
+      ]);
     }
-  };
-
-  const removePresenter = (values) => {
-    /*
-      1. Finds and removes presenter from local list.
-      2. Removes from global presenter list ONLY if it isn't being used elsewhere.
-    */
-    const presenter = presenters.filter((p) => !values.includes(p))[0];
-
-    deleteGlobalPresenter(presenter);
-
-    setPresenters(values);
   };
 
   const addCredit = () => {
@@ -196,10 +205,129 @@ function PresentationForm(props) {
     Credit Type + Credit Value * Dynamic, Add credit btn
   */
 
+  const selectPresenter = (presenter) => {
+    /*
+      1. Add to global list if applicable
+      2. Add to local presentation
+      3. Inc next id
+    */
+
+    console.log("Select presenter", presenter);
+
+    setPresenters([...presenters, { name: presenter, id: String(getNextPresenterId()) }]);
+    addGlobalPresenter(presenter);
+  };
+
+  const deselectPresenter = (presenter) => {
+    console.log("deselect presenter", presenter);
+    /*
+      1. Remove from global list if applicable
+      2. Remove from presentation
+    */
+
+    deleteGlobalPresenter(presenter);
+
+    setPresenters(presenters.filter((p) => (p.name !== presenter ? true : false)));
+  };
+
+  const onClose = (e) => {
+    setVisible(false);
+  };
+
+  const reorderPresenters = (list, startIndex, endIndex) => {
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+
+    return result;
+  };
+
+  // This is the style for each draggable element
+  const getDraggableItemStyle = (isDragging, draggableStyle) => ({
+    // some basic styles to make the items look a bit nicer
+    userSelect: "none",
+    padding: 16,
+    marginBottom: 16,
+
+    // change background colour if dragging
+    background: isDragging ? "lightgreen" : "white",
+    boxShadow: "0 0 3px 1px rgba(40, 40, 40, 0.35)",
+
+    // styles we need to apply on draggables
+    ...draggableStyle,
+  });
+
+  // This is the style for the container that holds the draggables
+  const getListStyle = () => ({
+    padding: 8,
+    width: "100%",
+  });
+
+  const onDragEnd = (result) => {
+    // Dropped outside the list
+    if (!result.destination) {
+      return;
+    }
+
+    const orderedPresenters = reorderPresenters(presenters, result.source.index, result.destination.index);
+
+    setPresenters(orderedPresenters);
+  };
+
   return (
     <>
+      {/* UI Flow Modal for jumping to review program or add additional presentation */}
       <FlowSwitchTwoModal isVisible={modalVisible} setVisibility={setModalVisible} setFormView={setFormView} />
+
+      {/* Form Wrapper*/}
       <div className="presentation-form-container">
+        {/* DnD Presenter Drawer */}
+        <Drawer
+          title="Presenters"
+          placement="right"
+          closable={true}
+          onClose={onClose}
+          visible={visible}
+          getContainer={false}
+          style={{ position: "absolute" }}>
+          {/* Create DnD component or an Empty depending on presenter count */}
+          {presenters.length > 1 ? (
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Droppable droppableId="droppable">
+                {(provided, snapshot) => (
+                  <div
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    style={getListStyle(snapshot.isDraggingOver)}>
+                    {presenters.map((presenter, index) => (
+                      // Render draggables for each presenter
+                      <Draggable key={presenter.id} draggableId={presenter.id} index={index}>
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            style={getDraggableItemStyle(snapshot.isDragging, provided.draggableProps.style)}>
+                            {presenter.name}
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
+          ) : (
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+          )}
+
+          <Button onClick={onClose} type="primary" htmlType="button" style={{ width: "100%" }}>
+            Done
+          </Button>
+        </Drawer>
+
+        {/* THE BIG FORM */}
         <Form
           form={form}
           name="presentationForm"
@@ -231,9 +359,13 @@ function PresentationForm(props) {
             <Input />
           </Form.Item>
 
+          {/* PRESENTER BUTTONS */}
           <Form.Item>
             <Button type="primary" htmlType="button" onClick={addPresenter}>
               Add Presenter
+            </Button>
+            <Button type="primary" htmlType="button" onClick={() => setVisible(true)}>
+              Re-order Presenters
             </Button>
           </Form.Item>
 
@@ -241,7 +373,8 @@ function PresentationForm(props) {
           <Form.Item label="Current Presenter List" name="presenterList">
             <Select
               mode="multiple"
-              onChange={removePresenter}
+              onSelect={selectPresenter}
+              onDeselect={deselectPresenter}
               placeholder="Presenters previously used can be selected here.">
               {globalPresenters.map((presenter, idx) => {
                 return (
