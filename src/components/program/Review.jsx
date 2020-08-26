@@ -36,10 +36,7 @@ const Review = (props) => {
 
 	const programdata = (p) => {
 		p.programDateString = `Program Day: ${moment(p.date).format("ddd, MMM Do Y")}`
-		console.log(`Review.jsx 39: `, p.programDateString)
 		p.programToFrom = `${moment(p.dateStart).format("MMM DD")} - ${moment(p.dateEnd).format("MMM DD")}`
-		// title = {`Program Day: ${moment(day.date).format("ddd, MMM Do Y")}`}
-
 		return p
 	}
 
@@ -51,25 +48,13 @@ const Review = (props) => {
 					renderItem={day => (
 						<List.Item>
 							<List.Item.Meta
-								title={programdata(day).programDateString}
-								description={<Sessions props={day.sessions} />}
+								// title={}
+								description={<Sessions className="program-agenda" props={{ sessions: day.sessions, dayHeader: programdata(day).programDateString }} />}
 							/>
 						</List.Item>
 					)}
 				/>
 			</Card>
-
-			// <Table className="program-agenda" showHeader={false} size="small" dataSource={program.days} pagination={false} key={moment().unix()}>
-			// 	<Column title="Date" dataIndex="date" key={moment().unix()}
-			// 		render={(dataIndex, singleDay, i) => (
-			// 			<>
-			// 				<p>Program Day: {moment(dataIndex).format("ddd, MMM Do Y")}</p>
-			// 				<Sessions props={singleDay} key={moment().unix()} />
-			// 			</>
-			// 		)}
-			// 	/>
-			// </Table>
-
 			: <Skeleton />
 	)
 };
@@ -83,49 +68,39 @@ const Sessions = ({ props }) => {
 		return s
 	}
 
-	console.log(`Review.jsx 84: `, props)
-
 	return (
 		<List
+			size="small"
 			dataSource={props.sessions}
+			header={props.dayHeader}
 			renderItem={session => (
 				<List.Item>
 					<List.Item.Meta
-						title={`Session: ${sessiondata(session).sessionsDateString}`}
-					// description={<Sessions props={day} />}
+						description={<Presentations className={`program-session`} props={{ pres: session.presentations, sessionHeader: sessiondata(session).sessionsDateString }} />}
 					/>
 				</List.Item>
 			)}
 		/>
-
-		// 	<Table className="program-session" showHeader={false} size="small" style={{ marginLeft: "20px" }} dataSource={props.sessions} pagination={false} key={moment().unix()}>
-		// 	<Column title="Session Name" dataIndex="dateStart" key={moment().unix()}
-		// 		render={(dataIndex, single, i) => (
-		// 			<>
-		// 				<p>Session: {sessiondata(single).sessionsDateString}</p>
-		// 				<Presentations props={single} key={moment().unix()} />
-		// 			</>
-		// 		)}
-		// 	/>
-		// </Table>
 	)
 }
 
 const Presentations = ({ props }) => {
 	// 3rd level. descendent of `sessions`.
 	// concerned with `presentations` nested data.
-
+	
 	return (
-		<Table className={`program-presentation`} showHeader={false} size="small" style={{ marginLeft: "20px" }} dataSource={props.presentations} pagination={false} key={moment().unix()}>
-			<Column title="Presentation" dataIndex="name" key="name" key={moment().unix()}
-				render={(dataIndex, single, i) => (
-					<>
-						<div>Presentation: {single.name}</div>
-						<div>By: {single.presenters.join(", ")}</div>
-					</>
-				)}
-			/>
-		</Table>
+		<List
+			size="small"
+			dataSource={props.pres}
+			header={props.sessionHeader}
+			renderItem={pres => (
+				<List.Item>
+					<List.Item.Meta
+						description={<div className={`program-presentation`}>{pres.name}</div>}
+					/>
+				</List.Item>
+			)}
+		/>
 	)
 }
 
