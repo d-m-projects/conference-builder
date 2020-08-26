@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, ReactDOM } from "react";
 import { ProgramContext } from "../../contexts/Program";
 import { useLocation } from "react-router-dom";
 
@@ -57,35 +57,43 @@ const Review = (props) => {
 		return p
 	}
 
+	// onBeforeCapture={onBeforeCapture}
+	// onBeforeDragStart={onBeforeDragStart}
+	// onDragStart={onDragStart}
+	// onDragUpdate={onDragUpdate}
+	// {provided.placeholder}
 	return (
 		program.dateStart
 			? <Card title={program.name} extra={programdata(program).programToFrom}>
-				<DragDropContext
-					onBeforeCapture={onBeforeCapture}
-					onBeforeDragStart={onBeforeDragStart}
-					onDragStart={onDragStart}
-					onDragUpdate={onDragUpdate}
-					onDragEnd={onDragEnd}
-				>
+				<DragDropContext onDragEnd={onDragEnd}>
 					<Droppable droppableId="topDrop" >
-						{(provided, snapshot) => (
-							<List ref={provided.innerRef} {...provided.droppableProps}
-								dataSource={program.days}
-								renderItem={day => (
-									<>
-										<Draggable draggableId={day.date} index={`number`} key={day.date}>
-											<List.Item>
-												<List.Item.Meta
-													// title={}
-													description={<Sessions className="program-agenda" props={{ sessions: day.sessions, dayHeader: programdata(day).programDateString }} />}
-												/>
-											</List.Item>
-										</Draggable>
-									</>
-								)}
-								{provided.placeholder}
-							/>
-						)}
+						<List
+							dataSource={program.days}
+							renderItem={day => (
+								<div>
+									<Draggable draggableId={day.date} index={`number`} key={day.date}>
+										<div>
+											{(provided, snapshot) => (
+												<div>
+													<List.Item
+														ref={(node) => provided.innerRef(ReactDOM.findDOMNode(node))}
+														{...provided.droppableProps}
+														{...provided.dragHandleProps}
+													>
+														<div>
+															<List.Item.Meta
+																// title={}
+																description={<Sessions className="program-agenda" props={{ sessions: day.sessions, dayHeader: programdata(day).programDateString }} />}
+															/>
+														</div>
+													</List.Item>
+												</div>
+											)}
+										</div>
+									</Draggable>
+								</div>
+							)}
+						/>
 					</Droppable>
 				</DragDropContext>
 			</Card>
