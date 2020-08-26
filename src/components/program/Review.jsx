@@ -78,24 +78,12 @@ const Sessions = ({ props }) => {
 	}
 	console.log(`Review.jsx 99: `, props)
 	return (
-		<>
+		<div style={{marginLeft: "10px",border:"1px solid green"}}>
 			<div>{props.dayHeader}</div>
-			{props.sessions.map( session => (
+			{props.sessions.map(session => (
 				<Presentations className={`program-session`} props={{ pres: session.presentations, sessionHeader: sessiondata(session).sessionsDateString }} />
 			))}
-		</>
-		// <List
-		// 	size="small"
-		// 	dataSource={props.sessions}
-		// 	header={props.dayHeader}
-		// 	renderItem={session => (
-		// 		<List.Item>
-		// 			<List.Item.Meta
-		// 				description={<Presentations className={`program-session`} props={{ pres: session.presentations, sessionHeader: sessiondata(session).sessionsDateString }} />}
-		// 			/>
-		// 		</List.Item>
-		// 	)}
-		// />
+		</div>
 	)
 }
 
@@ -104,18 +92,11 @@ const Presentations = ({ props }) => {
 	// concerned with `presentations` nested data.
 
 	return (
-		<List
-			size="small"
-			dataSource={props.pres}
-			header={props.sessionHeader}
-			renderItem={pres => (
-				<List.Item>
-					<List.Item.Meta
-						description={<div className={`program-presentation`}>{pres.name}</div>}
-					/>
-				</List.Item>
-			)}
-		/>
+		<div style={{marginLeft: "10px",border:"1px solid red"}}>
+			{props.pres.map(pres => (
+				<div className={`program-presentation`}>{pres.name}</div>
+			))}
+		</div>
 	)
 }
 
