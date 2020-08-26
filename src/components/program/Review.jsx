@@ -3,6 +3,7 @@ import { ProgramContext } from "../../contexts/Program";
 import { useLocation } from "react-router-dom";
 
 import moment from "moment";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 // antd components
 import { Skeleton, Table, Card, Button, List } from "antd";
@@ -34,6 +35,22 @@ const Review = (props) => {
 	// 	program.injectTestData()
 	// }
 
+	const onBeforeCapture = (e) => {
+		console.log(`Review.jsx 39: `, e)
+	};
+	const onBeforeDragStart = (e) => {
+		console.log(`Review.jsx 42: `, e)
+	};
+	const onDragStart = (e) => {
+		console.log(`Review.jsx 45: `, e)
+	};
+	const onDragUpdate = (e) => {
+		console.log(`Review.jsx 48: `, e)
+	};
+	const onDragEnd = (e) => {
+		console.log(`Review.jsx 51: `, e)
+	};
+
 	const programdata = (p) => {
 		p.programDateString = `Program Day: ${moment(p.date).format("ddd, MMM Do Y")}`
 		p.programToFrom = `${moment(p.dateStart).format("MMM DD")} - ${moment(p.dateEnd).format("MMM DD")}`
@@ -43,17 +60,35 @@ const Review = (props) => {
 	return (
 		program.dateStart
 			? <Card title={program.name} extra={programdata(program).programToFrom}>
-				<List
-					dataSource={program.days}
-					renderItem={day => (
-						<List.Item>
-							<List.Item.Meta
-								// title={}
-								description={<Sessions className="program-agenda" props={{ sessions: day.sessions, dayHeader: programdata(day).programDateString }} />}
+				<DragDropContext
+				// onBeforeCapture={onBeforeCapture}
+				// onBeforeDragStart={onBeforeDragStart}
+				// onDragStart={onDragStart}
+				// onDragUpdate={onDragUpdate}
+				// onDragEnd={onDragEnd}
+				>
+					<Droppable droppableId="topDrop" >
+						{provided => (
+
+							<List ref={provided.innerRef} {...provided.droppableProps}
+								dataSource={program.days}
+								renderItem={day => (
+									<>
+										<Draggable draggableId={day.date}>
+											<List.Item>
+												<List.Item.Meta
+													// title={}
+													description={<Sessions className="program-agenda" props={{ sessions: day.sessions, dayHeader: programdata(day).programDateString }} />}
+												/>
+											</List.Item>
+										</Draggable>
+										{provided.placeholder}
+									</>
+								)}
 							/>
-						</List.Item>
-					)}
-				/>
+						)}
+					</Droppable>
+				</DragDropContext>
 			</Card>
 			: <Skeleton />
 	)
@@ -67,27 +102,31 @@ const Sessions = ({ props }) => {
 		s.sessionsDateString = `${s.name} (${moment(s.dateStart).format("HH:mm")}-${moment(s.dateEnd).format("HH:mm")})`
 		return s
 	}
-
+	console.log(`Review.jsx 99: `, props)
 	return (
+		// <Droppable droppableId={props.name}>
 		<List
 			size="small"
 			dataSource={props.sessions}
 			header={props.dayHeader}
 			renderItem={session => (
+				// <Draggable draggableId={session.name}>
 				<List.Item>
 					<List.Item.Meta
 						description={<Presentations className={`program-session`} props={{ pres: session.presentations, sessionHeader: sessiondata(session).sessionsDateString }} />}
 					/>
 				</List.Item>
+				// </Draggable>
 			)}
 		/>
+		// </Droppable>
 	)
 }
 
 const Presentations = ({ props }) => {
 	// 3rd level. descendent of `sessions`.
 	// concerned with `presentations` nested data.
-	
+
 	return (
 		<List
 			size="small"
