@@ -18,6 +18,27 @@ import injection from "../../data/testdata"
 
 const { Column } = Table
 
+
+const getDraggableItemStyle = (isDragging, draggableStyle) => ({
+	// some basic styles to make the items look a bit nicer
+	userSelect: "none",
+	padding: 16,
+	marginBottom: 16,
+
+	// change background colour if dragging
+	background: isDragging ? "lightgreen" : "white",
+	boxShadow: "0 0 3px 1px rgba(40, 40, 40, 0.35)",
+
+	// styles we need to apply on draggables
+	...draggableStyle,
+});
+
+// This is the style for the container that holds the draggables
+const getListStyle = () => ({
+	padding: 8,
+	width: "100%",
+});
+
 const Review = (props) => {
 	// Top level of the Review
 	// Renders `Days` and passes down `Sessions` with nested data.
@@ -51,26 +72,6 @@ const Review = (props) => {
 		console.log(`end: `, e)
 	};
 
-	const getDraggableItemStyle = (isDragging, draggableStyle) => ({
-		// some basic styles to make the items look a bit nicer
-		userSelect: "none",
-		padding: 16,
-		marginBottom: 16,
-
-		// change background colour if dragging
-		background: isDragging ? "lightgreen" : "white",
-		boxShadow: "0 0 3px 1px rgba(40, 40, 40, 0.35)",
-
-		// styles we need to apply on draggables
-		...draggableStyle,
-	});
-
-	// This is the style for the container that holds the draggables
-	const getListStyle = () => ({
-		padding: 8,
-		width: "100%",
-	});
-
 	const programdata = (p) => {
 		p.programDateString = `Program Day: ${moment(p.date).format("ddd, MMM Do Y")}`
 		p.programToFrom = `${moment(p.dateStart).format("MMM DD")} - ${moment(p.dateEnd).format("MMM DD")}`
@@ -98,14 +99,15 @@ const Review = (props) => {
 									<Draggable key={day.date} draggableId={day.date} index={index}>
 										{(provided, snapshot) => (
 											<div
-												className="program-agenda"
-												props={{ sessions: day.sessions, dayHeader: programdata(day).programDateString }}
 												ref={provided.innerRef}
 												{...provided.draggableProps}
 												{...provided.dragHandleProps}
 												style={getDraggableItemStyle(snapshot.isDragging, provided.draggableProps.style)}
 											>
-												<h1>{day.date}</h1>
+												<Sessions
+													className="program-agenda"
+													props={{ sessions: day.sessions, dayHeader: programdata(day).programDateString }}
+												/>
 											</div>
 										)}
 									</Draggable>
@@ -128,13 +130,24 @@ const Sessions = ({ props }) => {
 		s.sessionsDateString = `${s.name} (${moment(s.dateStart).format("HH:mm")}-${moment(s.dateEnd).format("HH:mm")})`
 		return s
 	}
-	console.log(`Review.jsx 99: `, props)
 	return (
-		<div style={{ marginLeft: "10px", border: "1px solid green" }}>
+		<div>
 			<div>{props.dayHeader}</div>
-			{props.sessions.map(session => (
-				<Presentations className={`program-session`} props={{ pres: session.presentations, sessionHeader: sessiondata(session).sessionsDateString }} />
+			{props.sessions.map((session, index) => (
+				<Draggable key={session.name} draggableId={session.name} index={index}>
+					{(provided, snapshot) => (
+						<div
+							ref={provided.innerRef}
+							{...provided.draggableProps}
+							{...provided.dragHandleProps}
+							style={getDraggableItemStyle(snapshot.isDragging, provided.draggableProps.style)}
+						>
+							<Presentations className={`program-session`} props={{ pres: session.presentations, sessionHeader: sessiondata(session).sessionsDateString }} />
+						</div>
+					)}
+				</Draggable>
 			))}
+
 		</div>
 	)
 }
@@ -142,11 +155,21 @@ const Sessions = ({ props }) => {
 const Presentations = ({ props }) => {
 	// 3rd level. descendent of `sessions`.
 	// concerned with `presentations` nested data.
-
 	return (
-		<div style={{ marginLeft: "10px", border: "" }}>
-			{props.pres.map(pres => (
-				<div className={`program-presentation`}>{pres.name}</div>
+		<div>
+			{props.pres.map((pres, index) => (
+				<Draggable key={pres.name} draggableId={pres.name} index={index}>
+					{(provided, snapshot) => (
+						<div
+						ref={provided.innerRef}
+						{...provided.draggableProps}
+						{...provided.dragHandleProps}
+							style={getDraggableItemStyle(snapshot.isDragging, provided.draggableProps.style)}
+							>
+							<div className={`program-presentation`} key={index}>{pres.name}</div>
+						</div>
+					)}
+				</Draggable>
 			))}
 		</div>
 	)
