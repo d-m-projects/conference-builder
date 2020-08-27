@@ -35,11 +35,15 @@ const getListStyle = () => ({
 const Review = (props) => {
 	// Top level of the Review
 	// Renders `Days` and passes down `Sessions` with nested data.
+
+	const program = useContext(ProgramContext);
+	const { updateProgram } = program
+
+	const [days, setDays] = useState(program.days)
+
 	const location = useLocation()
 	let { initialView } = props
 	location.state ? initialView = location.state.initialView : initialView = VIEW.PROGRAM
-
-	const program = useContext(ProgramContext);
 
 	// DEV ONLY (by darrin)
 	// if `program` is empty, fill it with example data for visualization.
@@ -49,20 +53,40 @@ const Review = (props) => {
 	// 	program.injectTestData()
 	// }
 
-	const onBeforeCapture = (e) => {
-		console.log(`cap: `, e)
-	};
-	const onBeforeDragStart = (e) => {
-		console.log(`prestart: `, e)
-	};
-	const onDragStart = (e) => {
-		console.log(`start: `, e)
-	};
-	const onDragUpdate = (e) => {
-		console.log(`update: `, e)
-	};
+	useEffect(() => {
+		setDays(program.days)
+	}, [program])
+
+	const reorderDays = (list, startIndex, endIndex) => {
+		// Swaps the days in the list
+		// AND keeps the dates in the proper order.
+
+		const result = Array.from(list)
+
+		let alldates = []
+		for (let i = 0; i < result.length; i++) {
+			alldates.push(result.slice(i, i + 1)[0].date)
+		}
+		
+		let bothdates = [result.slice(startIndex, startIndex+1)[0].date, result.slice(endIndex, endIndex+1)[0].date]
+
+		// const x = 0
+		// result[endIndex].date = bothdates[0]
+		// result[startIndex].date = bothdates[1]
+
+		const [removed] = result.splice(startIndex, 1)
+		console.log(`Review.jsx 73: `, removed, result)
+		result.splice(endIndex, 0, removed)
+		return result
+	}
+
 	const onDragEnd = (e) => {
-		console.log(`end: `, e)
+		// Dropped outside the list
+		if (!e.destination) {
+			return;
+		}
+		const orderedDays = reorderDays(days, e.source.index, e.destination.index);
+		updateProgram({...program, days: orderedDays});
 	};
 
 	const programdata = (p) => {
@@ -160,7 +184,7 @@ const Presentations = ({ props }) => {
 				// {...provided.dragHandleProps}
 				// 	style={getDraggableItemStyle(snapshot.isDragging, provided.draggableProps.style)}
 				>
-					<h4 style={{fontStyle:"oblique"}}>Presentation: {pres.name}</h4>
+					<h4 style={{ fontStyle: "oblique" }}>Presentation: {pres.name}</h4>
 					<p key={index}>By: {pres.presenters.join(", ")}</p>
 				</div>
 				// 	)}
