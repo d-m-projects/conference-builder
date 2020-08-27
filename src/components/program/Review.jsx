@@ -59,7 +59,7 @@ const Review = (props) => {
 
 	const reorderDays = (list, startIndex, endIndex) => {
 		// Swaps the days in the list
-		// AND keeps the dates in the proper order.
+		// and keeps the dates in the original order.
 
 		const result = Array.from(list)
 
@@ -68,15 +68,11 @@ const Review = (props) => {
 			alldates.push(result.slice(i, i + 1)[0].date)
 		}
 		
-		let bothdates = [result.slice(startIndex, startIndex+1)[0].date, result.slice(endIndex, endIndex+1)[0].date]
-
-		// const x = 0
-		// result[endIndex].date = bothdates[0]
-		// result[startIndex].date = bothdates[1]
-
 		const [removed] = result.splice(startIndex, 1)
-		console.log(`Review.jsx 73: `, removed, result)
 		result.splice(endIndex, 0, removed)
+		for (let i = 0; i < result.length; i++) {
+			result[i].date = alldates[i]
+		}
 		return result
 	}
 
