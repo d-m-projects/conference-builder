@@ -124,7 +124,7 @@ const Sessions = ({ props }) => {
 	}
 	return (
 		<div>
-			<h2>{props.dayHeader}</h2>
+			<h3>{props.dayHeader}</h3>
 			{props.sessions.map((session, index) => (
 				// <Draggable key={session.name} draggableId={session.name} index={index}>
 				// 	{(provided, snapshot) => (
@@ -134,7 +134,7 @@ const Sessions = ({ props }) => {
 				// {...provided.dragHandleProps}
 				// style={getDraggableItemStyle(snapshot.isDragging, provided.draggableProps.style)}
 				>
-					<h3>Session: {session.name}</h3>
+					{/* <h3>Session: {session.name}</h3> */}
 					<Presentations props={{ pres: session.presentations, sessionHeader: sessiondata(session).sessionsDateString }} />
 				</div>
 				// 	)}
@@ -149,7 +149,8 @@ const Presentations = ({ props }) => {
 	// 3rd level. descendent of `sessions`.
 	// concerned with `presentations` nested data.
 	return (
-		<div >
+		<div>
+			<h4>{props.sessionHeader}</h4>
 			{props.pres.map((pres, index) => (
 				// <Draggable key={pres.name} draggableId={pres.name} index={index}>
 				// 	{(provided, snapshot) => (
@@ -159,8 +160,8 @@ const Presentations = ({ props }) => {
 				// {...provided.dragHandleProps}
 				// 	style={getDraggableItemStyle(snapshot.isDragging, provided.draggableProps.style)}
 				>
-					<h4>Presentation: {pres.name}</h4>
-					<div key={index}>{pres.presenters.join(", ")}</div>
+					<h4 style={{fontStyle:"oblique"}}>Presentation: {pres.name}</h4>
+					<p key={index}>By: {pres.presenters.join(", ")}</p>
 				</div>
 				// 	)}
 				// </Draggable>
