@@ -11,6 +11,34 @@ import { Skeleton, Card, List } from "antd";
 // Components
 import { VIEW } from "../forms/FormManager";
 
+
+
+const treeData = {}
+
+const buildData = (obj, log = "  ") => {
+	let res, key
+
+	for (key in obj)
+		if (typeof obj[key] !== "function") {
+			treeData[key] = obj[key]
+		}
+
+	for (key in obj) {
+		if (obj.hasOwnProperty(key) && typeof obj[key] === "object") {
+			res = buildData(obj[key], `  ${log}`)
+			// console.log(`${log}${key}:${obj[key]}`)
+			treeData[key] = obj[key]
+			treeData.children = obj[key]
+			if (res) {
+				return res
+			}
+		} else if (key === "name") {
+			treeData.title = obj[key]
+			treeData.key = obj[key]
+		}
+	}
+}
+
 const Review = (props) => {
 	// Top level of the Review
 	// Renders `Days` and passes down `Sessions` with nested data.
@@ -31,6 +59,16 @@ const Review = (props) => {
 	// if (!program.dateStart) {
 	// 	program.injectTestData()
 	// }
+	
+	buildData(program)
+	console.log(`treedata: `, treeData)
+
+
+	const programdata = (p) => {
+		p.programDateString = `Program Day: ${moment(p.date).format("ddd, MMM Do Y")}`
+		p.programToFrom = `${moment(p.dateStart).format("MMM DD")} - ${moment(p.dateEnd).format("MMM DD")}`
+		return p
+	}
 
 	return (
 		program.dateStart
