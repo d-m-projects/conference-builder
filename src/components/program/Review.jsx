@@ -6,33 +6,29 @@ import moment from "moment";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 // antd components
-import { Skeleton, Table, Card, Button, List } from "antd";
+import { Skeleton, Card, List } from "antd";
 
 // Components
-import FormManager, { VIEW } from "../forms/FormManager";
-
-// Dev test data
-import injection from "../../data/testdata"
-
-const { Column } = Table
+import { VIEW } from "../forms/FormManager";
 
 const getDraggableItemStyle = (isDragging, draggableStyle) => ({
 	// some basic styles to make the items look a bit nicer
 	userSelect: "none",
 	padding: 16,
-	marginBottom: 16,
+	marginBottom: 4,
 
-	// change background colour if dragging
-	background: isDragging ? "lightgreen" : "white",
-	boxShadow: "0 0 3px 1px rgba(40, 40, 40, 0.35)",
+	// // change background colour if dragging
+	// background: isDragging ? "lightgreen" : "white",
+	// boxShadow: "0 0 3px 1px rgba(40, 40, 40, 0.35)",
+	border: "1px solid #ddd",
 
-	// styles we need to apply on draggables
+	// // styles we need to apply on draggables
 	...draggableStyle,
 });
 
 // This is the style for the container that holds the draggables
 const getListStyle = () => ({
-	padding: 8,
+	// padding: 8,
 	width: "100%",
 });
 
@@ -77,12 +73,12 @@ const Review = (props) => {
 
 	return (
 		program.dateStart
-			? <Card title={program.name} extra={programdata(program).programToFrom}>
+			? <Card title={program.name} extra={programdata(program).programToFrom} bodyStyle={{ display: "flex" }}>
 				<DragDropContext
-					onBeforeCapture={onBeforeCapture}
-					onBeforeDragStart={onBeforeDragStart}
-					onDragStart={onDragStart}
-					onDragUpdate={onDragUpdate}
+					// onBeforeCapture={onBeforeCapture}
+					// onBeforeDragStart={onBeforeDragStart}
+					// onDragStart={onDragStart}
+					// onDragUpdate={onDragUpdate}
 					onDragEnd={onDragEnd}
 				>
 					<Droppable droppableId="droppable">
@@ -95,14 +91,13 @@ const Review = (props) => {
 								{program.days.map((day, index) => (
 									<Draggable key={day.date} draggableId={day.date} index={index}>
 										{(provided, snapshot) => (
-											<div
+											<div className={`program-agenda`}
 												ref={provided.innerRef}
 												{...provided.draggableProps}
 												{...provided.dragHandleProps}
 												style={getDraggableItemStyle(snapshot.isDragging, provided.draggableProps.style)}
 											>
 												<Sessions
-													className="program-agenda"
 													props={{ sessions: day.sessions, dayHeader: programdata(day).programDateString }}
 												/>
 											</div>
@@ -129,20 +124,21 @@ const Sessions = ({ props }) => {
 	}
 	return (
 		<div>
-			<div>{props.dayHeader}</div>
+			<h2>{props.dayHeader}</h2>
 			{props.sessions.map((session, index) => (
-				<Draggable key={session.name} draggableId={session.name} index={index}>
-					{(provided, snapshot) => (
-						<p
-							ref={provided.innerRef}
-							{...provided.draggableProps}
-							{...provided.dragHandleProps}
-							style={getDraggableItemStyle(snapshot.isDragging, provided.draggableProps.style)}
-						>
-							<Presentations className={`program-session`} props={{ pres: session.presentations, sessionHeader: sessiondata(session).sessionsDateString }} />
-						</p>
-					)}
-				</Draggable>
+				// <Draggable key={session.name} draggableId={session.name} index={index}>
+				// 	{(provided, snapshot) => (
+				<div key={index} style={{ marginLeft: "20px" }}
+				// ref={provided.innerRef}
+				// {...provided.draggableProps}
+				// {...provided.dragHandleProps}
+				// style={getDraggableItemStyle(snapshot.isDragging, provided.draggableProps.style)}
+				>
+					<h3>Session: {session.name}</h3>
+					<Presentations props={{ pres: session.presentations, sessionHeader: sessiondata(session).sessionsDateString }} />
+				</div>
+				// 	)}
+				// </Draggable>
 			))}
 
 		</div>
@@ -153,20 +149,21 @@ const Presentations = ({ props }) => {
 	// 3rd level. descendent of `sessions`.
 	// concerned with `presentations` nested data.
 	return (
-		<div>
+		<div >
 			{props.pres.map((pres, index) => (
-				<Draggable key={pres.name} draggableId={pres.name} index={index}>
-					{(provided, snapshot) => (
-						<div
-						ref={provided.innerRef}
-						{...provided.draggableProps}
-						{...provided.dragHandleProps}
-							style={getDraggableItemStyle(snapshot.isDragging, provided.draggableProps.style)}
-							>
-							<div className={`program-presentation`} key={index}>{pres.name}</div>
-						</div>
-					)}
-				</Draggable>
+				// <Draggable key={pres.name} draggableId={pres.name} index={index}>
+				// 	{(provided, snapshot) => (
+				<div key={index} style={{ marginLeft: "20px" }}
+				// ref={provided.innerRef}
+				// {...provided.draggableProps}
+				// {...provided.dragHandleProps}
+				// 	style={getDraggableItemStyle(snapshot.isDragging, provided.draggableProps.style)}
+				>
+					<h4>Presentation: {pres.name}</h4>
+					<div key={index}>{pres.presenters.join(", ")}</div>
+				</div>
+				// 	)}
+				// </Draggable>
 			))}
 		</div>
 	)
