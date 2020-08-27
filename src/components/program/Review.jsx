@@ -139,7 +139,7 @@ const Sessions = ({ props }) => {
 	// concerned with `sessions` and passing down `presentations` nested data.
 
 	const sessiondata = (s) => {
-		s.sessionsDateString = `${s.name} (${moment(s.dateStart).format("HH:mm")}-${moment(s.dateEnd).format("HH:mm")})`
+		s.sessionsDateString = `${s.name} Session (${moment(s.dateStart).format("HH:mm")}-${moment(s.dateEnd).format("HH:mm")})`
 		return s
 	}
 	return (
