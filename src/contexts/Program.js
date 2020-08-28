@@ -222,6 +222,8 @@ const ProgramProvider = (props) => {
 			const { day, session } = e.event.origKeys
 			let target = program.days[day].sessions[session]
 
+			if (!rangeCheck(e)) { return }
+
 			const updateSessionTimes = {
 				...target,
 				dateStart: `${moment(e.start).format()}`,
@@ -241,12 +243,13 @@ const ProgramProvider = (props) => {
 			const { day, session, pres } = e.event.origKeys
 			let target = program.days[day].sessions[session].presentations[pres]
 
+			if (!rangeCheck(e)) { return }
+
 			const updatePresTimes = {
 				...target,
 				dateStart: `${moment(e.start).format()}`,
 				dateEnd: `${moment(e.end).format()}`,
 			}
-
 			program.days[day].sessions[session].presentations.splice(
 				pres,
 				1,
@@ -255,14 +258,49 @@ const ProgramProvider = (props) => {
 
 			setProgram({ ...program })
 		}
-		
+
+		const rangeCheck = (e) => {
+			const { type, origKeys: { day, session, pres } } = e.event
+			const dayRange = [program.dateStart, program.dateEnd]
+			const sessionRange = []
+
+			for (const pDay of program.days) {
+				for (const pSession of pDay.sessions) {
+					sessionRange.push([pSession.dateStart, pSession.dateEnd])
+				}
+			}
+
+			if (type === "session") {
+				const chkStart =
+					moment(e.start)
+						.isBetween(dayRange[0], dayRange[1], "day", "[]")
+				const chkEnd =
+					moment(e.end)
+						.isBetween(dayRange[0], dayRange[1], "day", "[]")
+				if (chkStart && chkEnd) return true;
+			}
+
+			if (type === "presentation") {
+				for (const range of sessionRange) {
+					const chkStart =
+						moment(e.start)
+							.isBetween(range[0], range[1], "minute", "[]")
+					const chkEnd =
+						moment(e.end)
+							.isBetween(range[0], range[1], "minute", "[]")
+					if (chkStart && chkEnd) return true;
+				}
+			}
+			return false
+		}
+
 		switch (t) {
 			case "onDragStart":
-				console.log(`onDragStart: `,)
+				// console.log(`onDragStart: `, e)
 				break;
 
 			case "onEventDrop":
-				console.log(`onEventDrop: `, e.event.type)
+				// console.log(`onEventDrop: `, e.event.type)
 				const type =
 					e.event.type === "session"
 						? moveSession(e)
