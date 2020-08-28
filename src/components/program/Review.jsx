@@ -2,82 +2,28 @@ import React, { useContext, useState, useEffect } from "react";
 import { ProgramContext } from "../../contexts/Program";
 import { useLocation } from "react-router-dom";
 
-import moment from "moment";
-// import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-
 // antd components
 import { Skeleton, Card, List } from "antd";
 
 // Components
 import { VIEW } from "../forms/FormManager";
 
+// modules
+import moment from "moment";
+import { Calendar, Views, momentLocalizer } from 'react-big-calendar'
+// import localizer from 'react-big-calendar/lib/localizers/globalize'
+// import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
-
-const treeData = {}
-
-const origBuildData = (obj, log = "  ") => {
-	let res, key
-
-	for (key in obj)
-		if (typeof obj[key] !== "function") {
-			treeData[key] = obj[key]
-		}
-
-	for (key in obj) {
-		if (obj.hasOwnProperty(key) && typeof obj[key] === "object") {
-			res = buildData(obj[key], `  ${log}`)
-			// console.log(`${log}${key}:${obj[key]}`)
-			treeData[key] = obj[key]
-			treeData.children = obj[key]
-			if (res) {
-				return res
-			}
-		} else if (key === "name") {
-			treeData.title = obj[key]
-			treeData.key = obj[key]
-		}
-	}
-}
-
-const buildData = (obj) => {
-	if (!obj.dateStart) {
-		return
-	}
-	let data = [];
-	let id = 0
-	for (let day of obj.days) {
-		for (let s of day.sessions) {
-			data.push({
-				id: id,
-				title: s.name,
-				start: s.dateStart,
-				end: s.dateEnd,
-			})
-			id++
-			for (let p of s.presentations) {
-				data.push({
-					id: id,
-					title: p.name,
-					start: p.dateStart,
-					end: p.dateEnd,
-					credits: p.credits,
-					presenters: p.presenters,
-				})
-				id++
-			}
-		}
-	}
-	return data
-}
-
+const localizer = momentLocalizer(moment)
 const Review = (props) => {
 	// Top level of the Review
 	// Renders `Days` and passes down `Sessions` with nested data.
 
+	const [RBCdata, setRBCdata] = useState([])
 	const program = useContext(ProgramContext);
 	const { updateProgram } = program
 
-	const [days, setDays] = useState(program.days)
+	const [startDate, setStartDate] = useState("")
 
 	const location = useLocation()
 	let { initialView } = props
@@ -87,9 +33,9 @@ const Review = (props) => {
 	// if `program` is empty, fill it with example data for visualization.
 	// Use when you need complete data in `program`
 	// (so you don't have to enter it manually)
-	if (!program.dateStart) {
-		program.injectTestData()
-	}
+	// if (!program.dateStart) {
+	// 	program.injectTestData()
+	// }
 
 	// buildData(program)
 	// console.log(`treedata: `, treeData)
@@ -101,23 +47,22 @@ const Review = (props) => {
 		return p
 	}
 
-	const RBCdata = buildData(program)
-	console.log(`Review.jsx 100: `, RBCdata)
+	useEffect(() => {
+		setRBCdata(buildData(program))
+		setStartDate(new Date(program.dateStart))
+	}, [program])
 
 	return (
-		program.dateStart
-			? <Card title={program.name} extra="program dates here" bodyStyle={{ display: "flex" }}>
-				<div>
-					{program.days.map((day, index) => (
-						<div className={`program-agenda`}>
-							<Sessions
-								props={{ sessions: day.sessions, dayHeader: "single day date" }}
-							/>
-						</div>
-					))}
-				</div>
-			</Card>
+		Boolean(RBCdata)  // if this is an array.length 0, it will be `false`
+			? <Calendar
+				events={RBCdata}
+				localizer={localizer}
+				defaultView={"day"}
+				date={startDate}
+				views={["week", "day", "agenda"]}
+			/>
 			: <Skeleton />
+		// <div>{console.log(`Review.jsx 58: `, RBCdata, program.dateStart)}</div>
 	)
 };
 
@@ -156,6 +101,37 @@ const Presentations = ({ props }) => {
 			))}
 		</div>
 	)
+}
+
+const buildData = (obj) => {
+	if (!obj.dateStart) {
+		return
+	}
+	let data = [];
+	let id = 0
+	for (let day of obj.days) {
+		for (let s of day.sessions) {
+			data.push({
+				id: id,
+				title: s.name,
+				start: new Date(s.dateStart),
+				end: new Date(s.dateEnd),
+			})
+			id++
+			for (let p of s.presentations) {
+				data.push({
+					id: id,
+					title: p.name,
+					start: new Date(p.dateStart),
+					end: new Date(p.dateEnd),
+					credits: p.credits,
+					presenters: p.presenters,
+				})
+				id++
+			}
+		}
+	}
+	return data
 }
 
 export default Review;

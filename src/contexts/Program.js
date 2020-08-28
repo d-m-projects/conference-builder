@@ -23,11 +23,9 @@ const ProgramProvider = (props) => {
 	const [program, setProgram] = useState(defaultProgram);
 
 	useEffect(() => {
-		conlog("Context Changed", program);
 		if (program.id && program.dateStart) {
 			db.update(program)
 				.then((x) => {
-					// program.id = x
 					console.log("Context > DB Updated ", x);
 				})
 				.catch((err) => {
@@ -53,8 +51,8 @@ const ProgramProvider = (props) => {
 			name: newProgram.name,
 			dateStart: newProgram.dateStart,
 			dateEnd: newProgram.dateEnd,
-      days: newProgram.days,
-      globalPresenters: []
+			days: newProgram.days,
+			globalPresenters: []
 		});
 	};
 
@@ -167,22 +165,22 @@ const ProgramProvider = (props) => {
 	};
 
 	const getSessionById = (sessionId) => {
-    let foundSession = null;
+		let foundSession = null;
 
-    program.days.some(day => {
-      return day.sessions.some(session => {
-        if (session.id === sessionId){
-          foundSession = session;
-          return true;
-        }
-      });
-    });
+		program.days.some(day => {
+			return day.sessions.some(session => {
+				if (session.id === sessionId) {
+					foundSession = session;
+					return true;
+				}
+			});
+		});
 
-    if (foundSession) {
-      return foundSession;
-    } else {
-      console.log("If you see this then either you broke session ids or are searching for an invalid one...");
-    }
+		if (foundSession) {
+			return foundSession;
+		} else {
+			console.log("If you see this then either you broke session ids or are searching for an invalid one...");
+		}
 	};
 
 	const injectDB = (x) => {
@@ -242,7 +240,7 @@ const ProgramProvider = (props) => {
 				// clearProgram,
 				//Dev Only. call directly in a component when...
 				// ...you need a DB entry.
-				injectDB, 
+				injectDB,
 				// ...you need test data in your component.
 				injectTestData,
 			}}>
@@ -253,15 +251,33 @@ const ProgramProvider = (props) => {
 
 export { ProgramProvider, ProgramContext };
 
-function conlog() {
-	const show = false
-	if (show) {
-		console.log("__Program_")
-		for (const arg in arguments) {
-			console.dir(arguments[arg]);
-		}
-		console.log("^^^^^^^^^^")
+const buildData = (obj) => {
+	if (!obj.dateStart) {
+		return
 	}
+	let data = [];
+	let id = 0
+	for (let day of obj.days) {
+		for (let s of day.sessions) {
+			data.push({
+				id: id,
+				title: s.name,
+				start: s.dateStart,
+				end: s.dateEnd,
+			})
+			id++
+			for (let p of s.presentations) {
+				data.push({
+					id: id,
+					title: p.name,
+					start: p.dateStart,
+					end: p.dateEnd,
+					credits: p.credits,
+					presenters: p.presenters,
+				})
+				id++
+			}
+		}
+	}
+	return data
 }
-
-// use var here to ensure hoisting
