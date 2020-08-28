@@ -219,28 +219,43 @@ const ProgramProvider = (props) => {
 
 	function handleDnd(t, e) {
 		const moveSession = (e) => {
-			return
+			const { day, session } = e.event.origKeys
+			let target = program.days[day].sessions[session]
+
+			const updateSessionTimes = {
+				...target,
+				dateStart: `${moment(e.start).format()}`,
+				dateEnd: `${moment(e.end).format()}`,
+			}
+
+			program.days[day].sessions.splice(
+				session,
+				1,
+				updateSessionTimes
+			);
+
+			setProgram({ ...program })
 		}
+
 		const movePresentation = (e) => {
 			const { day, session, pres } = e.event.origKeys
 			let target = program.days[day].sessions[session].presentations[pres]
-			// console.log(`Program.js 227: `, moment(e.start).format())
+
 			const updatePresTimes = {
 				...target,
 				dateStart: `${moment(e.start).format()}`,
 				dateEnd: `${moment(e.end).format()}`,
 			}
-			// console.log(`Program.js 233: `, target)
 
-			console.log(`Program.js 236: `, program)
 			program.days[day].sessions[session].presentations.splice(
 				pres,
 				1,
 				updatePresTimes
 			);
-			console.log(`Program.js 239: `, program)
+
 			setProgram({ ...program })
 		}
+		
 		switch (t) {
 			case "onDragStart":
 				console.log(`onDragStart: `,)
