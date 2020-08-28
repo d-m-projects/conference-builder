@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 
 // antd components
 import { Row, Col, DatePicker, message, Card, Form, Input, Space, Button } from "antd";
-import { EditOutlined, DownloadOutlined, DoubleRightOutlined } from '@ant-design/icons';
+import { EditOutlined, DownloadOutlined, DoubleRightOutlined, CopyOutlined } from '@ant-design/icons';
 
 import * as dates from "date-arithmetic";
 import moment from "moment";
@@ -13,25 +13,44 @@ import db from "../../data/database"
 
 import FormManager, { VIEW } from "../forms/FormManager";
 
+import YAML from "yaml";
+import FileSaver from "file-saver";
+
 const { Meta } = Card
 const { RangePicker } = DatePicker;
 
 const File = () => {
-	const [fileman, setFileman] = useState([
-
-	])
-	const program = useContext(ProgramContext);
+  const program = useContext(ProgramContext);
 	const { loadProgram, createProgram } = program
+  
 	const history = useHistory()
 
-	const doEditClick = async (id) => {
+  const [fileman, setFileman] = useState([]);
+
+  const doEditClick = async (id) => {
 		await loadProgram(id)
 		history.push("/review", { initialView: VIEW.REVIEW });
 	}
 
 	const doDownloadClick = async (id) => {
-		console.log(`index.js 28: download click id `, id)
-	}
+    const dbProgramData = await db.read(id);
+    const yamlProgram = YAML.stringify(dbProgramData);
+    
+    const yamlFile = new Blob([yamlProgram], {type: "text/yaml;charset=utf-8"});
+
+    FileSaver.saveAs(yamlFile, `${dbProgramData.name}.yaml`);
+  }
+  
+  const doCopyClick = async (id) => {
+    const dbProgramData = await db.read(id);
+    const yamlProgram = YAML.stringify(dbProgramData);
+
+    navigator.clipboard.writeText(yamlProgram).then(() => {
+      message.success("Program YAML copied to clipboard!");
+    }, () => {
+      message.error("Could not copy yaml program to clipboard, try another browser?");
+    });
+  }
 
 	const onFinish = async (values) => {
 		console.log(`index.js 35: `, values)
@@ -112,6 +131,7 @@ const File = () => {
 									actions={[
 										<EditOutlined onClick={() => doEditClick(item.id)} />,
 										<DownloadOutlined onClick={() => doDownloadClick(item.id)} />,
+										<CopyOutlined onClick={() => doCopyClick(item.id)} />,
 									]}
 									title={item.name}
 								>
