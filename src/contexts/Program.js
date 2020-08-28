@@ -226,19 +226,19 @@ const ProgramProvider = (props) => {
 			let target = program.days[day].sessions[session].presentations[pres]
 			// console.log(`Program.js 227: `, moment(e.start).format())
 			const updatePresTimes = {
+				...target,
 				dateStart: `${moment(e.start).format()}`,
 				dateEnd: `${moment(e.end).format()}`,
 			}
 			// console.log(`Program.js 233: `, target)
-			const glyph = {
-				...program,
-			}
+
+			console.log(`Program.js 236: `, program)
 			program.days[day].sessions[session].presentations.splice(
 				pres,
 				1,
-				target
+				updatePresTimes
 			);
-			// console.log(`Program.js 239: `, program, glyph)
+			console.log(`Program.js 239: `, program)
 			setProgram({ ...program })
 		}
 		switch (t) {
