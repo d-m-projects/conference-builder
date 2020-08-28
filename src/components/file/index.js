@@ -13,29 +13,44 @@ import db from "../../data/database"
 
 import FormManager, { VIEW } from "../forms/FormManager";
 
+import YAML from "yaml";
+import FileSaver from "file-saver";
+
 const { Meta } = Card
 const { RangePicker } = DatePicker;
 
 const File = () => {
-	const [fileman, setFileman] = useState([
-
-	])
-	const program = useContext(ProgramContext);
+  const program = useContext(ProgramContext);
 	const { loadProgram, createProgram } = program
+  
 	const history = useHistory()
 
-	const doEditClick = async (id) => {
+  const [fileman, setFileman] = useState([]);
+
+  const doEditClick = async (id) => {
 		await loadProgram(id)
 		history.push("/review", { initialView: VIEW.REVIEW });
 	}
 
 	const doDownloadClick = async (id) => {
-		console.log(`index.js 28: download click id `, id)
-	}
+    const dbProgramData = await db.read(id);
+    const yamlProgram = YAML.stringify(dbProgramData);
+    
+    const yamlFile = new Blob([yamlProgram], {type: "text/yaml;charset=utf-8"});
 
-	const doYamlCopyClick = async (id) => {
-		console.log(`index.js 28: download click id `, id)
-	}
+    FileSaver.saveAs(yamlFile, `${dbProgramData.name}.yaml`);
+  }
+  
+  const doCopyClick = async (id) => {
+    const dbProgramData = await db.read(id);
+    const yamlProgram = YAML.stringify(dbProgramData);
+
+    navigator.clipboard.writeText(yamlProgram).then(() => {
+      message.success("Program YAML copied to clipboard!");
+    }, () => {
+      message.error("Could not copy yaml program to clipboard, try another browser?");
+    });
+  }
 
 	const onFinish = async (values) => {
 		console.log(`index.js 35: `, values)
@@ -116,7 +131,7 @@ const File = () => {
 									actions={[
 										<EditOutlined onClick={() => doEditClick(item.id)} />,
 										<DownloadOutlined onClick={() => doDownloadClick(item.id)} />,
-										<CopyOutlined onClick={() => doDownloadClick(item.id)} />,
+										<CopyOutlined onClick={() => doCopyClick(item.id)} />,
 									]}
 									title={item.name}
 								>
