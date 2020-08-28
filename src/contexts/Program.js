@@ -217,11 +217,50 @@ const ProgramProvider = (props) => {
 		setProgram(await read);
 	};
 
-	// No longer necessary?
-	// const clearProgram = () => {
-	// 	db.clean();
-	// 	setProgram(defaultProgram);
-	// };
+	function handleDnd(t, e) {
+		const moveSession = (e) => {
+			return
+		}
+		const movePresentation = (e) => {
+			const { day, session, pres } = e.event.origKeys
+			let target = program.days[day].sessions[session].presentations[pres]
+			// console.log(`Program.js 227: `, moment(e.start).format())
+			const updatePresTimes = {
+				dateStart: `${moment(e.start).format()}`,
+				dateEnd: `${moment(e.end).format()}`,
+			}
+			// console.log(`Program.js 233: `, target)
+			const glyph = {
+				...program,
+			}
+			program.days[day].sessions[session].presentations.splice(
+				pres,
+				1,
+				target
+			);
+			// console.log(`Program.js 239: `, program, glyph)
+			setProgram({ ...program })
+		}
+		switch (t) {
+			case "onDragStart":
+				console.log(`onDragStart: `,)
+				break;
+
+			case "onEventDrop":
+				console.log(`onEventDrop: `, e.event.type)
+				const type =
+					e.event.type === "session"
+						? moveSession(e)
+						: movePresentation(e)
+
+				break;
+
+			default:
+				console.log(`handleDnd fallthru ${t}`, e)
+				break;
+		}
+	}
+
 
 	return (
 		<ProgramContext.Provider
@@ -236,6 +275,7 @@ const ProgramProvider = (props) => {
 				createPresentation,
 				addGlobalPresenter,
 				deleteGlobalPresenter,
+				handleDnd,
 				loadProgram,
 				// clearProgram,
 				//Dev Only. call directly in a component when...
@@ -251,33 +291,3 @@ const ProgramProvider = (props) => {
 
 export { ProgramProvider, ProgramContext };
 
-const buildData = (obj) => {
-	if (!obj.dateStart) {
-		return
-	}
-	let data = [];
-	let id = 0
-	for (let day of obj.days) {
-		for (let s of day.sessions) {
-			data.push({
-				id: id,
-				title: s.name,
-				start: s.dateStart,
-				end: s.dateEnd,
-			})
-			id++
-			for (let p of s.presentations) {
-				data.push({
-					id: id,
-					title: p.name,
-					start: p.dateStart,
-					end: p.dateEnd,
-					credits: p.credits,
-					presenters: p.presenters,
-				})
-				id++
-			}
-		}
-	}
-	return data
-}

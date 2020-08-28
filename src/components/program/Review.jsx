@@ -11,19 +11,22 @@ import { VIEW } from "../forms/FormManager";
 // modules
 import moment from "moment";
 import { Calendar, Views, momentLocalizer } from 'react-big-calendar'
-// import localizer from 'react-big-calendar/lib/localizers/globalize'
-// import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
 
+// vars
 const localizer = momentLocalizer(moment)
+const DragAndDropCalendar = withDragAndDrop(Calendar)
+
+// Work
 const Review = (props) => {
 	// Top level of the Review
 	// Renders `Days` and passes down `Sessions` with nested data.
 
 	const [RBCdata, setRBCdata] = useState([])
 	const program = useContext(ProgramContext);
-	const { updateProgram } = program
+	const { handleDnd } = program
 
-	const [startDate, setStartDate] = useState("")
+	const [draggedEvent, setDraggedEvent] = useState({})
 
 	const location = useLocation()
 	let { initialView } = props
@@ -40,85 +43,67 @@ const Review = (props) => {
 	// buildData(program)
 	// console.log(`treedata: `, treeData)
 
-
-	const programdata = (p) => {
-		p.programDateString = `Program Day: ${moment(p.date).format("ddd, MMM Do Y")}`
-		p.programToFrom = `${moment(p.dateStart).format("MMM DD")} - ${moment(p.dateEnd).format("MMM DD")}`
-		return p
+	const eventPropGetter = (e) => {
+		if (e.type === "session") {
+			return {
+				style: {
+					backgroundColor: "#ffffcc",
+					color: "#444",
+				},
+			};
+		}
 	}
 
 	useEffect(() => {
-		setRBCdata(buildData(program))
-		setStartDate(new Date(program.dateStart))
+		setRBCdata(buildData(program))  // for doc on this setState, see buildData() at the bottom of this file.
+		// setStartDate(new Date(program.dateStart))
 	}, [program])
 
 	return (
 		Boolean(RBCdata)  // if this is an array.length 0, it will be `false`
-			? <Calendar
+			? <DragAndDropCalendar
 				events={RBCdata}
 				localizer={localizer}
 				defaultView={"day"}
-				date={startDate}
+				defaultDate={new Date(program.dateStart)}
 				views={["week", "day", "agenda"]}
+
+				eventPropGetter={eventPropGetter}
+				selectable
+				resizable
+				popup={true}
+				onDragStart={e => handleDnd("onDragStart", e)}
+				onEventDrop={e => handleDnd("onEventDrop", e)}
+				onEventResize={e => handleDnd("onEventResize", e)}
+				onSelectSlot={e => handleDnd("onSelectSlot", e)}
+				handleDragStart={e => handleDnd("handleDragStart", e)}
 			/>
 			: <Skeleton />
-		// <div>{console.log(`Review.jsx 58: `, RBCdata, program.dateStart)}</div>
 	)
 };
 
-const Sessions = ({ props }) => {
-	// 2nd level. descendent of `days`.
-	// concerned with `sessions` and passing down `presentations` nested data.
-
-	const sessiondata = (s) => {
-		s.sessionsDateString = `${s.name} Session (${moment(s.dateStart).format("HH:mm")}-${moment(s.dateEnd).format("HH:mm")})`
-		return s
-	}
-	return (
-		<div>
-			<h3>{props.dayHeader}</h3>
-			{props.sessions.map((session, index) => (
-				<div key={index} style={{ marginLeft: "20px" }}>
-					<Presentations props={{ pres: session.presentations, sessionHeader: sessiondata(session).sessionsDateString }} />
-				</div>
-			))}
-
-		</div>
-	)
-}
-
-const Presentations = ({ props }) => {
-	// 3rd level. descendent of `sessions`.
-	// concerned with `presentations` nested data.
-	return (
-		<div>
-			<h4>{props.sessionHeader}</h4>
-			{props.pres.map((pres, index) => (
-				<div key={index} style={{ marginLeft: "20px" }}>
-					<h4 style={{ fontStyle: "oblique" }}>Presentation: {pres.name}</h4>
-					<p key={index}>By: {pres.presenters.join(", ")}</p>
-				</div>
-			))}
-		</div>
-	)
-}
-
 const buildData = (obj) => {
+	// from the original `program` object, 
+	// build an array of objects that is shaped specifically for
+	// react-big-calendar
+
 	if (!obj.dateStart) {
 		return
 	}
 	let data = [];
 	let id = 0
-	for (let day of obj.days) {
-		for (let s of day.sessions) {
+	for (let [i, day] of obj.days.entries()) {
+		for (let [j, s] of day.sessions.entries()) {
 			data.push({
 				id: id,
 				title: s.name,
 				start: new Date(s.dateStart),
 				end: new Date(s.dateEnd),
+				type: "session",
+				origKeys: {day: i, session: j},
 			})
 			id++
-			for (let p of s.presentations) {
+			for (let [k, p] of s.presentations.entries()) {
 				data.push({
 					id: id,
 					title: p.name,
@@ -126,12 +111,33 @@ const buildData = (obj) => {
 					end: new Date(p.dateEnd),
 					credits: p.credits,
 					presenters: p.presenters,
+					type: "presentation",
+					origKeys: { day: i, session: j, pres: k },
 				})
 				id++
 			}
 		}
 	}
+
 	return data
+}
+
+const isBetween = (compare, start, end) => {
+	// all args are dates
+	// checks if `compare` date isBetween `start` date and `end` date
+	// using js Date.getTime() (unix timestamp)
+	// returns boolean
+
+	compare = new Date(compare).getTime
+	start = new Date(start).getTime
+	end = new Date(end).getTime
+
+	console.log(`Review.jsx 115: `, compare, start, end)
+
+	if (compare <= end && compare >= start) {
+		return true
+	}
+	return false
 }
 
 export default Review;
