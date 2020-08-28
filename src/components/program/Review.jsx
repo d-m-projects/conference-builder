@@ -15,7 +15,7 @@ import { VIEW } from "../forms/FormManager";
 
 const treeData = {}
 
-const buildData = (obj, log = "  ") => {
+const origBuildData = (obj, log = "  ") => {
 	let res, key
 
 	for (key in obj)
@@ -39,6 +39,37 @@ const buildData = (obj, log = "  ") => {
 	}
 }
 
+const buildData = (obj) => {
+	if (!obj.dateStart) {
+		return
+	}
+	let data = [];
+	let id = 0
+	for (let day of obj.days) {
+		for (let s of day.sessions) {
+			data.push({
+				id: id,
+				title: s.name,
+				start: s.dateStart,
+				end: s.dateEnd,
+			})
+			id++
+			for (let p of s.presentations) {
+				data.push({
+					id: id,
+					title: p.name,
+					start: p.dateStart,
+					end: p.dateEnd,
+					credits: p.credits,
+					presenters: p.presenters,
+				})
+				id++
+			}
+		}
+	}
+	return data
+}
+
 const Review = (props) => {
 	// Top level of the Review
 	// Renders `Days` and passes down `Sessions` with nested data.
@@ -59,7 +90,7 @@ const Review = (props) => {
 	if (!program.dateStart) {
 		program.injectTestData()
 	}
-	
+
 	// buildData(program)
 	// console.log(`treedata: `, treeData)
 
@@ -69,6 +100,9 @@ const Review = (props) => {
 		p.programToFrom = `${moment(p.dateStart).format("MMM DD")} - ${moment(p.dateEnd).format("MMM DD")}`
 		return p
 	}
+
+	const RBCdata = buildData(program)
+	console.log(`Review.jsx 100: `, RBCdata)
 
 	return (
 		program.dateStart
