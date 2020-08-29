@@ -24,11 +24,9 @@ const ProgramProvider = (props) => {
 	const [program, setProgram] = useState(defaultProgram);
 
 	useEffect(() => {
-		conlog("Context Changed", program);
 		if (program.id && program.dateStart) {
 			db.update(program)
 				.then((x) => {
-					// program.id = x
 					console.log("Context > DB Updated ", x);
 				})
 				.catch((err) => {
@@ -60,6 +58,11 @@ const ProgramProvider = (props) => {
       selectedSessionId: 0,
       globalPresenters: []
 		});
+	};
+
+	const updateProgram = (program) => {
+		console.log(`Program.js 62: `, program.days)
+		setProgram(program)
 	};
 
 	const createSession = (newSession) => {
@@ -210,28 +213,122 @@ const ProgramProvider = (props) => {
 		setProgram(await read);
 	};
 
-	// No longer necessary?
-	// const clearProgram = () => {
-	// 	db.clean();
-	// 	setProgram(defaultProgram);
-	// };
+	function handleDnd(t, e) {
+		const moveSession = (e) => {
+			const { day, session } = e.event.origKeys
+			let target = program.days[day].sessions[session]
+
+			if (!rangeCheck(e)) { return }
+
+			const updateSessionTimes = {
+				...target,
+				dateStart: `${moment(e.start).format()}`,
+				dateEnd: `${moment(e.end).format()}`,
+			}
+
+			program.days[day].sessions.splice(
+				session,
+				1,
+				updateSessionTimes
+			);
+
+			setProgram({ ...program })
+		}
+
+		const movePresentation = (e) => {
+			const { day, session, pres } = e.event.origKeys
+			let target = program.days[day].sessions[session].presentations[pres]
+
+			if (!rangeCheck(e)) { return }
+
+			const updatePresTimes = {
+				...target,
+				dateStart: `${moment(e.start).format()}`,
+				dateEnd: `${moment(e.end).format()}`,
+			}
+			program.days[day].sessions[session].presentations.splice(
+				pres,
+				1,
+				updatePresTimes
+			);
+
+			setProgram({ ...program })
+		}
+
+		const rangeCheck = (e) => {
+			const { type, origKeys: { day, session, pres } } = e.event
+			const dayRange = [program.dateStart, program.dateEnd]
+			const sessionRange = []
+
+			for (const pDay of program.days) {
+				for (const pSession of pDay.sessions) {
+					sessionRange.push([pSession.dateStart, pSession.dateEnd])
+				}
+			}
+
+			if (type === "session") {
+				const chkStart =
+					moment(e.start)
+						.isBetween(dayRange[0], dayRange[1], "day", "[]")
+				const chkEnd =
+					moment(e.end)
+						.isBetween(dayRange[0], dayRange[1], "day", "[]")
+				if (chkStart && chkEnd) return true;
+			}
+
+			if (type === "presentation") {
+				for (const range of sessionRange) {
+					const chkStart =
+						moment(e.start)
+							.isBetween(range[0], range[1], "minute", "[]")
+					const chkEnd =
+						moment(e.end)
+							.isBetween(range[0], range[1], "minute", "[]")
+					if (chkStart && chkEnd) return true;
+				}
+			}
+			return false
+		}
+
+		switch (t) {
+			case "onDragStart":
+				// console.log(`onDragStart: `, e)
+				break;
+
+			case "onEventDrop":
+				// console.log(`onEventDrop: `, e.event.type)
+				const type =
+					e.event.type === "session"
+						? moveSession(e)
+						: movePresentation(e)
+
+				break;
+
+			default:
+				console.log(`handleDnd fallthru ${t}`, e)
+				break;
+		}
+	}
+
 
 	return (
 		<ProgramContext.Provider
 			value={{
 				...program,
 				createProgram,
+				updateProgram,
 				createSession,
 				getSessionById,
         createPresentation,
         getNextPresenterId,
 				addGlobalPresenter,
 				deleteGlobalPresenter,
+				handleDnd,
 				loadProgram,
 				// clearProgram,
 				//Dev Only. call directly in a component when...
 				// ...you need a DB entry.
-				injectDB, 
+				injectDB,
 				// ...you need test data in your component.
 				injectTestData,
 			}}>
@@ -242,15 +339,3 @@ const ProgramProvider = (props) => {
 
 export { ProgramProvider, ProgramContext };
 
-function conlog() {
-	const show = false
-	if (show) {
-		console.log("__Program_")
-		for (const arg in arguments) {
-			console.dir(arguments[arg]);
-		}
-		console.log("^^^^^^^^^^")
-	}
-}
-
-// use var here to ensure hoisting
