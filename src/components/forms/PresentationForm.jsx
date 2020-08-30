@@ -35,7 +35,6 @@ function PresentationForm(props) {
   // Friendly strings for list to render credits
   const [creditsList, setCreditsList] = useState([]);
 
-  // Modal
   const [modalVisible, setModalVisible] = useState(false);
 
   // Drawer
@@ -51,8 +50,6 @@ function PresentationForm(props) {
     });
 
     form.setFieldsValue({ presenter: "", presenterList: names });
-
-    console.log("Local Presenter List", presenters);
   }, [presenters]);
 
   useEffect(() => {
@@ -118,12 +115,17 @@ function PresentationForm(props) {
 
         form.resetFields();
       } else {
-        message.error("Presentation date range is outside the bounds of current session.", 5);
+        const {dateStart, dateEnd} = getSessionById(selectedSessionId);
+
+        const sessionStart = moment(dateStart).format("HH:mm")
+        const sessionEnd = moment(dateEnd).format("HH:mm")
+
+        message.error(`Presentation time range must be between ${sessionStart}-${sessionEnd}`, 5);
 
         form.setFields([
           {
             name: "presentationLength",
-            errors: ["Date range outside bounds of current session."],
+            errors: [`Time selected outside range of session (${sessionStart}-${sessionEnd})`],
           },
         ]);
       }
@@ -141,7 +143,6 @@ function PresentationForm(props) {
 
       setPresenters([...presenters, { name: presenter, id: String(getNextPresenterId()) }]);
 
-      console.log("Add presenter local & global", presenter);
       addGlobalPresenter(presenter);
     } else {
       form.setFields([
@@ -212,14 +213,11 @@ function PresentationForm(props) {
       3. Inc next id
     */
 
-    console.log("Select presenter", presenter);
-
     setPresenters([...presenters, { name: presenter, id: String(getNextPresenterId()) }]);
     addGlobalPresenter(presenter);
   };
 
   const deselectPresenter = (presenter) => {
-    console.log("deselect presenter", presenter);
     /*
       1. Remove from global list if applicable
       2. Remove from presentation
@@ -283,29 +281,6 @@ function PresentationForm(props) {
     const programEnd = moment(session.dateEnd).hour(0).minute(0).second(0).millisecond(0);
     
     return formattedDate.isBefore(programStart) || formattedDate.isAfter(programEnd);
-  }
-
-  function range(start, end) {
-    const result = [];
-    for (let i = start; i < end; i++) {
-      result.push(i);
-    }
-    return result;
-  }
-
-  const disabledTime = (_, type) => {
-    if (type === 'start') {
-      return {
-        disabledHours: () => range(0, 60).splice(4, 20),
-        disabledMinutes: () => range(30, 60),
-        // disabledSeconds: () => [55, 56],
-      };
-    }
-    return {
-      disabledHours: () => range(0, 60).splice(20, 4),
-      disabledMinutes: () => range(0, 31),
-      // disabledSeconds: () => [55, 56],
-    };
   }
 
   return (
@@ -385,7 +360,7 @@ function PresentationForm(props) {
             label="Presentation Start & End Times"
             name="presentationLength"
             rules={[{ required: true, message: "Input a time range for this presentation." }]}>
-            <RangePicker disabledDate={disabledDate} disabledTime={disabledTime} showTime={{ format: "HH:mm" }} format="YYYY-MM-DD HH:mm" minuteStep={5} />
+            <RangePicker disabledDate={disabledDate} showTime={{ format: "HH:mm" }} format="YYYY-MM-DD HH:mm" minuteStep={5} />
           </Form.Item>
 
           {/* PRESENTER INPUT */}
