@@ -66,7 +66,7 @@ function PresentationForm(props) {
     const isValidPresentationDateRange = (start, end) => {
       const session = getSessionById(selectedSessionId);
 
-      if (start.isBefore(moment(session.dateStart)) || end.isAfter(moment(session.dateEnd))) {
+      if (start.isBefore(session.dateStart) || end.isAfter(session.dateEnd)) {
         return false;
       }
       return true;
@@ -115,10 +115,10 @@ function PresentationForm(props) {
 
         form.resetFields();
       } else {
-        const {dateStart, dateEnd} = getSessionById(selectedSessionId);
+        const { dateStart, dateEnd } = getSessionById(selectedSessionId);
 
-        const sessionStart = moment(dateStart).format("HH:mm")
-        const sessionEnd = moment(dateEnd).format("HH:mm")
+        const sessionStart = moment(dateStart).format("HH:mm");
+        const sessionEnd = moment(dateEnd).format("HH:mm");
 
         message.error(`Presentation time range must be between ${sessionStart}-${sessionEnd}`, 5);
 
@@ -276,12 +276,12 @@ function PresentationForm(props) {
     const session = getSessionById(selectedSessionId);
 
     const formattedDate = moment(date).hour(0).minute(0).second(0).millisecond(0);
-    
+
     const programStart = moment(session.dateStart).hour(0).minute(0).second(0).millisecond(0);
     const programEnd = moment(session.dateEnd).hour(0).minute(0).second(0).millisecond(0);
-    
+
     return formattedDate.isBefore(programStart) || formattedDate.isAfter(programEnd);
-  }
+  };
 
   return (
     <>
@@ -360,7 +360,12 @@ function PresentationForm(props) {
             label="Presentation Start & End Times"
             name="presentationLength"
             rules={[{ required: true, message: "Input a time range for this presentation." }]}>
-            <RangePicker disabledDate={disabledDate} showTime={{ format: "HH:mm" }} format="YYYY-MM-DD HH:mm" minuteStep={5} />
+            <RangePicker
+              disabledDate={disabledDate}
+              showTime={{ format: "HH:mm" }}
+              format="YYYY-MM-DD HH:mm"
+              minuteStep={5}
+            />
           </Form.Item>
 
           {/* PRESENTER INPUT */}

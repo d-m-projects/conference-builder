@@ -20,16 +20,11 @@ function SessionForm(props) {
   const [form] = Form.useForm();
 
   const disabledDate = (date) => {
-    const formattedDate = moment(date).hour(0).minute(0).second(0).millisecond(0);
-
-    const programStart = moment(program.dateStart).hour(0).minute(0).second(0).millisecond(0);
-    const programEnd = moment(program.dateEnd).hour(0).minute(0).second(0).millisecond(0);
-
-    return formattedDate.isBefore(programStart) || formattedDate.isAfter(programEnd);
+    return date.isBefore(program.dateStart, "day") || date.isAfter(program.dateEnd, "day");
   };
 
   const validSessionDateRange = (start, end) => {
-    if (start.isBefore(moment(program.dateStart)) || end.isAfter(moment(program.dateEnd))) {
+    if (start.isBefore(program.dateStart) || end.isAfter(program.dateEnd)) {
       return false;
     }
     return true;
@@ -58,21 +53,21 @@ function SessionForm(props) {
 
       form.resetFields();
     } else {
-      const programStart = moment(program.dateStart).format("HH:mm");
-      const programEnd = moment(program.dateEnd).format("HH:mm");
+      const programStartTime = moment(program.dateStart).format("HH:mm");
+      const programEndTime = moment(program.dateEnd).format("HH:mm");
 
       let fieldErrorText = [""];
 
       if (start.dayOfYear() === moment(program.dateStart).dayOfYear()) {
         // Session time starts before program starts :(
-        message.error(`Session time must start on or after program start time (${programStart}).`, 5);
+        message.error(`Session time must start on or after program start time (${programStartTime}).`, 5);
 
-        fieldErrorText = [`Time selected is before program start time (${programStart})`];
+        fieldErrorText = [`Time selected is before program start time (${programStartTime})`];
       } else {
         // Session time exceeds program end time! Doh!
-        message.error(`Session time must end on or before program end time (${programEnd}).`, 5);
+        message.error(`Session time must end on or before program end time (${programEndTime}).`, 5);
 
-        fieldErrorText = [`Time selected is past program end time (${programEnd})`];
+        fieldErrorText = [`Time selected is past program end time (${programEndTime})`];
       }
 
       form.setFields([
