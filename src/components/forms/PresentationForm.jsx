@@ -274,6 +274,40 @@ function PresentationForm(props) {
     setPresenters(orderedPresenters);
   };
 
+  const disabledDate = (date) => {
+    const session = getSessionById(selectedSessionId);
+
+    const formattedDate = moment(date).hour(0).minute(0).second(0).millisecond(0);
+    
+    const programStart = moment(session.dateStart).hour(0).minute(0).second(0).millisecond(0);
+    const programEnd = moment(session.dateEnd).hour(0).minute(0).second(0).millisecond(0);
+    
+    return formattedDate.isBefore(programStart) || formattedDate.isAfter(programEnd);
+  }
+
+  function range(start, end) {
+    const result = [];
+    for (let i = start; i < end; i++) {
+      result.push(i);
+    }
+    return result;
+  }
+
+  const disabledTime = (_, type) => {
+    if (type === 'start') {
+      return {
+        disabledHours: () => range(0, 60).splice(4, 20),
+        disabledMinutes: () => range(30, 60),
+        // disabledSeconds: () => [55, 56],
+      };
+    }
+    return {
+      disabledHours: () => range(0, 60).splice(20, 4),
+      disabledMinutes: () => range(0, 31),
+      // disabledSeconds: () => [55, 56],
+    };
+  }
+
   return (
     <>
       {/* UI Flow Modal for jumping to review program or add additional presentation */}
@@ -351,7 +385,7 @@ function PresentationForm(props) {
             label="Presentation Start & End Times"
             name="presentationLength"
             rules={[{ required: true, message: "Input a time range for this presentation." }]}>
-            <RangePicker showTime={{ format: "HH:mm" }} format="YYYY-MM-DD HH:mm" minuteStep={5} />
+            <RangePicker disabledDate={disabledDate} disabledTime={disabledTime} showTime={{ format: "HH:mm" }} format="YYYY-MM-DD HH:mm" minuteStep={5} />
           </Form.Item>
 
           {/* PRESENTER INPUT */}

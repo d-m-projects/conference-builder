@@ -14,14 +14,22 @@ function SessionForm(props) {
 
   const program = useContext(ProgramContext);
   const { createSession } = program;
-  const programDateRange = [program.dateStart, program.dateEnd];
 
   const [modalVisible, setModalVisible] = useState(false);
 
   const [form] = Form.useForm();
 
+  const disabledDate = (date) => {
+    const formattedDate = moment(date).hour(0).minute(0).second(0).millisecond(0);
+    
+    const programStart = moment(program.dateStart).hour(0).minute(0).second(0).millisecond(0);
+    const programEnd = moment(program.dateEnd).hour(0).minute(0).second(0).millisecond(0);
+    
+    return formattedDate.isBefore(programStart) || formattedDate.isAfter(programEnd);
+  }
+
   const validSessionDateRange = (start, end) => {
-    if (start.isBefore(moment(programDateRange[0])) || end.isAfter(moment(programDateRange[1]))) {
+    if (start.isBefore(moment(program.dateStart)) || end.isAfter(moment(program.dateEnd))) {
       return false;
     }
     return true;
@@ -86,7 +94,7 @@ function SessionForm(props) {
             label="Session Start & End Dates"
             name="sessionLength"
             rules={[{ required: true, message: "Input a date range for this session." }]}>
-            <RangePicker showTime={{ format: "HH:mm" }} format="YYYY-MM-DD HH:mm" minuteStep={5} />
+            <RangePicker disabledDate={disabledDate} showTime={{ format: "HH:mm" }}  minuteStep={5} />
           </Form.Item>
 
           {/* SUBMIT */}
