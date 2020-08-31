@@ -46,6 +46,16 @@ db.insert = (data) => {
 		})
 }
 
+db.delete = (id) => {
+	return db.programs.delete(id)
+		.then(() => {
+			conlog(">>> DB ID Deleted (returns `undefined`):", id)
+		})
+		.catch((err) => {
+			console.error(">>> DB ID Delete error", id, err)
+		})
+}
+
 db.update = (data) => {
 	const dataString = JSON.parse(JSON.stringify(data))
 	return db.programs.put(dataString)
