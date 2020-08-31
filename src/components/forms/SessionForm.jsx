@@ -104,7 +104,12 @@ function SessionForm(props) {
             label="Session Start & End Dates"
             name="sessionLength"
             rules={[{ required: true, message: "Input a date range for this session." }]}>
-            <RangePicker disabledDate={disabledDate} showTime={{ format: "HH:mm" }} minuteStep={5} />
+            <RangePicker
+              disabledDate={disabledDate}
+              showTime={{ format: "HH:mm" }}
+              format="YYYY-MM-DD HH:mm"
+              minuteStep={5}
+            />
           </Form.Item>
 
           {/* SUBMIT */}
