@@ -7,6 +7,7 @@ import PresenterDnD from "./PresenterDnD";
 import PresenterInput from "./PresenterInput";
 import CreditInput from "./CreditInput";
 
+import { Row, Col, Divider } from "antd";
 import { Form, Input, Button, DatePicker, message } from "antd";
 
 const { RangePicker } = DatePicker;
@@ -133,28 +134,39 @@ function PresentationForm(props) {
         }}
         onFinish={formSubmit}
         autoComplete="off"
-        layout={"vertical"}
         hideRequiredMark>
         {/* PRESENTATION NAME */}
-        <Form.Item
-          label="Presentation Name"
-          name="presentationName"
-          rules={[{ required: true, message: "Input a name for this presentation." }]}>
-          <Input />
-        </Form.Item>
+        <Row>
+          <Col span={24}>
+            <Form.Item
+              label="Presentation Name"
+              labelCol={{ span: 24 }}
+              name="presentationName"
+              rules={[{ required: true, message: "Input a name for this presentation." }]}>
+              <Input />
+            </Form.Item>
+          </Col>
+        </Row>
 
         {/* PRESENTATION TIME RANGE */}
-        <Form.Item
-          label="Presentation Start & End Times"
-          name="presentationLength"
-          rules={[{ required: true, message: "Input a time range for this presentation." }]}>
-          <RangePicker
-            disabledDate={disabledDate}
-            showTime={{ format: "HH:mm" }}
-            format="YYYY-MM-DD HH:mm"
-            minuteStep={5}
-          />
-        </Form.Item>
+        <Row>
+          <Col span={24}>
+            <Form.Item
+              label="Presentation Start & End Times"
+              labelCol={{ span: 24 }}
+              name="presentationLength"
+              rules={[{ required: true, message: "Input a time range for this presentation." }]}>
+              <RangePicker
+                disabledDate={disabledDate}
+                showTime={{ format: "HH:mm" }}
+                format="YYYY-MM-DD HH:mm"
+                minuteStep={5}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Divider />
 
         {/* PRESENTER SUB-COMPONENT */}
         <PresenterInput
@@ -163,6 +175,8 @@ function PresentationForm(props) {
           setPresenters={setPresenters}
           setDrawerVisible={setDrawerVisible}
         />
+
+        <Divider />
 
         {/* CREDIT SUB-COMPONENT */}
         <CreditInput
@@ -173,12 +187,18 @@ function PresentationForm(props) {
           setCreditsList={setCreditsList}
         />
 
+        <Divider />
+
         {/* SUBMIT */}
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Add Presentation
-          </Button>
-        </Form.Item>
+        <Row>
+          <Col span={24}>
+            <Form.Item>
+              <Button type="primary" htmlType="submit">
+                Add Presentation
+              </Button>
+            </Form.Item>
+          </Col>
+        </Row>
       </Form>
     </div>
   );

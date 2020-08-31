@@ -34,8 +34,9 @@ function PresenterDnD(props) {
   const getDraggableItemStyle = (isDragging, draggableStyle) => ({
     // some basic styles to make the items look a bit nicer
     userSelect: "none",
-    padding: 16,
+    padding: 10,
     marginBottom: 16,
+    textAlign: "center",
 
     // change background colour if dragging
     background: isDragging ? "lightgreen" : "white",

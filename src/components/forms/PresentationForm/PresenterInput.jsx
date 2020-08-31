@@ -1,6 +1,7 @@
 import React, { useEffect, useContext } from "react";
 import { ProgramContext } from "../../../contexts/Program";
 
+import { Row, Col } from "antd";
 import { Form, Input, Button, Select } from "antd";
 const { Option } = Select;
 
@@ -67,36 +68,57 @@ function PresenterInput(props) {
   return (
     <>
       {/* PRESENTER INPUT */}
-      <Form.Item label="Presenter" name="presenter">
-        <Input />
-      </Form.Item>
+      <Row gutter={0}>
+        <Col span={24}>
+          {/* I'M NOT PROUD OF THIS... */}
+          <Form.Item label="Presenter" colon={false} style={{ margin: "10px 0" }}></Form.Item>
+        </Col>
+      </Row>
 
-      {/* PRESENTER BUTTONS */}
-      <Form.Item>
-        <Button type="primary" htmlType="button" onClick={addPresenter}>
-          Add Presenter
-        </Button>
-        <Button type="primary" htmlType="button" onClick={() => setDrawerVisible(true)}>
-          Re-order Presenters
-        </Button>
-      </Form.Item>
+      <Row gutter={16}>
+        <Col span={16}>
+          <Form.Item name="presenter">
+            <Input />
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Button type="primary" htmlType="button" onClick={addPresenter}>
+            Add Presenter
+          </Button>
+        </Col>
+      </Row>
 
       {/* PRESENTER LIST */}
-      <Form.Item label="Current Presenter List" name="presenterList">
-        <Select
-          mode="multiple"
-          onSelect={selectPresenter}
-          onDeselect={deselectPresenter}
-          placeholder="Presenters previously used can be selected here.">
-          {globalPresenters.map((presenter, idx) => {
-            return (
-              <Option key={idx} value={presenter}>
-                {presenter}
-              </Option>
-            );
-          })}
-        </Select>
-      </Form.Item>
+      <Row>
+        <Col span={24}>
+          <Form.Item label="Current Presenter List" labelCol={{ span: 24 }} name="presenterList">
+            <Select
+              mode="multiple"
+              onSelect={selectPresenter}
+              onDeselect={deselectPresenter}
+              placeholder="Presenters previously used can be selected here.">
+              {globalPresenters.map((presenter, idx) => {
+                return (
+                  <Option key={idx} value={presenter}>
+                    {presenter}
+                  </Option>
+                );
+              })}
+            </Select>
+          </Form.Item>
+        </Col>
+      </Row>
+
+      {/* PRESENTER BUTTONS */}
+      <Row>
+        <Col span={24}>
+          <Form.Item>
+            <Button type="primary" htmlType="button" onClick={() => setDrawerVisible(true)}>
+              Re-order Presenters
+            </Button>
+          </Form.Item>
+        </Col>
+      </Row>
     </>
   );
 }

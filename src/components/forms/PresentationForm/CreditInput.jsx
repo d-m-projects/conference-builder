@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 
+import { Row, Col } from "antd";
 import { Form, Input, Button, Select } from "antd";
 const { Option } = Select;
 
@@ -61,33 +62,47 @@ function CreditInput(props) {
   };
 
   return (
-    <div>
-      <Form.Item label="Credit Type" name="creditType">
-        <Input />
-      </Form.Item>
-      <Form.Item label="Credit Amount" name="creditAmount">
-        <Input type="number" />
-      </Form.Item>
+    <>
+      <Row gutter={16}>
+        <Col span={16}>
+          <Form.Item label="Credit Type" labelCol={{ span: 24 }} name="creditType">
+            <Input />
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item label="Credit Amount" labelCol={{ span: 24 }} name="creditAmount">
+            <Input type="number" />
+          </Form.Item>
+        </Col>
+      </Row>
 
-      <Form.Item>
-        <Button type="primary" htmlType="button" onClick={addCredit}>
-          Add Credit
-        </Button>
-      </Form.Item>
+      <Row>
+        <Col span={24}>
+          <Form.Item>
+            <Button type="primary" htmlType="button" onClick={addCredit}>
+              Add Credit
+            </Button>
+          </Form.Item>
+        </Col>
+      </Row>
 
       {/* CREDIT LIST */}
-      <Form.Item label="Current Credits" name="creditList">
-        <Select mode="multiple" onChange={removeCredit} placeholder="Credits will display here as they are added.">
-          {creditsList.map((credit, idx) => {
-            return (
-              <Option key={idx} value={credit}>
-                {credit}
-              </Option>
-            );
-          })}
-        </Select>
-      </Form.Item>
-    </div>
+      <Row>
+        <Col span={24}>
+          <Form.Item label="Current Credits" labelCol={{ span: 24 }} name="creditList">
+            <Select mode="multiple" onChange={removeCredit} placeholder="Credits will display here as they are added.">
+              {creditsList.map((credit, idx) => {
+                return (
+                  <Option key={idx} value={credit}>
+                    {credit}
+                  </Option>
+                );
+              })}
+            </Select>
+          </Form.Item>
+        </Col>
+      </Row>
+    </>
   );
 }
 
