@@ -3,13 +3,12 @@ import { ProgramContext } from "../../contexts/Program";
 import { useHistory } from "react-router-dom";
 
 // antd components
-import { Row, Col, DatePicker, message, Card, Form, Input, Space, Button } from "antd";
-import { EditOutlined, DownloadOutlined, DoubleRightOutlined, CopyOutlined } from '@ant-design/icons';
+import { Row, Col, DatePicker, message, Card, Form, Input, Space, Button, Modal } from "antd";
+import { EditOutlined, DownloadOutlined, DoubleRightOutlined, CopyOutlined, DeleteTwoTone, ExclamationCircleOutlined } from '@ant-design/icons';
 
 import * as dates from "date-arithmetic";
 import moment from "moment";
 import db from "../../data/database"
-// import data from "./data" // test data for scaffold
 
 import { VIEW } from "../forms/FormManager";
 
@@ -18,39 +17,73 @@ import FileSaver from "file-saver";
 
 const { Meta } = Card
 const { RangePicker } = DatePicker;
+const { confirm } = Modal
 
 const File = () => {
-  const program = useContext(ProgramContext);
+	const program = useContext(ProgramContext);
 	const { loadProgram, createProgram } = program
-  
+
 	const history = useHistory()
 
-  const [fileman, setFileman] = useState([]);
+	const [fileman, setFileman] = useState([]);
+	const [deleted, setDeleted] = useState(false); // trigger useEffect rerender when a program is deleted
 
-  const doEditClick = async (id) => {
+	const doEditClick = async (id) => {
 		await loadProgram(id)
 		history.push("/review", { initialView: VIEW.REVIEW });
 	}
 
 	const doDownloadClick = async (id) => {
-    const dbProgramData = await db.read(id);
-    const yamlProgram = YAML.stringify(dbProgramData);
-    
-    const yamlFile = new Blob([yamlProgram], {type: "text/yaml;charset=utf-8"});
+		const dbProgramData = await db.read(id);
+		const yamlProgram = YAML.stringify(dbProgramData);
 
-    FileSaver.saveAs(yamlFile, `${dbProgramData.name}.yaml`);
-  }
-  
-  const doCopyClick = async (id) => {
-    const dbProgramData = await db.read(id);
-    const yamlProgram = YAML.stringify(dbProgramData);
+		const yamlFile = new Blob([yamlProgram], { type: "text/yaml;charset=utf-8" });
 
-    navigator.clipboard.writeText(yamlProgram).then(() => {
-      message.success("Program YAML copied to clipboard!");
-    }, () => {
-      message.error("Could not copy yaml program to clipboard, try another browser?");
-    });
-  }
+		FileSaver.saveAs(yamlFile, `${dbProgramData.name}.yaml`);
+	}
+
+	const doCopyClick = async (id) => {
+		const dbProgramData = await db.read(id);
+		const yamlProgram = YAML.stringify(dbProgramData);
+
+		navigator.clipboard.writeText(yamlProgram).then(() => {
+			message.success("Program YAML copied to clipboard!");
+		}, () => {
+			message.error("Could not copy yaml program to clipboard, try another browser?");
+		});
+	}
+
+	const doDelete = (props) => {
+		console.log(`Request to delete program from DB: `, props.name, props)
+
+		const ModalDeleteText = (props) => {
+			return (
+				<>
+					<p>You are about to delete this program and all associated data. This is <em><strong>irreversible!</strong></em></p>
+					<p>Are you sure?</p>
+					<Card title={props.item.name}>
+						<p>Begin: {moment(props.item.dateStart).format("ddd, MMM Do Y")}</p>
+						<p>End: {moment(props.item.dateEnd).format("ddd, MMM Do Y")}</p>
+					</Card>
+				</>)
+		}
+
+		confirm({
+			title: "Delete this program?",
+			icon: <ExclamationCircleOutlined />,
+			content: <ModalDeleteText item={props} />,
+			okText: "Delete",
+			okType: "danger",
+			cancelText: "Cancel",
+			onOk() {
+				db.delete(props.id)
+				setDeleted(true)
+			},
+			onCancel() {
+				console.log(`Delete Request CANCELLED.`,)
+			}
+		})
+	}
 
 	const onFinish = async (values) => {
 		console.log(`index.js 35: `, values)
@@ -75,19 +108,25 @@ const File = () => {
 		message.success(`Program '${values.programName}' Started!`);
 	}
 
-	useEffect(() => {
+	const getall = async () => {
 		const defaultFileman = {
 			name: "",
 			dateStart: null,
 			dateEnd: null,
 		}
-		const getall = async () => {
-			let ret = await db.readAll()
-			ret.sort((x, y) => (x.name > y.name) ? 1 : -1)
-			setFileman([defaultFileman, ...ret])
-		}
+		let ret = await db.readAll()
+		ret.sort((x, y) => (x.name > y.name) ? 1 : -1)
+		setDeleted(false)
+		setFileman([defaultFileman, ...ret])
+	}
+
+	useEffect(() => {
 		getall()
 	}, [])
+
+	useEffect(() => {
+		getall()
+	}, [deleted])
 
 	const CreateCard = () => {
 		return (
@@ -134,6 +173,7 @@ const File = () => {
 										<CopyOutlined onClick={() => doCopyClick(item.id)} />,
 									]}
 									title={item.name}
+									extra={<DeleteTwoTone onClick={() => doDelete(item)} twoToneColor="red" />}
 								>
 									<p>Begin: {moment(item.dateStart).format("ddd, MMM Do Y")}</p>
 									<p>End: {moment(item.dateEnd).format("ddd, MMM Do Y")}</p>
