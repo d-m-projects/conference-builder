@@ -48,8 +48,8 @@ db.insert = (data) => {
 
 db.delete = (id) => {
 	return db.programs.delete(id)
-		.then(() => {
-			conlog(">>> DB ID Deleted (returns `undefined`):", id)
+		.then((ret) => {
+			conlog(">>> DB ID Deleted (returns `undefined`):", ret)
 		})
 		.catch((err) => {
 			console.error(">>> DB ID Delete error", id, err)
