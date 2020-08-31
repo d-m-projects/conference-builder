@@ -176,7 +176,7 @@ export const injection = {
 							}
 						}
 					],
-					id: 0,
+					id: 2,
 				},
 				{
 					name: "Parallelism",
@@ -195,7 +195,7 @@ export const injection = {
 							}
 						}
 					],
-					id: 1,
+					id: 3,
 				}
 			]
 		},		{
@@ -221,7 +221,11 @@ export const injection = {
 		"Helaina Pittaway",
 		"Zita Kelsall",
 		"Sande Denial"
-	]
+  ],
+  nextSessionId: 4,
+  nextPresenterId: 0,
+  selectedSessionId: 0,
+
 }
 
 export default injection

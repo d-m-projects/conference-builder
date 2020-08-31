@@ -14,14 +14,17 @@ function SessionForm(props) {
 
   const program = useContext(ProgramContext);
   const { createSession } = program;
-  const programDateRange = [program.dateStart, program.dateEnd];
 
   const [modalVisible, setModalVisible] = useState(false);
 
   const [form] = Form.useForm();
 
+  const disabledDate = (date) => {
+    return date.isBefore(program.dateStart, "day") || date.isAfter(program.dateEnd, "day");
+  };
+
   const validSessionDateRange = (start, end) => {
-    if (start.isBefore(moment(programDateRange[0])) || end.isAfter(moment(programDateRange[1]))) {
+    if (start.isBefore(program.dateStart) || end.isAfter(program.dateEnd)) {
       return false;
     }
     return true;
@@ -50,12 +53,27 @@ function SessionForm(props) {
 
       form.resetFields();
     } else {
-      message.error("Session date range is outside the bounds of current program.", 5);
+      const programStartTime = moment(program.dateStart).format("HH:mm");
+      const programEndTime = moment(program.dateEnd).format("HH:mm");
+
+      let fieldErrorText = [""];
+
+      if (start.dayOfYear() === moment(program.dateStart).dayOfYear()) {
+        // Session time starts before program starts :(
+        message.error(`Session time must start on or after program start time (${programStartTime}).`, 5);
+
+        fieldErrorText = [`Time selected is before program start time (${programStartTime})`];
+      } else {
+        // Session time exceeds program end time! Doh!
+        message.error(`Session time must end on or before program end time (${programEndTime}).`, 5);
+
+        fieldErrorText = [`Time selected is past program end time (${programEndTime})`];
+      }
 
       form.setFields([
         {
           name: "sessionLength",
-          errors: ["Date range outside bounds of current program."],
+          errors: fieldErrorText,
         },
       ]);
     }
@@ -86,7 +104,12 @@ function SessionForm(props) {
             label="Session Start & End Dates"
             name="sessionLength"
             rules={[{ required: true, message: "Input a date range for this session." }]}>
-            <RangePicker showTime={{ format: "HH:mm" }} format="YYYY-MM-DD HH:mm" minuteStep={5} />
+            <RangePicker
+              disabledDate={disabledDate}
+              showTime={{ format: "HH:mm" }}
+              format="YYYY-MM-DD HH:mm"
+              minuteStep={5}
+            />
           </Form.Item>
 
           {/* SUBMIT */}
