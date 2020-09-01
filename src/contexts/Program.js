@@ -96,9 +96,10 @@ const ProgramProvider = (props) => {
 						// console.log(program.selectedSessionId, "Context modified", session.name , "=>", sessionData.name)
 						return {
 							...session,
-							name: sessionData.name,
-							dateStart: sessionData.dateStart,
-							dateEnd: sessionData.dateEnd
+							...sessionData
+							// name: sessionData.name,
+							// dateStart: sessionData.dateStart,
+							// dateEnd: sessionData.dateEnd
 						}
 					}
 					return session;

@@ -26,6 +26,7 @@ const Agenda = (props) => {
 
 	// State for dynamic item list
 	const [itemList, setItemList] = useState([]);
+	const [single, setSingle] = useState({});
 
 	// Drawer
 	const [drawerVisible, setDrawerVisible] = useState(false);
@@ -36,6 +37,7 @@ const Agenda = (props) => {
 	location.state ? initialView = location.state.initialView : initialView = VIEW.PROGRAM
 
 	const program = useContext(ProgramContext);
+	const { editSession } = program
 
 	// DEV ONLY (by darrin)
 	// if `program` is empty, fill it with example data for visualization.
@@ -45,8 +47,8 @@ const Agenda = (props) => {
 	// 	program.injectTestData()
 	// }
 
-	const doReorder = (list) => {
-		console.log(`Agenda.jsx 49: `, list)
+	const doReorder = (list, one) => {
+		setSingle(one)
 		setItemList(list)
 		setDrawerVisible(true)
 	}
@@ -58,6 +60,10 @@ const Agenda = (props) => {
 		)
 	}
 
+	useEffect(() => {
+		console.log(`Agenda.jsx 62: useEffect `, single.presentations)
+	}, [itemList])
+
 	return (
 		program.dateStart
 			? <>
@@ -66,6 +72,7 @@ const Agenda = (props) => {
 					setVisible={setDrawerVisible}
 					itemList={itemList}
 					setItemList={setItemList}
+					single={single}
 				/>
 				<Card title={program.name} extra={programdata(program)}>
 					<Table className="program-agenda" showHeader={false} size="small" dataSource={program.days} pagination={false} key={moment().unix()}>
@@ -112,7 +119,7 @@ const Sessions = ({ visible, setVisible, itemList, setItemList, doReorder, singl
 						<Space size={16}>
 							<p>Session: {sessiondata(single).sessionsDateString}</p>
 							<Button size="small" onClick={
-								() => doReorder(single.presentations)
+								() => doReorder(single.presentations, single)
 							}>
 								<UnorderedListOutlined />
 							</Button>

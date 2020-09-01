@@ -140,6 +140,7 @@ const Review = (props) => {
 	useEffect(() => {
 		setRBCdata(buildData(program))  // for doc on this setState, see buildData() at the bottom of this file.
 		// setStartDate(new Date(program.dateStart))
+		console.log(`Review.jsx 143: id `, program.id)
 	}, [program])
 
 	return (

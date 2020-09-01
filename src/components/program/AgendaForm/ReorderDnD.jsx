@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
+import { ProgramContext } from "../../../contexts/Program";
+
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 import { Drawer, Button, Empty } from "antd";
 
 function ReorderDnD(props) {
-	console.log(`ReorderDnD.jsx 7: `, )
-	const { visible, setVisible, itemList, setItemList } = props;
+	const { visible, setVisible, itemList, setItemList, single } = props;
+	const program = useContext(ProgramContext);
+	const { editSession } = program
 
 	const closeDrawer = () => {
 		setVisible(false);
@@ -13,10 +16,22 @@ function ReorderDnD(props) {
 
 	const reorderList = (list, startIndex, endIndex) => {
 		const result = Array.from(list);
+		const persistentData = result.map((item) => {
+			return { id: item.id, dateStart: item.dateStart, dateEnd: item.dateEnd }
+		})
+
 		const [removed] = result.splice(startIndex, 1);
 		result.splice(endIndex, 0, removed);
 
-		return result;
+		const newRes = result.map((item, i) => {
+			console.log(`ReorderDnD.jsx 23: `,)
+			item = { ...item, ...persistentData[i] }
+			return item
+		})
+
+		console.log(`ReorderDnD.jsx 18: stop`,)
+
+		return newRes;
 	};
 
 	const onDragEnd = (result) => {
@@ -24,11 +39,12 @@ function ReorderDnD(props) {
 		if (!result.destination) {
 			return;
 		}
-
 		// Re-order presenter array with changes
 		const orderedList = reorderList(itemList, result.source.index, result.destination.index);
-
+		const newSession = {...single, presentations: orderedList}
+		
 		setItemList(orderedList);
+		editSession(newSession.id, newSession)
 	};
 
 	// This is the style for each draggable element
@@ -63,21 +79,21 @@ function ReorderDnD(props) {
 				onClose={closeDrawer}
 				visible={visible}
 				getContainer={false}
-				style={{ position: "absolute", display:(visible ? "block" : "none" ) }}>
+				style={{ position: "absolute", display: (visible ? "block" : "none") }}>
 				{itemList.length > 1 ? (
 					<DragDropContext onDragEnd={onDragEnd}>
 						<Droppable droppableId="droppable">
 							{(provided, snapshot) => (
 								<div {...provided.droppableProps} ref={provided.innerRef} style={getListStyle(snapshot.isDraggingOver)}>
-									{itemList.map((presenter, index) => (
-										<Draggable key={presenter.id} draggableId={presenter.id} index={index}>
+									{itemList.map((item, index) => (
+										<Draggable key={item.id} draggableId={`${item.id}`} index={index}>
 											{(provided, snapshot) => (
 												<div
 													ref={provided.innerRef}
 													{...provided.draggableProps}
 													{...provided.dragHandleProps}
 													style={getDraggableItemStyle(snapshot.isDragging, provided.draggableProps.style)}>
-													{presenter.name}
+													{item.name}
 												</div>
 											)}
 										</Draggable>
