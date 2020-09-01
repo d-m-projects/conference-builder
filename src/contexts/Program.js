@@ -86,6 +86,29 @@ const ProgramProvider = (props) => {
     });
   };
 
+  const editSession = (sessionId, sessionData) => {
+    setProgram({
+      ...program,
+      days: program.days.map(day => {
+        day.sessions = day.sessions.map(session => {
+          if (session.id === sessionId){
+            // Session we want to modify
+            // console.log(program.selectedSessionId, "Context modified", session.name , "=>", sessionData.name)
+            return {
+              ...session,
+              name: sessionData.name,
+              dateStart: sessionData.dateStart,
+              dateEnd: sessionData.dateEnd
+            }
+          }
+          return session;
+        });
+
+        return day;
+      })
+    });
+  }
+
   const deleteSession = (sessionId) => {
     setProgram({
       ...program,
@@ -341,9 +364,10 @@ const ProgramProvider = (props) => {
 		<ProgramContext.Provider
 			value={{
 				...program,
-				createProgram,
+        createProgram,
 				updateProgram,
         createSession,
+        editSession,
         deleteSession,
 				getSessionById,
         createPresentation,

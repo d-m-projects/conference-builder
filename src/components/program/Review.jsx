@@ -31,9 +31,32 @@ function CustomEvent({event}) {
   }
 
   const handleEdit = (event) => {
-    const view = event.type === "session" ? VIEW.SESSION : VIEW.PRESENTATION;
+    if (event.type === "session"){
+      program.selectedSessionId = event.id;
 
-    history.push("/program", { initialView: view, formMode: "edit", initialFormValues: event })
+      const initialFormValues = {
+        sessionName: event.title,
+        sessionLength: [event.start, event.end]
+      }
+
+      history.push("/program", { 
+        initialView: VIEW.SESSION, 
+        initialFormMode: "edit", 
+        initialFormValues
+      });
+      
+    } else {
+      const initialFormValues = {
+        sessionName: event.title,
+        sessionLength: [event.start, event.end]
+      }
+
+      history.push("/program", { 
+        initialView: VIEW.PRESENTATION, 
+        initialFormMode: "edit", 
+        initialFormValues
+      });
+    }
   }
 
   return (
@@ -76,9 +99,9 @@ const Review = (props) => {
 	// if `program` is empty, fill it with example data for visualization.
 	// Use when you need complete data in `program`
 	// (so you don't have to enter it manually)
-	// if (!program.dateStart) {
-	// 	program.injectTestData()
-	// }
+	if (!program.dateStart) {
+		program.injectTestData()
+	}
 
 	// buildData(program)
 	// console.log(`treedata: `, treeData)

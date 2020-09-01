@@ -9,11 +9,12 @@ import GenericModal from "../GenericModal/GenericModal";
 import { VIEW } from "../../forms/FormManager";
 
 function FlowSwitchOneModal(props) {
-  const { isVisible, setVisibility, setFormView } = props;
+  const { isVisible, setVisibility, setFormView, setFormMode } = props;
 
   const history = useHistory();
 
   const handleCreateSession = () => {
+    setFormMode("add")
     setFormView(VIEW.SESSION);
 
     setVisibility(false);
@@ -25,8 +26,8 @@ function FlowSwitchOneModal(props) {
     setVisibility(false);
   };
 
-  const handleHome = () => {
-    history.push("/");
+  const handleReview = () => {
+    history.push("/review");
 
     setVisibility(false);
   };
@@ -59,8 +60,8 @@ function FlowSwitchOneModal(props) {
           </>,
         ],
         footer: (
-          <Button type="primary" onClick={handleHome}>
-            Save for now and go to home
+          <Button type="primary" onClick={handleReview}>
+            Review program
           </Button>
         ),
       }}

@@ -126,14 +126,14 @@ export const injection = {
 				{
           id: 1,
 					name: "Alphazap",
-					dateStart: "2020-09-01T08:00:00.000Z",
-					dateEnd: "2020-09-01T12:00:00.000Z",
+					dateStart: "2020-09-01T16:00:00.000Z",
+					dateEnd: "2020-09-01T17:00:00.000Z",
 					presentations: [
 						{
               id: 2,
 							name: "Choloepus hoffmani",
-							dateStart: "2020-09-01T08:00:00.000Z",
-							dateEnd: "2020-09-01T09:00:00.000Z",
+							dateStart: "2020-09-01T16:00:00.000Z",
+							dateEnd: "2020-09-01T17:00:00.000Z",
 							presenters: [
 								"Aluino Dyde",
 								"Essa Panter",

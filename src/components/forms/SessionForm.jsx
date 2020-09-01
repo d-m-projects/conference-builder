@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { ProgramContext } from "../../contexts/Program";
 
 import moment from "moment";
@@ -10,14 +10,32 @@ import FlowSwitchOneModal from "../Modals/FlowSwitchOne/FlowSwitchOneModal";
 const { RangePicker } = DatePicker;
 
 function SessionForm(props) {
-  const { setFormView } = props;
+  const { initialFormMode, initialFormValues, setFormView } = props;
 
   const program = useContext(ProgramContext);
-  const { createSession } = program;
+  const { createSession, editSession } = program;
+
+  const [formMode, setFormMode] = useState(initialFormMode);
 
   const [modalVisible, setModalVisible] = useState(false);
 
   const [form] = Form.useForm();
+
+  let prefillValues = {} 
+
+  if ( initialFormValues ) {
+    prefillValues = {
+      ...initialFormValues,
+      sessionLength: [
+        moment(initialFormValues.sessionLength[0]),
+        moment(initialFormValues.sessionLength[1])
+      ]
+    }
+  }
+
+  useEffect(() => {
+      form.resetFields();
+  }, [formMode]);
 
   const disabledDate = (date) => {
     return date.isBefore(program.dateStart, "day") || date.isAfter(program.dateEnd, "day");
@@ -35,23 +53,33 @@ function SessionForm(props) {
     const end = values.sessionLength[1].second(0).millisecond(0);
 
     if (validSessionDateRange(start, end)) {
-      createSession({
-        name: values.sessionName,
+      if (formMode === "edit") {
+        editSession(program.selectedSessionId, {
+          name: values.sessionName,
+  
+          dateStart: start._d,
+          dateEnd: end._d,
+        });
 
-        // Store datetime as string, not instance of moment
-        dateStart: start._d,
-        dateEnd: end._d,
-
-        presentations: [],
-      });
-
-      message.success(`Session ${values.sessionName} created!`);
+        message.success(`Session ${values.sessionName} modified!`);
+      } else {
+        createSession({
+          name: values.sessionName,
+  
+          // Store datetime as string, not instance of moment
+          dateStart: start._d,
+          dateEnd: end._d,
+  
+          presentations: [],
+        });
+  
+        message.success(`Session ${values.sessionName} created!`);
+      }
 
       setTimeout(() => {
         setModalVisible(true);
       }, 200);
 
-      form.resetFields();
     } else {
       const programStartTime = moment(program.dateStart).format("HH:mm");
       const programEndTime = moment(program.dateEnd).format("HH:mm");
@@ -81,7 +109,7 @@ function SessionForm(props) {
 
   return (
     <>
-      <FlowSwitchOneModal isVisible={modalVisible} setVisibility={setModalVisible} setFormView={setFormView} />
+      <FlowSwitchOneModal isVisible={modalVisible} setVisibility={setModalVisible} setFormView={setFormView} setFormMode={setFormMode} />
       <div className="session-form-container">
         <Form
           form={form}
@@ -90,7 +118,9 @@ function SessionForm(props) {
           onFinish={formSubmit}
           autoComplete="off"
           layout="vertical"
-          hideRequiredMark>
+          hideRequiredMark
+          initialValues={formMode === "edit" ? prefillValues : {}}
+          >
           {/* SESSION NAME */}
           <Form.Item
             label="Session Name"
@@ -115,7 +145,7 @@ function SessionForm(props) {
           {/* SUBMIT */}
           <Form.Item>
             <Button type="primary" htmlType="submit">
-              Create Session
+              {formMode === "edit" ? "Edit Session" : "Create Session"}
             </Button>
           </Form.Item>
         </Form>
