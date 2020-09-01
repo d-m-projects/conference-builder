@@ -1,9 +1,10 @@
 import React, { useContext, useState, useEffect } from "react";
 import { ProgramContext } from "../../contexts/Program";
-import { useLocation } from "react-router-dom";
+import { useLocation, useHistory } from "react-router-dom";
 
 // antd components
-import { Skeleton, Card, List } from "antd";
+import { Skeleton, Card, List, Popconfirm, message, Tooltip } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 // Components
 import { VIEW } from "../forms/FormManager";
@@ -16,6 +17,45 @@ import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
 // vars
 const localizer = momentLocalizer(moment)
 const DragAndDropCalendar = withDragAndDrop(Calendar)
+
+function CustomEvent({event}) {
+  const program = useContext(ProgramContext);
+  const { deleteSession, deletePresentation } = program;
+
+  const history = useHistory();
+
+  const handleDelete = (event) => {
+    event.type === "session" ? deleteSession(event.id) : deletePresentation(event.id);
+
+    message.success(`${event.title} deleted!`)
+  }
+
+  const handleEdit = (event) => {
+    const view = event.type === "session" ? VIEW.SESSION : VIEW.PRESENTATION;
+
+    history.push("/program", { initialView: view, formMode: "edit", initialFormValues: event })
+  }
+
+  return (
+    <>
+    <span className="event-card-widgets">
+        <Popconfirm
+          title={`Are you sure you want to delete this ${event.type === "session" ? "session" : "presentation"}?`}
+          onConfirm={() => handleDelete(event)}
+          okText="Yes"
+          cancelText="No">
+          <Tooltip title={event.type === "session" ? "Delete Session" : "Delete Presentation"}>
+            <DeleteOutlined />
+          </Tooltip>
+        </Popconfirm>
+        <Tooltip title={event.type === "session" ? "Edit Session" : "Edit Presentation"}>
+          <EditOutlined onClick={() => handleEdit(event)} />
+        </Tooltip>
+      </span>
+      <span>{event.title}</span>
+    </>
+  )
+}
 
 // Work
 const Review = (props) => {
@@ -56,7 +96,7 @@ const Review = (props) => {
 
 	useEffect(() => {
 		setRBCdata(buildData(program))  // for doc on this setState, see buildData() at the bottom of this file.
-		// setStartDate(new Date(program.dateStart))
+    // setStartDate(new Date(program.dateStart))
 	}, [program])
 
 	return (
@@ -76,7 +116,10 @@ const Review = (props) => {
 				onEventDrop={e => handleDnd("onEventDrop", e)}
 				onEventResize={e => handleDnd("onEventResize", e)}
 				onSelectSlot={e => handleDnd("onSelectSlot", e)}
-				handleDragStart={e => handleDnd("handleDragStart", e)}
+        handleDragStart={e => handleDnd("handleDragStart", e)}
+        components={{
+          event: CustomEvent,
+        }}
 			/>
 			: <Skeleton />
 	)
@@ -95,7 +138,7 @@ const buildData = (obj) => {
 	for (let [i, day] of obj.days.entries()) {
 		for (let [j, s] of day.sessions.entries()) {
 			data.push({
-				id: id,
+				id: s.id,
 				title: s.name,
 				start: new Date(s.dateStart),
 				end: new Date(s.dateEnd),
@@ -105,7 +148,7 @@ const buildData = (obj) => {
 			id++
 			for (let [k, p] of s.presentations.entries()) {
 				data.push({
-					id: id,
+					id: p.id,
 					title: p.name,
 					start: new Date(p.dateStart),
 					end: new Date(p.dateEnd),
