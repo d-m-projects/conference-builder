@@ -136,12 +136,17 @@ const Presentations = ({ props }) => {
 	// 3rd level. descendent of `sessions`.
 	// concerned with `presentations` nested data.
 
+	const presdata = (p) => {
+		p.presDateString = `[${moment(p.dateStart).format("HH:mm")}-${moment(p.dateEnd).format("HH:mm")}] ${p.name}`
+		return p
+	}
+
 	return (
 		<Table className={`program-presentation`} showHeader={false} size="small" style={{ marginLeft: "20px" }} dataSource={props.presentations} pagination={false} key={moment().unix()}>
 			<Column title="Presentation" dataIndex="name" key="name" key={moment().unix()}
 				render={(dataIndex, single, i) => (
 					<>
-						<div>Presentation: {single.name}</div>
+						<div>{presdata(single).presDateString}</div>
 						<div>By: {single.presenters.join(", ")}</div>
 					</>
 				)}
