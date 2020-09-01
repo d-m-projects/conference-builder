@@ -44,7 +44,7 @@ const ProgramProvider = (props) => {
 		} else {
 			console.log(`Program.js 39: Missing program.dateStart.`);
 		}
-	}, [program]);
+  }, [program]);
 
 	const createProgram = (newProgram) => {
 		setProgram({
@@ -120,6 +120,37 @@ const ProgramProvider = (props) => {
     });
   }
 
+  const selectSession = (sessionId) => {
+    setProgram({
+      ...program,
+      selectedSessionId: sessionId
+    });
+  }
+
+  const selectSessionByPresentationId = (presentationId) => {
+    let foundSessionId = -1;
+  
+    program.days.some(day => {
+      day.sessions.some(session => {
+        session.presentations.some(presentation => {
+          if (presentation.id === presentationId) {
+            foundSessionId = session.id;
+            return true;
+          }
+        });
+      });
+    });
+
+    if (foundSessionId >= 0) {
+      setProgram({
+        ...program,
+        selectedSessionId: foundSessionId
+      });
+    } else {
+      console.log("If you see this then either you broke presentation ids or are searching for an invalid session...");
+    }
+  }
+
   const createPresentation = (sessionId, presentation) => {
     // Add presentation to session by id
 
@@ -137,6 +168,31 @@ const ProgramProvider = (props) => {
       }),
     });
   };
+
+  const editPresentation = (presentationId, presentationData) => {
+    setProgram({
+      ...program,
+      days: program.days.map(day => {
+        day.sessions = day.sessions.map(session => {
+          session.presentations = session.presentations.map(presentation => {
+            if (presentation.id === presentationId) {
+              // Pres we want to modify
+              return {
+                ...presentation,
+                ...presentationData
+              }
+            }
+
+            return presentation;
+          })
+
+          return session;
+        })
+      
+        return day;
+      })
+    })
+  }
 
   const deletePresentation = (presentationId) => {
     setProgram({
@@ -209,7 +265,7 @@ const ProgramProvider = (props) => {
   };
 
   const getSessionById = (sessionId) => {
-    let foundSession = null;
+    let foundSession = 0;
 
     // Using .some will break the looping on first truthy return so it's faster
     program.days.some((day) => {
@@ -227,6 +283,8 @@ const ProgramProvider = (props) => {
       console.log("If you see this then either you broke session ids or are searching for an invalid one...");
     }
   };
+
+  
 
 	const injectDB = (x) => {
 		// 
@@ -369,8 +427,11 @@ const ProgramProvider = (props) => {
         createSession,
         editSession,
         deleteSession,
-				getSessionById,
+        selectSession,
+        getSessionById,
+        selectSessionByPresentationId,
         createPresentation,
+        editPresentation,
         deletePresentation,
         getNextPresenterId,
 				addGlobalPresenter,

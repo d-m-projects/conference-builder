@@ -23,7 +23,7 @@ function FormManager(props) {
       case VIEW.SESSION:
         return <SessionForm setFormView={setFormView} initialFormMode={initialFormMode} initialFormValues={initialFormValues} />;
       case VIEW.PRESENTATION:
-        return <PresentationForm setFormView={setFormView} initialFormValues={initialFormValues} />;
+        return <PresentationForm setFormView={setFormView} initialFormMode={initialFormMode} initialFormValues={initialFormValues} />;
       case VIEW.REVIEW:
         return <Agenda setFormView={setFormView} />;
       default:

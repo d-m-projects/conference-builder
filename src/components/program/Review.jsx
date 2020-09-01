@@ -3,7 +3,7 @@ import { ProgramContext } from "../../contexts/Program";
 import { useLocation, useHistory } from "react-router-dom";
 
 // antd components
-import { Skeleton, Card, List, Popconfirm, message, Tooltip } from "antd";
+import { Row, Col, Space, Divider, Skeleton, Card, List, Popconfirm, message, Tooltip, Button } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 // Components
@@ -20,7 +20,7 @@ const DragAndDropCalendar = withDragAndDrop(Calendar)
 
 function CustomEvent({event}) {
   const program = useContext(ProgramContext);
-  const { deleteSession, deletePresentation } = program;
+  const { selectSession, deleteSession, deletePresentation, getNextPresenterId } = program;
 
   const history = useHistory();
 
@@ -32,7 +32,7 @@ function CustomEvent({event}) {
 
   const handleEdit = (event) => {
     if (event.type === "session"){
-      program.selectedSessionId = event.id;
+      selectSession(event.id);
 
       const initialFormValues = {
         sessionName: event.title,
@@ -44,11 +44,30 @@ function CustomEvent({event}) {
         initialFormMode: "edit", 
         initialFormValues
       });
-      
+
     } else {
+      // console.log(event)
+      
+      const presenters = [];
+      let pId = getNextPresenterId();
+
+      event.presenters.forEach(presenter => {
+        presenters.push({name: presenter, id: String(pId)});
+        pId++;
+      })
+
+      const creditList = []; 
+      for (const key in event.credits){
+        creditList.push(`${key} | ${event.credits[key]}`)
+      }
+
       const initialFormValues = {
-        sessionName: event.title,
-        sessionLength: [event.start, event.end]
+        id: event.id,
+        presentationName: event.title,
+        presentationLength: [event.start, event.end],
+        presenters: presenters,
+        credits: event.credits,
+        creditsList: creditList
       }
 
       history.push("/program", { 
@@ -124,13 +143,17 @@ const Review = (props) => {
 
 	return (
 		Boolean(RBCdata)  // if this is an array.length 0, it will be `false`
-			? <DragAndDropCalendar
+			? <>
+      <Row>
+        <Col span={24}>
+
+      <DragAndDropCalendar
 				events={RBCdata}
 				localizer={localizer}
 				defaultView={"day"}
 				defaultDate={new Date(program.dateStart)}
 				views={["week", "day", "agenda"]}
-
+        
 				eventPropGetter={eventPropGetter}
 				selectable
 				resizable
@@ -143,7 +166,22 @@ const Review = (props) => {
         components={{
           event: CustomEvent,
         }}
-			/>
+        />
+        </Col>
+      </Row>
+
+      <Divider />
+
+      <Row>
+        <Col span={24}>
+          <Space>
+            <Button type="primary">Add Session</Button>
+            <Button type="primary">Add Presentation</Button>
+            <Button type="primary">Edit Program Name / Date Range</Button>
+          </Space>
+        </Col>
+      </Row>
+      </>
 			: <Skeleton />
 	)
 };
