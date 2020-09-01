@@ -23,7 +23,7 @@ const defaultProgram = {
 const ProgramProvider = (props) => {
 	const [program, setProgram] = useState(defaultProgram);
 
-	useEffect(() => {
+  useEffect(() => {
 		if (program.id && program.dateStart) {
 			db.update(program)
 				.then((x) => {
@@ -86,13 +86,24 @@ const ProgramProvider = (props) => {
     });
   };
 
+  const deleteSession = (sessionId) => {
+    setProgram({
+      ...program,
+      days: program.days.map((day) => {
+        day.sessions = day.sessions.filter(session => session.id !== sessionId);
+
+        return day;
+      })
+    });
+  }
+
   const createPresentation = (sessionId, presentation) => {
     // Add presentation to session by id
 
     setProgram({
       ...program,
-      days: program.days.map((day) => {
-        day.sessions.map((session) => {
+      days: program.days.map(day => {
+        day.sessions.map(session => {
           if (session.id === sessionId) {
             session.presentations.push(presentation);
           }
@@ -103,6 +114,21 @@ const ProgramProvider = (props) => {
       }),
     });
   };
+
+  const deletePresentation = (presentationId) => {
+    setProgram({
+      ...program,
+      days: program.days.map(day => {
+        day.sessions = day.sessions.map(session => {
+          session.presentations = session.presentations.filter(presentation => presentation.id !== presentationId);
+
+          return session;
+        });
+
+        return day;
+      })
+    });
+  }
 
   const addGlobalPresenter = (presenter) => {
     // Will add a presenter to the global list if he/she doesn't already exist.
@@ -317,9 +343,11 @@ const ProgramProvider = (props) => {
 				...program,
 				createProgram,
 				updateProgram,
-				createSession,
+        createSession,
+        deleteSession,
 				getSessionById,
         createPresentation,
+        deletePresentation,
         getNextPresenterId,
 				addGlobalPresenter,
 				deleteGlobalPresenter,
