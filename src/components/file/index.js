@@ -157,8 +157,7 @@ const File = () => {
 	}
 
 	return (
-		// to flex column count responsively
-		// https://usehooks.com/useMedia/
+
 		<>
 			<Row gutter={[10, 10]}>
 				{fileman.map((item, i) =>
