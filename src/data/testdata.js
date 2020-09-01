@@ -150,7 +150,6 @@ export const injection = {
 		"Zita Kelsall",
 		"Sande Denial"
 	],
-	nestDayId: 4,
 	nextSessionId: 4,
 	nextPresenterId: 13,
 	nextPresentationId: 6,

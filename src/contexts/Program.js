@@ -86,13 +86,78 @@ const ProgramProvider = (props) => {
 		});
 	};
 
+	const editSession = (sessionId, sessionData) => {
+		setProgram({
+			...program,
+			days: program.days.map(day => {
+				day.sessions = day.sessions.map(session => {
+					if (session.id === sessionId) {
+						// Session we want to modify
+						// console.log(program.selectedSessionId, "Context modified", session.name , "=>", sessionData.name)
+						return {
+							...session,
+							name: sessionData.name,
+							dateStart: sessionData.dateStart,
+							dateEnd: sessionData.dateEnd
+						}
+					}
+					return session;
+				});
+
+				return day;
+			})
+		});
+	}
+
+	const deleteSession = (sessionId) => {
+		setProgram({
+			...program,
+			days: program.days.map((day) => {
+				day.sessions = day.sessions.filter(session => session.id !== sessionId);
+
+				return day;
+			})
+		});
+	}
+
+	const selectSession = (sessionId) => {
+		setProgram({
+			...program,
+			selectedSessionId: sessionId
+		});
+	}
+
+	const selectSessionByPresentationId = (presentationId) => {
+		let foundSessionId = -1;
+
+		program.days.some(day => {
+			day.sessions.some(session => {
+				session.presentations.some(presentation => {
+					if (presentation.id === presentationId) {
+						foundSessionId = session.id;
+						return true;
+					}
+				});
+			});
+		});
+
+		if (foundSessionId >= 0) {
+			setProgram({
+				...program,
+				selectedSessionId: foundSessionId
+			});
+		} else {
+			console.log("If you see this then either you broke presentation ids or are searching for an invalid session...");
+		}
+	}
+
 	const createPresentation = (sessionId, presentation) => {
 		// Add presentation to session by id
 
 		setProgram({
 			...program,
-			days: program.days.map((day) => {
-				day.sessions.map((session) => {
+			days: program.days.map(day => {
+				day.sessions.map(session => {
 					if (session.id === sessionId) {
 						session.presentations.push(presentation);
 					}
@@ -103,6 +168,46 @@ const ProgramProvider = (props) => {
 			}),
 		});
 	};
+
+	const editPresentation = (presentationId, presentationData) => {
+		setProgram({
+			...program,
+			days: program.days.map(day => {
+				day.sessions = day.sessions.map(session => {
+					session.presentations = session.presentations.map(presentation => {
+						if (presentation.id === presentationId) {
+							// Pres we want to modify
+							return {
+								...presentation,
+								...presentationData
+							}
+						}
+
+						return presentation;
+					})
+
+					return session;
+				})
+
+				return day;
+			})
+		})
+	}
+
+	const deletePresentation = (presentationId) => {
+		setProgram({
+			...program,
+			days: program.days.map(day => {
+				day.sessions = day.sessions.map(session => {
+					session.presentations = session.presentations.filter(presentation => presentation.id !== presentationId);
+
+					return session;
+				});
+
+				return day;
+			})
+		});
+	}
 
 	const addGlobalPresenter = (presenter) => {
 		// Will add a presenter to the global list if he/she doesn't already exist.
@@ -160,7 +265,7 @@ const ProgramProvider = (props) => {
 	};
 
 	const getSessionById = (sessionId) => {
-		let foundSession = null;
+		let foundSession = 0;
 
 		// Using .some will break the looping on first truthy return so it's faster
 		program.days.some((day) => {
@@ -178,6 +283,8 @@ const ProgramProvider = (props) => {
 			console.log("If you see this then either you broke session ids or are searching for an invalid one...");
 		}
 	};
+
+
 
 	const injectDB = (x) => {
 		// 
@@ -342,8 +449,14 @@ const ProgramProvider = (props) => {
 				createProgram,
 				updateProgram,
 				createSession,
+				editSession,
+				deleteSession,
+				selectSession,
 				getSessionById,
+				selectSessionByPresentationId,
 				createPresentation,
+				editPresentation,
+				deletePresentation,
 				getNextPresenterId,
 				addGlobalPresenter,
 				deleteGlobalPresenter,

@@ -6,7 +6,7 @@ import Form from "./Form";
 import "./styles.scss";
 
 function PresentationForm(props) {
-  const { setFormView } = props;
+  const { initialFormMode, initialFormValues, setFormView } = props;
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -15,7 +15,7 @@ function PresentationForm(props) {
       {/* UI Flow Modal for jumping to review program or add additional presentation */}
       <FlowSwitchTwoModal isVisible={modalVisible} setVisibility={setModalVisible} setFormView={setFormView} />
 
-      <Form setModalVisible={setModalVisible} />
+      <Form initialFormMode={initialFormMode} initialFormValues={initialFormValues} setModalVisible={setModalVisible} />
     </div>
   );
 }
