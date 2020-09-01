@@ -215,30 +215,33 @@ const ProgramProvider = (props) => {
 
 	function handleDnd(t, e) {
 		const moveSession = (e) => {
-			const { day, session } = e.event.origKeys
-			let target = program.days[day].sessions[session]
+			const { dayIndex, sessionIndex } = e.event.origIndex
+			let working = { ...program }
+			let target = working.days[dayIndex].sessions[sessionIndex]   // digging the session out by index
+			let origin = working.days[dayIndex]   // getting the origin day
 
-			if (!rangeCheck(e)) { return }
+			const checkDrop = rangeCheck(e)
+			if (!checkDrop.ok) { return }
 
-			const updateSessionTimes = {
+			target = {
 				...target,
 				dateStart: `${moment(e.start).format()}`,
 				dateEnd: `${moment(e.end).format()}`,
 			}
 
-			program.days[day].sessions.splice(
-				session,
-				1,
-				updateSessionTimes
-			);
+			const dayDrop = working.days.map(d => d.id).indexOf(checkDrop.newDayId)
 
-			setProgram({ ...program })
+			const destination = working.days[dayDrop].sessions
+			destination.push(target)
+			origin.sessions.splice(sessionIndex, 1)
+
+			setProgram({ ...working })
 		}
 
 		const movePresentation = (e) => {
 			const { dayIndex, sessionIndex, presIndex } = e.event.origIndex
 			// const { dayId, sessionId, presId } = e.event.origData
-			let working = {...program}
+			let working = { ...program }
 			let target = working.days[dayIndex].sessions[sessionIndex].presentations[presIndex]   // digging the pres out by index
 			let origin = working.days[dayIndex].sessions[sessionIndex]   // getting the origin session
 
@@ -264,6 +267,7 @@ const ProgramProvider = (props) => {
 		const rangeCheck = (e) => {
 			const { type } = e.event
 			const dayRange = [program.dateStart, program.dateEnd]
+			const dayCount = moment(program.dateEnd).diff(moment(program.dateStart))
 			const sessionRange = []
 
 			for (const pDay of program.days) {
@@ -273,13 +277,18 @@ const ProgramProvider = (props) => {
 			}
 
 			if (type === "session") {
-				const chkStart =
-					moment(e.start)
-						.isBetween(dayRange[0], dayRange[1], "day", "[]")
-				const chkEnd =
-					moment(e.end)
-						.isBetween(dayRange[0], dayRange[1], "day", "[]")
-				if (chkStart && chkEnd) return true;
+				console.log(`Program.js 280: `, )
+				for (const day of program.days) {
+					const chkDayDate =
+						(moment(e.start).format("DD MM YYYY") === moment(day.date).format("DD MM YYYY"))
+					if (chkDayDate) {
+						const send = {
+							ok: true,
+							newDayId: day.id
+						}
+						return send;
+					}
+				}
 			}
 
 			if (type === "presentation") {
