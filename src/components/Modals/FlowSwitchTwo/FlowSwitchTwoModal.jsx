@@ -9,9 +9,16 @@ import GenericModal from "../GenericModal/GenericModal";
 import { VIEW } from "../../forms/FormManager";
 
 function FlowSwitchTwoModal(props) {
-  const { isVisible, setVisibility, setFormView } = props;
+  const { isVisible, setVisibility, setFormView, setFormMode } = props;
 
   const history = useHistory();
+
+  const handleAddPresentation = () => {
+    setFormMode("add")
+    setFormView(VIEW.PRESENTATION);
+
+    setVisibility(false);
+  };
 
   const handleReviewProgram = () => {
     history.push("/review");
@@ -19,17 +26,6 @@ function FlowSwitchTwoModal(props) {
     setVisibility(false);
   };
 
-  const handleAddPresentation = () => {
-    setFormView(VIEW.PRESENTATION);
-
-    setVisibility(false);
-  };
-
-  const handleHome = () => {
-    history.push("/");
-
-    setVisibility(false);
-  };
 
   return (
     <GenericModal
@@ -58,11 +54,7 @@ function FlowSwitchTwoModal(props) {
             </Button>
           </>,
         ],
-        footer: (
-          <Button type="primary" onClick={handleHome}>
-            Save for now and go to home
-          </Button>
-        ),
+        footer: {},
       }}
     />
   );

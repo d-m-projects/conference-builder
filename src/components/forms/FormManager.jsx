@@ -13,21 +13,21 @@ const VIEW = {
 };
 
 function FormManager(props) {
-  const { initialView } = props;
+  const { initialView, initialFormMode, initialFormValues } = props;
   const [formView, setFormView] = useState(initialView ? initialView : VIEW.PROGRAM);
 
   const getFormComponentForView = () => {
     switch (formView) {
       case VIEW.PROGRAM:
-        return <ProgramForm setFormView={setFormView} />;
+        return <ProgramForm setFormView={setFormView} initialFormMode={initialFormMode} initialFormValues={initialFormValues} />;
       case VIEW.SESSION:
-        return <SessionForm setFormView={setFormView} />;
+        return <SessionForm setFormView={setFormView} initialFormMode={initialFormMode} initialFormValues={initialFormValues} />;
       case VIEW.PRESENTATION:
-        return <PresentationForm setFormView={setFormView} />;
+        return <PresentationForm setFormView={setFormView} initialFormMode={initialFormMode} initialFormValues={initialFormValues} />;
       case VIEW.REVIEW:
         return <Agenda setFormView={setFormView} />;
       default:
-        return <ProgramForm setFormView={setFormView} />;
+        return <ProgramForm setFormView={setFormView} initialFormValues={initialFormValues} />;
     }
   };
 

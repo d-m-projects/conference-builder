@@ -62,14 +62,12 @@ function PresenterDnD(props) {
         visible={visible}
         getContainer={false}
         style={{ position: "absolute" }}>
-        {/* Create DnD component or an Empty depending on presenter count */}
         {presenters.length > 1 ? (
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="droppable">
               {(provided, snapshot) => (
                 <div {...provided.droppableProps} ref={provided.innerRef} style={getListStyle(snapshot.isDraggingOver)}>
                   {presenters.map((presenter, index) => (
-                    // Render draggables for each presenter
                     <Draggable key={presenter.id} draggableId={presenter.id} index={index}>
                       {(provided, snapshot) => (
                         <div

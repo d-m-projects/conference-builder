@@ -10,11 +10,16 @@ import { Popover, Button, Col, Row, Card } from "antd";
 import { InfoCircleTwoTone } from '@ant-design/icons';
 
 
-function ProgramPage(props) {
+function ProgramPage() {
 	const location = useLocation()
-	let initialView
-	location.state ? initialView = location.state.initialView : initialView = VIEW.PROGRAM
-	const [formView, setFormView] = useState(initialView);
+
+  const { initialFormMode, initialFormValues } = location.state;
+
+	let initialView;
+  
+  location.state ? initialView = location.state.initialView : initialView = VIEW.PROGRAM
+  
+  const [formView, setFormView] = useState(initialView);
 
 	const infoBlock = () => {
 		const text = (
@@ -40,7 +45,7 @@ function ProgramPage(props) {
 		<Row gutter={28} justify="space-between">
 			<Col span={12}>
 				<Card title="Program Data" extra={infoBlock()}>
-					<FormManager initialView={formView} />
+					<FormManager initialView={formView} initialFormMode={initialFormMode} initialFormValues={initialFormValues} />
 				</Card>
 			</Col>
 			<Col className="agendaView" span={12}>

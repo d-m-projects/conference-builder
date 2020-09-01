@@ -89,11 +89,13 @@ export const injection = {
 			date: "2020-09-01T12:00:00.000Z",
 			sessions: [
 				{
+					id: 0,
 					name: "Regrant",
 					dateStart: "2020-09-01T13:00:00.000Z",
 					dateEnd: "2020-09-01T17:00:00.000Z",
 					presentations: [
 						{
+              id: 0,
 							name: "Betamethasone Dipropionate",
 							dateStart: "2020-09-01T13:00:00.000Z",
 							dateEnd: "2020-09-01T14:00:00.000Z",
@@ -104,9 +106,10 @@ export const injection = {
 							],
 							credits: {
 								Oceanic: "5"
-							}
+              },
 						},
 						{
+              id: 1,
 							name: "Chlorpheniramine Maleate",
 							dateStart: "2020-09-01T14:30:00.000Z",
 							dateEnd: "2020-09-01T15:30:00.000Z",
@@ -116,20 +119,21 @@ export const injection = {
 							],
 							credits: {
 								Fancy: "2"
-							}
+							},
 						}
 					],
-					id: 0,
 				},
 				{
+          id: 1,
 					name: "Alphazap",
-					dateStart: "2020-09-01T08:00:00.000Z",
-					dateEnd: "2020-09-01T12:00:00.000Z",
+					dateStart: "2020-09-01T16:00:00.000Z",
+					dateEnd: "2020-09-01T17:00:00.000Z",
 					presentations: [
 						{
+              id: 2,
 							name: "Choloepus hoffmani",
-							dateStart: "2020-09-01T08:00:00.000Z",
-							dateEnd: "2020-09-01T09:00:00.000Z",
+							dateStart: "2020-09-01T16:00:00.000Z",
+							dateEnd: "2020-09-01T17:00:00.000Z",
 							presenters: [
 								"Aluino Dyde",
 								"Essa Panter",
@@ -139,7 +143,6 @@ export const injection = {
 							}
 						}
 					],
-					id: 1,
 				}
 			]
 		},
@@ -147,11 +150,13 @@ export const injection = {
 			date: "2020-09-02T12:00:00.000Z",
 			sessions: [
 				{
+          id: 2,
 					name: "Budgetary Management",
 					dateStart: "2020-09-02T13:00:00.000Z",
 					dateEnd: "2020-09-02T17:00:00.000Z",
 					presentations: [
 						{
+              id: 3,
 							name: "Streamlined eco-centric task-force",
 							dateStart: "2020-09-02T14:00:00.000Z",
 							dateEnd: "2020-09-02T15:00:00.000Z",
@@ -161,9 +166,10 @@ export const injection = {
 							],
 							credits: {
 								Oceanic: "5"
-							}
+              }
 						},
 						{
+              id: 4,
 							name: "Mandatory multi-tasking standardization",
 							dateStart: "2020-09-02T15:30:00.000Z",
 							dateEnd: "2020-09-02T16:30:00.000Z",
@@ -176,14 +182,15 @@ export const injection = {
 							}
 						}
 					],
-					id: 2,
 				},
 				{
+          id: 3,
 					name: "Parallelism",
 					dateStart: "2020-09-02T08:00:00.000Z",
 					dateEnd: "2020-09-02T12:00:00.000Z",
 					presentations: [
 						{
+              id: 5,
 							name: "Distributed bottom-line monitoring",
 							dateStart: "2020-09-02T09:00:00.000Z",
 							dateEnd: "2020-09-02T10:00:00.000Z",
@@ -195,7 +202,6 @@ export const injection = {
 							}
 						}
 					],
-					id: 3,
 				}
 			]
 		},		{
@@ -223,9 +229,9 @@ export const injection = {
 		"Sande Denial"
   ],
   nextSessionId: 4,
-  nextPresenterId: 0,
+  nextPresenterId: 13,
+  nextPresentationId: 6,
   selectedSessionId: 0,
-
 }
 
 export default injection

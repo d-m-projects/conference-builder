@@ -1,5 +1,7 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { ProgramContext } from "../../../contexts/Program";
+
+import {useHistory} from "react-router-dom";
 
 import moment from "moment";
 
@@ -7,30 +9,54 @@ import PresenterDnD from "./PresenterDnD";
 import PresenterInput from "./PresenterInput";
 import CreditInput from "./CreditInput";
 
-import { Row, Col, Divider } from "antd";
+import { Row, Col, Divider, Skeleton } from "antd";
 import { Form, Input, Button, DatePicker, message } from "antd";
 
 const { RangePicker } = DatePicker;
 
 function PresentationForm(props) {
-  const { setModalVisible } = props;
+  const { initialFormMode, initialFormValues, setModalVisible } = props;
 
   const program = useContext(ProgramContext);
-  const { selectedSessionId, getSessionById, createPresentation } = program;
+  const { selectSessionByPresentationId, selectedSessionId, getSessionById, createPresentation, editPresentation } = program;
+
+  const history = useHistory();
+
+  const [formMode, setFormMode] = useState(initialFormMode);
 
   // State for dynamic presenters
-  const [presenters, setPresenters] = useState([]);
+  const [presenters, setPresenters] = useState(initialFormValues ? initialFormValues.presenters : []);
 
   // State for dynamic credits
-  const [credits, setCredits] = useState({});
+  const [credits, setCredits] = useState(initialFormValues ? initialFormValues.credits : {});
 
   // Friendly strings for list to render credits
-  const [creditsList, setCreditsList] = useState([]);
+  const [creditsList, setCreditsList] = useState(initialFormValues ? initialFormValues.creditsList : []);
 
   // Drawer
   const [drawerVisible, setDrawerVisible] = useState(false);
 
   const [form] = Form.useForm();
+
+  let prefillValues = {} 
+
+  if ( initialFormValues ) {
+    prefillValues = {
+      ...initialFormValues,
+      presentationLength: [
+        moment(initialFormValues.presentationLength[0]),
+        moment(initialFormValues.presentationLength[1])
+      ]
+    }
+  }
+
+  useEffect(() => {
+    if (formMode === "edit") {
+      selectSessionByPresentationId(initialFormValues.id);
+    } else {
+      form.resetFields();
+    }
+  }, [formMode]);
 
   const formSubmit = (values) => {
     // Date range validation helper func
@@ -65,15 +91,32 @@ function PresentationForm(props) {
       const end = values.presentationLength[1].second(0).millisecond(0);
 
       if (isValidPresentationDateRange(start, end)) {
-        createPresentation(selectedSessionId, {
-          name: values.presentationName,
-          dateStart: start._d,
-          dateEnd: end._d,
-          presenters: presenters.map((presenter) => presenter.name),
-          credits: credits,
-        });
+        if (formMode === "edit") {
+          editPresentation(selectedSessionId, {
+            id: initialFormValues.id,
+            name: values.presentationName,
+            dateStart: start._d,
+            dateEnd: end._d,
+            presenters: presenters.map((presenter) => presenter.name),
+            credits: credits,
+          });
+  
+          message.success(`Presentation ${values.presentationName} modified!`);
 
-        message.success(`Presentation ${values.presentationName} created!`);
+          // TEMP
+          history.push("/review");
+        } else {
+          createPresentation(selectedSessionId, {
+            name: values.presentationName,
+            dateStart: start._d,
+            dateEnd: end._d,
+            presenters: presenters.map((presenter) => presenter.name),
+            credits: credits,
+          });
+  
+          message.success(`Presentation ${values.presentationName} created!`);
+        }
+        
 
         setTimeout(() => {
           setModalVisible(true);
@@ -106,7 +149,9 @@ function PresentationForm(props) {
   const disabledDate = (date) => {
     const session = getSessionById(selectedSessionId);
 
-    return date.isBefore(session.dateStart, "day") || date.isAfter(session.dateEnd, "day");
+    if(session) {
+      return date.isBefore(session.dateStart, "day") || date.isAfter(session.dateEnd, "day");
+    }
   };
 
   /* FORM FIELD REQUIREMENTS
@@ -117,6 +162,7 @@ function PresentationForm(props) {
   */
 
   return (
+    selectedSessionId >= 0 ?
     <div className="presentation-form-container">
       {/* DnD Presenter Drawer */}
       <PresenterDnD
@@ -129,7 +175,7 @@ function PresentationForm(props) {
       <Form
         form={form}
         name="presentationForm"
-        initialValues={{
+        initialValues={formMode === "edit" ? prefillValues : {
           creditAmount: 0,
         }}
         onFinish={formSubmit}
@@ -194,13 +240,13 @@ function PresentationForm(props) {
           <Col span={24}>
             <Form.Item>
               <Button type="primary" htmlType="submit">
-                Add Presentation
+                {formMode === "edit" ? "Edit Presentation" : "Add Presentation"}
               </Button>
             </Form.Item>
           </Col>
         </Row>
       </Form>
-    </div>
+    </div> : <Skeleton />
   );
 }
 
