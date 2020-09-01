@@ -126,22 +126,4 @@ const buildData = (obj) => {
 	return data
 }
 
-const isBetween = (compare, start, end) => {
-	// all args are dates
-	// checks if `compare` date isBetween `start` date and `end` date
-	// using js Date.getTime() (unix timestamp)
-	// returns boolean
-
-	compare = new Date(compare).getTime
-	start = new Date(start).getTime
-	end = new Date(end).getTime
-
-	console.log(`Review.jsx 115: `, compare, start, end)
-
-	if (compare <= end && compare >= start) {
-		return true
-	}
-	return false
-}
-
 export default Review;

@@ -277,7 +277,6 @@ const ProgramProvider = (props) => {
 			}
 
 			if (type === "session") {
-				console.log(`Program.js 280: `, )
 				for (const day of program.days) {
 					const chkDayDate =
 						(moment(e.start).format("DD MM YYYY") === moment(day.date).format("DD MM YYYY"))
@@ -335,7 +334,6 @@ const ProgramProvider = (props) => {
 				break;
 		}
 	}
-
 
 	return (
 		<ProgramContext.Provider
