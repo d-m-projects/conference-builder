@@ -115,8 +115,6 @@ const Review = (props) => {
 	let { initialView } = props
 	location.state ? initialView = location.state.initialView : initialView = VIEW.PROGRAM
 
-	console.log(`Review.jsx 35: `, program.id)
-
 	// DEV ONLY (by darrin)
 	// if `program` is empty, fill it with example data for visualization.
 	// Use when you need complete data in `program`

@@ -19,9 +19,6 @@ import injection from "../../data/testdata"
 
 const { Column } = Table
 
-const doReorder = (list) => {
-	return list[1]
-}
 
 const Agenda = (props) => {
 	// Top level of the agenda
@@ -38,8 +35,6 @@ const Agenda = (props) => {
 	let { initialView } = props
 	location.state ? initialView = location.state.initialView : initialView = VIEW.PROGRAM
 
-	console.log(`Agenda.jsx 18: `, props)
-
 	const program = useContext(ProgramContext);
 
 	// DEV ONLY (by darrin)
@@ -50,6 +45,12 @@ const Agenda = (props) => {
 	// 	program.injectTestData()
 	// }
 
+	const doReorder = (list) => {
+		console.log(`Agenda.jsx 49: `, list)
+		setItemList(list)
+		setDrawerVisible(true)
+	}
+
 	const programdata = (p) => {
 		const programDateString = `${moment(p.dateStart).format("MMM DD")} - ${moment(p.dateEnd).format("MMM DD")}`
 		return (
@@ -57,45 +58,46 @@ const Agenda = (props) => {
 		)
 	}
 
-	const reorderClick = (list, type) => {
-		const x = doReorder(list)
-		// create program.updatesession
-	}
-
 	return (
 		program.dateStart
-			? <Card title={program.name} extra={programdata(program)}>
-				<Table className="program-agenda" showHeader={false} size="small" dataSource={program.days} pagination={false} key={moment().unix()}>
-					<Column title="Date" dataIndex="date" key={moment().unix()}
-						render={(dataIndex, singleDay, i) => (
-							<>
-								<Space size={16}>
-									<p>Program Day: {moment(dataIndex).format("ddd, MMM Do Y")}</p>
-									{/* <Button size="small" ><UnorderedListOutlined /></Button> */}
-								</Space>
-								<Sessions key={moment().unix()}
-									props={singleDay}
-									visible={drawerVisible}
-									setVisible={setDrawerVisible}
-									itemList={itemList}
-									setItemList={setItemList}
-									reorderClick={reorderClick}
-								/>
-							</>
-						)}
-					/>
-				</Table>
-			</Card>
+			? <>
+				<ReorderDnD
+					visible={drawerVisible}
+					setVisible={setDrawerVisible}
+					itemList={itemList}
+					setItemList={setItemList}
+				/>
+				<Card title={program.name} extra={programdata(program)}>
+					<Table className="program-agenda" showHeader={false} size="small" dataSource={program.days} pagination={false} key={moment().unix()}>
+						<Column title="Date" dataIndex="date" key={moment().unix()}
+							render={(dataIndex, singleDay, i) => (
+								<>
+									<Space size={16}>
+										<p>Program Day: {moment(dataIndex).format("ddd, MMM Do Y")}</p>
+										{/* <Button size="small" ><UnorderedListOutlined /></Button> */}
+									</Space>
+									<Sessions key={moment().unix()}
+										singleDay={singleDay}
+										visible={drawerVisible}
+										setVisible={setDrawerVisible}
+										itemList={itemList}
+										setItemList={setItemList}
+										doReorder={doReorder}
+									/>
+								</>
+							)}
+						/>
+					</Table>
+				</Card>
+			</>
 
 			: <Skeleton />
 	)
 };
 
-const Sessions = ({ props }) => {
+const Sessions = ({ visible, setVisible, itemList, setItemList, doReorder, singleDay }) => {
 	// 2nd level. descendent of `days`.
 	// concerned with `sessions` and passing down `presentations` nested data.
-
-	const { visible, setVisible, presenters, setPresenters, reorderClick } = props;
 
 	const sessiondata = (s) => {
 		s.sessionsDateString = `${s.name} (${moment(s.dateStart).format("HH:mm")}-${moment(s.dateEnd).format("HH:mm")})`
@@ -103,13 +105,17 @@ const Sessions = ({ props }) => {
 	}
 
 	return (
-		<Table className="program-session" showHeader={false} size="small" style={{ marginLeft: "20px" }} dataSource={props.sessions} pagination={false} key={moment().unix()}>
+		<Table className="program-session" showHeader={false} size="small" style={{ marginLeft: "20px" }} dataSource={singleDay.sessions} pagination={false} key={moment().unix()}>
 			<Column title="Session Name" dataIndex="dateStart" key={moment().unix()}
 				render={(dataIndex, single, i) => (
 					<>
 						<Space size={16}>
 							<p>Session: {sessiondata(single).sessionsDateString}</p>
-							<Button size="small" onClick={() => reorderClick(single.presentations)}><UnorderedListOutlined /></Button>
+							<Button size="small" onClick={
+								() => doReorder(single.presentations)
+							}>
+								<UnorderedListOutlined />
+							</Button>
 						</Space>
 						<Presentations props={single} key={moment().unix()} />
 					</>

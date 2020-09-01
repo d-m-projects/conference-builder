@@ -3,7 +3,8 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 import { Drawer, Button, Empty } from "antd";
 
-function PresenterDnD(props) {
+function ReorderDnD(props) {
+	console.log(`ReorderDnD.jsx 7: `, )
 	const { visible, setVisible, itemList, setItemList } = props;
 
 	const closeDrawer = () => {
@@ -52,6 +53,7 @@ function PresenterDnD(props) {
 		width: "100%",
 	});
 
+
 	return (
 		<div className="presenter-dnd-drawer">
 			<Drawer
@@ -61,7 +63,7 @@ function PresenterDnD(props) {
 				onClose={closeDrawer}
 				visible={visible}
 				getContainer={false}
-				style={{ position: "absolute" }}>
+				style={{ position: "absolute", display:(visible ? "block" : "none" ) }}>
 				{itemList.length > 1 ? (
 					<DragDropContext onDragEnd={onDragEnd}>
 						<Droppable droppableId="droppable">
@@ -97,4 +99,4 @@ function PresenterDnD(props) {
 	);
 }
 
-export default PresenterDnD;
+export default ReorderDnD;
