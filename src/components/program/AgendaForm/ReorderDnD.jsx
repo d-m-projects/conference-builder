@@ -24,12 +24,9 @@ function ReorderDnD(props) {
 		result.splice(endIndex, 0, removed);
 
 		const newRes = result.map((item, i) => {
-			console.log(`ReorderDnD.jsx 23: `,)
 			item = { ...item, ...persistentData[i] }
 			return item
 		})
-
-		console.log(`ReorderDnD.jsx 18: stop`,)
 
 		return newRes;
 	};
@@ -42,7 +39,7 @@ function ReorderDnD(props) {
 		// Re-order presenter array with changes
 		const orderedList = reorderList(itemList, result.source.index, result.destination.index);
 		const newSession = {...single, presentations: orderedList}
-		
+
 		setItemList(orderedList);
 		editSession(newSession.id, newSession)
 	};

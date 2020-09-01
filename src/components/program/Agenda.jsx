@@ -16,9 +16,7 @@ import { newest, modified } from "../create/components/events"
 // Dev test data
 import injection from "../../data/testdata"
 
-
 const { Column } = Table
-
 
 const Agenda = (props) => {
 	// Top level of the agenda
@@ -30,7 +28,6 @@ const Agenda = (props) => {
 
 	// Drawer
 	const [drawerVisible, setDrawerVisible] = useState(false);
-
 
 	const location = useLocation()
 	let { initialView } = props
@@ -59,10 +56,6 @@ const Agenda = (props) => {
 			<Button type="text" style={{ margin: 0, padding: 0 }}>{programDateString}</Button>
 		)
 	}
-
-	useEffect(() => {
-		console.log(`Agenda.jsx 62: useEffect `, single.presentations)
-	}, [itemList])
 
 	return (
 		program.dateStart
@@ -118,10 +111,10 @@ const Sessions = ({ visible, setVisible, itemList, setItemList, doReorder, singl
 					<>
 						<Space size={16}>
 							<p>Session: {sessiondata(single).sessionsDateString}</p>
-							<Button size="small" onClick={
+							<Button size="small" icon={<UnorderedListOutlined />} onClick={
 								() => doReorder(single.presentations, single)
 							}>
-								<UnorderedListOutlined />
+								Change order
 							</Button>
 						</Space>
 						<Presentations props={single} key={moment().unix()} />

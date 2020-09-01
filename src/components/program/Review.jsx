@@ -119,12 +119,9 @@ const Review = (props) => {
 	// if `program` is empty, fill it with example data for visualization.
 	// Use when you need complete data in `program`
 	// (so you don't have to enter it manually)
-	if (!program.dateStart) {
-		program.injectTestData()
-	}
-
-	// buildData(program)
-	// console.log(`treedata: `, treeData)
+	// if (!program.dateStart) {
+	// 	program.injectTestData()
+	// }
 
 	const eventPropGetter = (e) => {
 		if (e.type === "session") {
@@ -139,8 +136,6 @@ const Review = (props) => {
 
 	useEffect(() => {
 		setRBCdata(buildData(program))  // for doc on this setState, see buildData() at the bottom of this file.
-		// setStartDate(new Date(program.dateStart))
-		console.log(`Review.jsx 143: id `, program.id)
 	}, [program])
 
 	return (
