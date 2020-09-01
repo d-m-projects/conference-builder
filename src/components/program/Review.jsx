@@ -8,6 +8,7 @@ import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 // Components
 import { VIEW } from "../forms/FormManager";
+import Agenda from "./Agenda";
 
 // modules
 import moment from "moment";
@@ -18,85 +19,85 @@ import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
 const localizer = momentLocalizer(moment)
 const DragAndDropCalendar = withDragAndDrop(Calendar)
 
-function CustomEvent({event}) {
-  const program = useContext(ProgramContext);
-  const { selectSession, deleteSession, deletePresentation, getNextPresenterId } = program;
+function CustomEvent({ event }) {
+	const program = useContext(ProgramContext);
+	const { selectSession, deleteSession, deletePresentation, getNextPresenterId } = program;
 
-  const history = useHistory();
+	const history = useHistory();
 
-  const handleDelete = (event) => {
-    event.type === "session" ? deleteSession(event.id) : deletePresentation(event.id);
+	const handleDelete = (event) => {
+		event.type === "session" ? deleteSession(event.id) : deletePresentation(event.id);
 
-    message.success(`${event.title} deleted!`)
-  }
+		message.success(`${event.title} deleted!`)
+	}
 
-  const handleEdit = (event) => {
-    if (event.type === "session"){
-      selectSession(event.id);
+	const handleEdit = (event) => {
+		if (event.type === "session") {
+			selectSession(event.id);
 
-      const initialFormValues = {
-        sessionName: event.title,
-        sessionLength: [event.start, event.end]
-      }
+			const initialFormValues = {
+				sessionName: event.title,
+				sessionLength: [event.start, event.end]
+			}
 
-      history.push("/program", { 
-        initialView: VIEW.SESSION, 
-        initialFormMode: "edit", 
-        initialFormValues
-      });
+			history.push("/program", {
+				initialView: VIEW.SESSION,
+				initialFormMode: "edit",
+				initialFormValues
+			});
 
-    } else {
-      // console.log(event)
-      
-      const presenters = [];
-      let pId = getNextPresenterId();
+		} else {
+			// console.log(event)
 
-      event.presenters.forEach(presenter => {
-        presenters.push({name: presenter, id: String(pId)});
-        pId++;
-      })
+			const presenters = [];
+			let pId = getNextPresenterId();
 
-      const creditList = []; 
-      for (const key in event.credits){
-        creditList.push(`${key} | ${event.credits[key]}`)
-      }
+			event.presenters.forEach(presenter => {
+				presenters.push({ name: presenter, id: String(pId) });
+				pId++;
+			})
 
-      const initialFormValues = {
-        id: event.id,
-        presentationName: event.title,
-        presentationLength: [event.start, event.end],
-        presenters: presenters,
-        credits: event.credits,
-        creditsList: creditList
-      }
+			const creditList = [];
+			for (const key in event.credits) {
+				creditList.push(`${key} | ${event.credits[key]}`)
+			}
 
-      history.push("/program", { 
-        initialView: VIEW.PRESENTATION, 
-        initialFormMode: "edit", 
-        initialFormValues
-      });
-    }
-  }
+			const initialFormValues = {
+				id: event.id,
+				presentationName: event.title,
+				presentationLength: [event.start, event.end],
+				presenters: presenters,
+				credits: event.credits,
+				creditsList: creditList
+			}
 
-  return (
-    <>
-    <span className="event-card-widgets">
-        <Popconfirm
-          title={`Are you sure you want to delete this ${event.type === "session" ? "session" : "presentation"}?`}
-          onConfirm={() => handleDelete(event)}
-          okText="Yes"
-          cancelText="No">
-          <Tooltip title={event.type === "session" ? "Delete Session" : "Delete Presentation"}>
-            <DeleteOutlined />
-          </Tooltip>
-        </Popconfirm>
-        <Tooltip title={event.type === "session" ? "Edit Session" : "Edit Presentation"}>
-          <EditOutlined onClick={() => handleEdit(event)} />
-        </Tooltip>
-      </span>
-      <span>{event.title}</span>
-    </>
-  )
+			history.push("/program", {
+				initialView: VIEW.PRESENTATION,
+				initialFormMode: "edit",
+				initialFormValues
+			});
+		}
+	}
+
+	return (
+		<>
+			<span className="event-card-widgets">
+				<Popconfirm
+					title={`Are you sure you want to delete this ${event.type === "session" ? "session" : "presentation"}?`}
+					onConfirm={() => handleDelete(event)}
+					okText="Yes"
+					cancelText="No">
+					<Tooltip title={event.type === "session" ? "Delete Session" : "Delete Presentation"}>
+						<DeleteOutlined />
+					</Tooltip>
+				</Popconfirm>
+				<Tooltip title={event.type === "session" ? "Edit Session" : "Edit Presentation"}>
+					<EditOutlined onClick={() => handleEdit(event)} />
+				</Tooltip>
+			</span>
+			<span>{event.title}</span>
+		</>
+	)
 }
 
 // Work
@@ -140,52 +141,71 @@ const Review = (props) => {
 
 	useEffect(() => {
 		setRBCdata(buildData(program))  // for doc on this setState, see buildData() at the bottom of this file.
-    // setStartDate(new Date(program.dateStart))
+		// setStartDate(new Date(program.dateStart))
 	}, [program])
 
 	return (
-		Boolean(RBCdata)  // if this is an array.length 0, it will be `false`
-			? <>
-      <Row>
-        <Col span={24}>
-
-      <DragAndDropCalendar
-				events={RBCdata}
-				localizer={localizer}
-				defaultView={"day"}
-				defaultDate={new Date(program.dateStart)}
-				views={["week", "day", "agenda"]}
-        
-				eventPropGetter={eventPropGetter}
-				selectable
-				resizable
-				popup={true}
-				onDragStart={e => handleDnd("onDragStart", e)}
-				onEventDrop={e => handleDnd("onEventDrop", e)}
-				onEventResize={e => handleDnd("onEventResize", e)}
-				onSelectSlot={e => handleDnd("onSelectSlot", e)}
-        handleDragStart={e => handleDnd("handleDragStart", e)}
-        components={{
-          event: CustomEvent,
-        }}
-        />
-        </Col>
-      </Row>
-
-      <Divider />
-
-      <Row>
-        <Col span={24}>
-          <Space>
-            <Button type="primary">Add Session</Button>
-            <Button type="primary">Add Presentation</Button>
-            <Button type="primary">Edit Program Name / Date Range</Button>
-          </Space>
-        </Col>
-      </Row>
-      </>
-			: <Skeleton />
+		<>
+			<Row>
+				<Col span={24}>
+					<Agenda props={program} />
+				</Col>
+			</Row>
+			<Divider />
+			<Row>
+				<Col span={24}>
+					<Space>
+						<Button type="primary">Add Session</Button>
+						<Button type="primary">Add Presentation</Button>
+						<Button type="primary">Edit Program Name / Date Range</Button>
+					</Space>
+				</Col>
+			</Row>
+		</>
 	)
+
+	/* 	return (
+			Boolean(RBCdata)  // if this is an array.length 0, it will be `false`
+				? <>
+					<Row>
+						<Col span={24}>
+							<DragAndDropCalendar
+								events={RBCdata}
+								localizer={localizer}
+								defaultView={"day"}
+								defaultDate={new Date(program.dateStart)}
+								views={["week", "day", "agenda"]}
+	
+								eventPropGetter={eventPropGetter}
+								selectable
+								resizable
+								popup={true}
+								onDragStart={e => handleDnd("onDragStart", e)}
+								onEventDrop={e => handleDnd("onEventDrop", e)}
+								onEventResize={e => handleDnd("onEventResize", e)}
+								onSelectSlot={e => handleDnd("onSelectSlot", e)}
+								handleDragStart={e => handleDnd("handleDragStart", e)}
+								components={{
+									event: CustomEvent,
+								}}
+							/>
+						</Col>
+					</Row>
+	
+					<Divider />
+	
+					<Row>
+						<Col span={24}>
+							<Space>
+								<Button type="primary">Add Session</Button>
+								<Button type="primary">Add Presentation</Button>
+								<Button type="primary">Edit Program Name / Date Range</Button>
+							</Space>
+						</Col>
+					</Row>
+				</Agenda>
+				: <Skeleton />
+		) */
 };
 
 const buildData = (obj) => {
@@ -206,7 +226,7 @@ const buildData = (obj) => {
 				start: new Date(s.dateStart),
 				end: new Date(s.dateEnd),
 				type: "session",
-				origIndex: {dayIndex: i, sessionIndex: j},
+				origIndex: { dayIndex: i, sessionIndex: j },
 				origData: { dayId: day.id, sessionId: s.id },
 			})
 			id++
