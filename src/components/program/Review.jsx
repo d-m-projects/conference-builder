@@ -100,7 +100,8 @@ const buildData = (obj) => {
 				start: new Date(s.dateStart),
 				end: new Date(s.dateEnd),
 				type: "session",
-				origKeys: {day: i, session: j},
+				origIndex: {day: i, session: j},
+				origData: { dayId: day.id, sessionId: s.id },
 			})
 			id++
 			for (let [k, p] of s.presentations.entries()) {
@@ -112,7 +113,8 @@ const buildData = (obj) => {
 					credits: p.credits,
 					presenters: p.presenters,
 					type: "presentation",
-					origKeys: { day: i, session: j, pres: k },
+					origIndex: { dayIndex: i, sessionIndex: j, presIndex: k },
+					origData: { dayId: day.id, sessionId: s.id, presentationId: p.id },
 				})
 				id++
 			}
