@@ -5,7 +5,7 @@ import { useLocation, useHistory } from "react-router-dom";
 import moment from "moment";
 
 // antd components
-import { Skeleton, Table, Card, Button, Space, Popconfirm, message, Tooltip, } from "antd";
+import { Skeleton, Table, Card, Button, Space, Popconfirm, message, Tooltip, Divider, } from "antd";
 import { EditOutlined, DeleteOutlined, UnorderedListOutlined } from "@ant-design/icons";
 
 // Components
@@ -80,23 +80,21 @@ function CustomEvent({ event, type }) {
 	}
 
 	return (
-		<>
-			<span className="event-card-widgets">
-				<Popconfirm
-					title={`Are you sure you want to delete this ${type === "session" ? "session" : "presentation"}?`}
-					onConfirm={() => handleDelete(event, type)}
-					okText="Yes"
-					cancelText="No">
-					<Tooltip title={type === "session" ? `Delete Session ${event && event.name}` : `Delete Presentation ${event && event.name}`}>
-						<DeleteOutlined />
-					</Tooltip>
-				</Popconfirm>
-				<Tooltip title={type === "session" ? `Edit Session ${event && event.name}` : `Edit Presentation ${event && event.name}`}>
-					<EditOutlined onClick={() => handleEdit(event, type)} />
+		<Space>
+			<Tooltip title={type === "session" ? `Edit Session ${event && event.name}` : `Edit Presentation ${event && event.name}`}>
+				<EditOutlined onClick={() => handleEdit(event, type)} />
+			</Tooltip>
+			<Popconfirm
+				title={`Are you sure you want to delete this ${type === "session" ? "session" : "presentation"}?`}
+				onConfirm={() => handleDelete(event, type)}
+				okText="Yes"
+				cancelText="No">
+				<Tooltip title={type === "session" ? `Delete Session ${event && event.name}` : `Delete Presentation ${event && event.name}`}>
+					<DeleteOutlined />
 				</Tooltip>
-			</span>
-			{/* <span>{event && event.name}</span> */}
-		</>
+			</Popconfirm>
+
+		</Space>
 	)
 }
 
@@ -150,7 +148,7 @@ const Agenda = (props) => {
 					single={single}
 				/>
 				<Card title={program.name} extra={programdata(program)}>
-					<Table bordered className="program-agenda" showHeader={false} size="small" dataSource={program.days} pagination={false} key={moment().unix()}>
+					<Table  className="program-agenda" showHeader={false} size="small" dataSource={program.days} pagination={false} key={moment().unix()}>
 						<Column title="Date" dataIndex="date" key={moment().unix()}
 							render={(dataIndex, singleDay, i) => (
 								<>
@@ -166,11 +164,11 @@ const Agenda = (props) => {
 										setItemList={setItemList}
 										doReorder={doReorder}
 									/>
+									{(i + 1) >= (program.days.length) ? null : <Divider />}
 								</>
 							)}
 						/>
 					</Table>
-					<CustomEvent />
 				</Card>
 			</>
 
@@ -189,24 +187,23 @@ const Sessions = ({ visible, setVisible, itemList, setItemList, doReorder, singl
 
 	return (
 		<>
-			<Table bordered className="program-session" showHeader={false} size="small" style={{ marginLeft: "20px" }} dataSource={singleDay.sessions} pagination={false} key={moment().unix()}>
-				<Column title="Session Name" dataIndex="dateStart" key={moment().unix()}
-					render={(dataIndex, single, i) => (
-						<>
-							<Space size={16}>
-								<p>Session: {sessiondata(single).sessionsDateString}</p>
-								<Button size="small" icon={<UnorderedListOutlined />} onClick={
-									() => doReorder(single.presentations, single)
-								}>
-									Change presentation order
-							</Button>
-							</Space>
-							<Presentations props={single} key={moment().unix()} />
-							<CustomEvent event={single} type={"session"} />
-						</>
-					)}
-				/>
-			</Table>
+				<Table  className="program-session" showHeader={false} size="small" style={{ marginLeft: "20px" }} dataSource={singleDay.sessions} pagination={false} key={moment().unix()}>
+					<Column title="Session Name" dataIndex="dateStart" key={moment().unix()}
+						render={(dataIndex, single, i) => (
+							<>
+								<Space size={16}>
+									<p>Session: {sessiondata(single).sessionsDateString}</p>
+									<Tooltip title="Change presentation order">
+										<UnorderedListOutlined onClick={() => doReorder(single.presentations, single)} />
+									</Tooltip>
+									<CustomEvent event={single} type={"session"} />
+								</Space>
+								<Presentations props={single} key={moment().unix()} />
+								<p>&nbsp;</p>
+							</>
+						)}
+					/>
+				</Table>
 		</>
 	)
 }
