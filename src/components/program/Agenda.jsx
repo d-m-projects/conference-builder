@@ -1,11 +1,11 @@
 import React, { useContext, useState, useEffect } from "react";
 import { ProgramContext } from "../../contexts/Program";
-import { useLocation } from "react-router-dom";
+import { useLocation, useHistory } from "react-router-dom";
 
 import moment from "moment";
 
 // antd components
-import { Skeleton, Table, Card, Button, Space } from "antd";
+import { Skeleton, Table, Card, Button, Space, Popconfirm, message, Tooltip, } from "antd";
 import { EditOutlined, DeleteOutlined, UnorderedListOutlined } from "@ant-design/icons";
 
 // Components
@@ -17,6 +17,88 @@ import { newest, modified } from "../create/components/events"
 import injection from "../../data/testdata"
 
 const { Column } = Table
+
+
+function CustomEvent({ event, type }) {
+	console.log(`Agenda.jsx 23: `, event)
+	const program = useContext(ProgramContext);
+	const { selectSession, deleteSession, deletePresentation, getNextPresenterId } = program;
+
+	const history = useHistory();
+
+	const handleDelete = (event, type) => {
+		type === "session" ? deleteSession(event.id) : deletePresentation(event.id);
+
+		message.success(`${event.name} deleted!`)
+	}
+
+	const handleEdit = (event, type) => {
+
+		if (type === "session") {
+			selectSession(event.id);
+
+			const initialFormValues = {
+				sessionName: event.name,
+				sessionLength: [event.dateStart, event.dateEnd]
+			}
+
+			history.push("/program", {
+				initialView: VIEW.SESSION,
+				initialFormMode: "edit",
+				initialFormValues
+			});
+
+		} else {
+			const presenters = [];
+			let pId = getNextPresenterId();
+
+			event.presenters.forEach(presenter => {
+				presenters.push({ name: presenter, id: String(pId) });
+				pId++;
+			})
+
+			const creditList = [];
+			for (const key in event.credits) {
+				creditList.push(`${key} | ${event.credits[key]}`)
+			}
+
+			const initialFormValues = {
+				id: event.id,
+				presentationName: event.name,
+				presentationLength: [event.start, event.end],
+				presenters: presenters,
+				credits: event.credits,
+				creditsList: creditList
+			}
+
+			history.push("/program", {
+				initialView: VIEW.PRESENTATION,
+				initialFormMode: "edit",
+				initialFormValues
+			});
+		}
+	}
+
+	return (
+		<>
+			<span className="event-card-widgets">
+				<Popconfirm
+					title={`Are you sure you want to delete this ${type === "session" ? "session" : "presentation"}?`}
+					onConfirm={() => handleDelete(event, type)}
+					okText="Yes"
+					cancelText="No">
+					<Tooltip title={type === "session" ? `Delete Session ${event && event.name}` : `Delete Presentation ${event && event.name}`}>
+						<DeleteOutlined />
+					</Tooltip>
+				</Popconfirm>
+				<Tooltip title={type === "session" ? `Edit Session ${event && event.name}` : `Edit Presentation ${event && event.name}`}>
+					<EditOutlined onClick={() => handleEdit(event, type)} />
+				</Tooltip>
+			</span>
+			{/* <span>{event && event.name}</span> */}
+		</>
+	)
+}
 
 const Agenda = (props) => {
 	// Top level of the agenda
@@ -68,7 +150,7 @@ const Agenda = (props) => {
 					single={single}
 				/>
 				<Card title={program.name} extra={programdata(program)}>
-					<Table className="program-agenda" showHeader={false} size="small" dataSource={program.days} pagination={false} key={moment().unix()}>
+					<Table bordered className="program-agenda" showHeader={false} size="small" dataSource={program.days} pagination={false} key={moment().unix()}>
 						<Column title="Date" dataIndex="date" key={moment().unix()}
 							render={(dataIndex, singleDay, i) => (
 								<>
@@ -88,6 +170,7 @@ const Agenda = (props) => {
 							)}
 						/>
 					</Table>
+					<CustomEvent />
 				</Card>
 			</>
 
@@ -105,23 +188,26 @@ const Sessions = ({ visible, setVisible, itemList, setItemList, doReorder, singl
 	}
 
 	return (
-		<Table className="program-session" showHeader={false} size="small" style={{ marginLeft: "20px" }} dataSource={singleDay.sessions} pagination={false} key={moment().unix()}>
-			<Column title="Session Name" dataIndex="dateStart" key={moment().unix()}
-				render={(dataIndex, single, i) => (
-					<>
-						<Space size={16}>
-							<p>Session: {sessiondata(single).sessionsDateString}</p>
-							<Button size="small" icon={<UnorderedListOutlined />} onClick={
-								() => doReorder(single.presentations, single)
-							}>
-								Change presentation order
+		<>
+			<Table bordered className="program-session" showHeader={false} size="small" style={{ marginLeft: "20px" }} dataSource={singleDay.sessions} pagination={false} key={moment().unix()}>
+				<Column title="Session Name" dataIndex="dateStart" key={moment().unix()}
+					render={(dataIndex, single, i) => (
+						<>
+							<Space size={16}>
+								<p>Session: {sessiondata(single).sessionsDateString}</p>
+								<Button size="small" icon={<UnorderedListOutlined />} onClick={
+									() => doReorder(single.presentations, single)
+								}>
+									Change presentation order
 							</Button>
-						</Space>
-						<Presentations props={single} key={moment().unix()} />
-					</>
-				)}
-			/>
-		</Table>
+							</Space>
+							<Presentations props={single} key={moment().unix()} />
+							<CustomEvent event={single} type={"session"} />
+						</>
+					)}
+				/>
+			</Table>
+		</>
 	)
 }
 
@@ -135,16 +221,20 @@ const Presentations = ({ props }) => {
 	}
 
 	return (
-		<Table className={`program-presentation`} showHeader={false} size="small" style={{ marginLeft: "20px" }} dataSource={props.presentations} pagination={false} key={moment().unix()}>
-			<Column title="Presentation" dataIndex="name" key="name" key={moment().unix()}
-				render={(dataIndex, single, i) => (
-					<>
-						<div>{presdata(single).presDateString}</div>
-						<div>By: {single.presenters.join(", ")}</div>
-					</>
-				)}
-			/>
-		</Table>
+		<>
+			<Table bordered className={`program-presentation`} showHeader={false} size="small" style={{ marginLeft: "20px" }} dataSource={props.presentations} pagination={false} key={moment().unix()}>
+				<Column title="Presentation" dataIndex="name" key="name" key={moment().unix()}
+					render={(dataIndex, single, i) => (
+						<>
+							<Space size="large">
+								<span>{presdata(single).presDateString}</span><CustomEvent event={single} type="presentation" />
+							</Space>
+							<div>By: {single.presenters.join(", ")}</div>
+						</>
+					)}
+				/>
+			</Table>
+		</>
 	)
 }
 
