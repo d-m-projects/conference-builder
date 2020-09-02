@@ -20,7 +20,6 @@ const { Column } = Table
 
 
 function CustomEvent({ event, type }) {
-	console.log(`Agenda.jsx 23: `, event)
 	const program = useContext(ProgramContext);
 	const { selectSession, deleteSession, deletePresentation, getNextPresenterId } = program;
 
@@ -148,15 +147,16 @@ const Agenda = (props) => {
 					single={single}
 				/>
 				<Card title={program.name} extra={programdata(program)}>
-					<Table  className="program-agenda" showHeader={false} size="small" dataSource={program.days} pagination={false} key={moment().unix()}>
-						<Column title="Date" dataIndex="date" key={moment().unix()}
+					<Table className="program-agenda" showHeader={false} size="small" dataSource={program.days} pagination={false}>
+						<Column title="Date" dataIndex="date"
 							render={(dataIndex, singleDay, i) => (
-								<>
+								<div key={i}>
+									{/* {console.log(`Agenda.jsx 153: Day`, i)} */}
 									<Space size={16}>
 										<p>Program Day: {moment(dataIndex).format("ddd, MMM Do Y")}</p>
 										{/* <Button size="small" ><UnorderedListOutlined /></Button> */}
 									</Space>
-									<Sessions key={moment().unix()}
+									<Sessions
 										singleDay={singleDay}
 										visible={drawerVisible}
 										setVisible={setDrawerVisible}
@@ -165,7 +165,7 @@ const Agenda = (props) => {
 										doReorder={doReorder}
 									/>
 									{(i + 1) >= (program.days.length) ? null : <Divider />}
-								</>
+								</div>
 							)}
 						/>
 					</Table>
@@ -184,27 +184,25 @@ const Sessions = ({ visible, setVisible, itemList, setItemList, doReorder, singl
 		s.sessionsDateString = `${s.name} (${moment(s.dateStart).format("HH:mm")}-${moment(s.dateEnd).format("HH:mm")})`
 		return s
 	}
-
+	// console.log(`Agenda.jsx 186: Session`, singleDay.id)
 	return (
-		<>
-				<Table  className="program-session" showHeader={false} size="small" style={{ marginLeft: "20px" }} dataSource={singleDay.sessions} pagination={false} key={moment().unix()}>
-					<Column title="Session Name" dataIndex="dateStart" key={moment().unix()}
-						render={(dataIndex, single, i) => (
-							<>
-								<Space size={16}>
-									<p>Session: {sessiondata(single).sessionsDateString}</p>
-									<Tooltip title="Change presentation order">
-										<UnorderedListOutlined onClick={() => doReorder(single.presentations, single)} />
-									</Tooltip>
-									<CustomEvent event={single} type={"session"} />
-								</Space>
-								<Presentations props={single} key={moment().unix()} />
-								<p>&nbsp;</p>
-							</>
-						)}
-					/>
-				</Table>
-		</>
+		<Table key={singleDay.id} className="program-session" showHeader={false} size="small" style={{ marginLeft: "20px" }} dataSource={singleDay.sessions} pagination={false}>
+			<Column title="Session Name" dataIndex="dateStart"
+				render={(dataIndex, single, i) => (
+					<div>
+						<Space size={16}>
+							<p>Session: {sessiondata(single).sessionsDateString}</p>
+							<Tooltip title="Change presentation order">
+								<UnorderedListOutlined onClick={() => doReorder(single.presentations, single)} />
+							</Tooltip>
+							<CustomEvent event={single} type={"session"} />
+						</Space>
+						<Presentations props={single} />
+						<p>&nbsp;</p>
+					</div>
+				)}
+			/>
+		</Table>
 	)
 }
 
@@ -216,22 +214,20 @@ const Presentations = ({ props }) => {
 		p.presDateString = `[${moment(p.dateStart).format("HH:mm")}-${moment(p.dateEnd).format("HH:mm")}] ${p.name}`
 		return p
 	}
-
+	// console.log(`Agenda.jsx 216: Pres`, props.id)
 	return (
-		<>
-			<Table bordered className={`program-presentation`} showHeader={false} size="small" style={{ marginLeft: "20px" }} dataSource={props.presentations} pagination={false} key={moment().unix()}>
-				<Column title="Presentation" dataIndex="name" key="name" key={moment().unix()}
-					render={(dataIndex, single, i) => (
-						<>
-							<Space size="large">
-								<span>{presdata(single).presDateString}</span><CustomEvent event={single} type="presentation" />
-							</Space>
-							<div>By: {single.presenters.join(", ")}</div>
-						</>
-					)}
-				/>
-			</Table>
-		</>
+		<Table bordered key={props.id} className={`program-presentation`} showHeader={false} size="small" style={{ marginLeft: "20px" }} dataSource={props.presentations} pagination={false}>
+			<Column title="Presentation" dataIndex="name" key="name"
+				render={(dataIndex, single, i) => (
+					<div key={i}>
+						<Space size="large">
+							<span>{presdata(single).presDateString}</span><CustomEvent event={single} type="presentation" />
+						</Space>
+						<div>By: {single.presenters.join(", ")}</div>
+					</div>
+				)}
+			/>
+		</Table>
 	)
 }
 
