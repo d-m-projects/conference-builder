@@ -114,7 +114,7 @@ const Sessions = ({ visible, setVisible, itemList, setItemList, doReorder, singl
 							<Button size="small" icon={<UnorderedListOutlined />} onClick={
 								() => doReorder(single.presentations, single)
 							}>
-								Change order
+								Change presentation order
 							</Button>
 						</Space>
 						<Presentations props={single} key={moment().unix()} />
