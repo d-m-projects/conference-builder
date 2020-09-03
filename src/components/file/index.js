@@ -131,7 +131,7 @@ const File = () => {
 	const CreateCard = () => {
 		return (
 			<Form onFinish={onFinish} key="0">
-				<Card title="Create New Program" >
+				<Card title="Create New Program" className="fileman-card" >
 					<Space direction="vertical" >
 						<Form.Item
 							name="programName"
@@ -165,7 +165,7 @@ const File = () => {
 						{
 							i === 0
 								? <CreateCard />
-								: <Card key={i}
+								: <Card className="fileman-card" key={i}
 									actions={[
 										<EditOutlined onClick={() => doEditClick(item.id)} />,
 										<DownloadOutlined onClick={() => doDownloadClick(item.id)} />,
@@ -176,6 +176,7 @@ const File = () => {
 								>
 									<p>Begin: {moment(item.dateStart).format("ddd, MMM Do Y")}</p>
 									<p>End: {moment(item.dateEnd).format("ddd, MMM Do Y")}</p>
+									<p>{item.nextSessionId} Sessions, {item.nextPresentationId} Presentations,<br />{item.nextPresenterId} Presenters</p>
 								</Card>
 						}
 					</Col>

@@ -119,33 +119,27 @@ const Review = (props) => {
 	// if `program` is empty, fill it with example data for visualization.
 	// Use when you need complete data in `program`
 	// (so you don't have to enter it manually)
-	if (!program.dateStart) {
-		program.injectTestData()
-	}
+	// if (!program.dateStart) {
+	// 	program.injectTestData()
+	// }
 
-	const eventPropGetter = (e) => {
-		if (e.type === "session") {
-			return {
-				style: {
-					backgroundColor: "#ffffcc",
-					color: "#444",
-				},
-			};
-		}
-	}
+	// const eventPropGetter = (e) => {
+	// 	if (e.type === "session") {
+	// 		return {
+	// 			style: {
+	// 				backgroundColor: "#ffffcc",
+	// 				color: "#444",
+	// 			},
+	// 		};
+	// 	}
+	// }
 
-	useEffect(() => {
-		setRBCdata(buildData(program))  // for doc on this setState, see buildData() at the bottom of this file.
-	}, [program])
+	// useEffect(() => {
+	// 	setRBCdata(buildData(program))  // for doc on this setState, see buildData() at the bottom of this file.
+	// }, [program])
 
 	return (
 		<>
-			<Row>
-				<Col span={24}>
-					<Agenda props={program} />
-				</Col>
-			</Row>
-			<Divider />
 			<Row>
 				<Col span={24}>
 					<Space>
@@ -153,6 +147,12 @@ const Review = (props) => {
 						<Button type="primary">Add Presentation</Button>
 						<Button type="primary">Edit Program Name / Date Range</Button>
 					</Space>
+				</Col>
+			</Row>
+			<Divider />
+			<Row>
+				<Col span={24}>
+					<Agenda props={program} />
 				</Col>
 			</Row>
 		</>
@@ -202,46 +202,46 @@ const Review = (props) => {
 		) */
 };
 
-const buildData = (obj) => {
-	// from the original `program` object, 
-	// build an array of objects that is shaped specifically for
-	// react-big-calendar
+// const buildData = (obj) => {
+// 	// from the original `program` object, 
+// 	// build an array of objects that is shaped specifically for
+// 	// react-big-calendar
 
-	if (!obj.dateStart) {
-		return
-	}
-	let data = [];
-	let id = 0
-	for (let [i, day] of obj.days.entries()) {
-		for (let [j, s] of day.sessions.entries()) {
-			data.push({
-				id: s.id,
-				title: s.name,
-				start: new Date(s.dateStart),
-				end: new Date(s.dateEnd),
-				type: "session",
-				origIndex: { dayIndex: i, sessionIndex: j },
-				origData: { dayId: day.id, sessionId: s.id },
-			})
-			id++
-			for (let [k, p] of s.presentations.entries()) {
-				data.push({
-					id: p.id,
-					title: p.name,
-					start: new Date(p.dateStart),
-					end: new Date(p.dateEnd),
-					credits: p.credits,
-					presenters: p.presenters,
-					type: "presentation",
-					origIndex: { dayIndex: i, sessionIndex: j, presIndex: k },
-					origData: { dayId: day.id, sessionId: s.id, presentationId: p.id },
-				})
-				id++
-			}
-		}
-	}
+// 	if (!obj.dateStart) {
+// 		return
+// 	}
+// 	let data = [];
+// 	let id = 0
+// 	for (let [i, day] of obj.days.entries()) {
+// 		for (let [j, s] of day.sessions.entries()) {
+// 			data.push({
+// 				id: s.id,
+// 				title: s.name,
+// 				start: new Date(s.dateStart),
+// 				end: new Date(s.dateEnd),
+// 				type: "session",
+// 				origIndex: { dayIndex: i, sessionIndex: j },
+// 				origData: { dayId: day.id, sessionId: s.id },
+// 			})
+// 			id++
+// 			for (let [k, p] of s.presentations.entries()) {
+// 				data.push({
+// 					id: p.id,
+// 					title: p.name,
+// 					start: new Date(p.dateStart),
+// 					end: new Date(p.dateEnd),
+// 					credits: p.credits,
+// 					presenters: p.presenters,
+// 					type: "presentation",
+// 					origIndex: { dayIndex: i, sessionIndex: j, presIndex: k },
+// 					origData: { dayId: day.id, sessionId: s.id, presentationId: p.id },
+// 				})
+// 				id++
+// 			}
+// 		}
+// 	}
 
-	return data
-}
+// 	return data
+// }
 
 export default Review;
