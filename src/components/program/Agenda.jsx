@@ -154,7 +154,9 @@ const Agenda = (props) => {
 									{/* {console.log(`Agenda.jsx 153: Day`, i)} */}
 									<Space size={16}>
 										<p>Program Day: {moment(dataIndex).format("ddd, MMM Do Y")}</p>
-										{/* <Button size="small" ><UnorderedListOutlined /></Button> */}
+										<Tooltip title="Reorder Sessions">
+											<UnorderedListOutlined onClick={() => doReorder(singleDay.sessions, singleDay)} />
+										</Tooltip>
 									</Space>
 									<Sessions
 										singleDay={singleDay}
@@ -192,7 +194,7 @@ const Sessions = ({ visible, setVisible, itemList, setItemList, doReorder, singl
 					<div>
 						<Space size={16}>
 							<p>Session: {sessiondata(single).sessionsDateString}</p>
-							<Tooltip title="Change presentation order">
+							<Tooltip title="Reorder Presentations">
 								<UnorderedListOutlined onClick={() => doReorder(single.presentations, single)} />
 							</Tooltip>
 							<CustomEvent event={single} type={"session"} />
