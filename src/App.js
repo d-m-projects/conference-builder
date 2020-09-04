@@ -75,7 +75,7 @@ function App() {
 						<div style={{ backgroundColor: "white", padding: "20px" }}>
 							<Switch>
 								<Route exact path="/" component={LandingPage} />
-								<Route path="/review" component={Review} />
+								<Route path="/review" component={Agenda} />
 								<Route path="/program" component={ProgramPage} />
 								<Route path="/dashboard" component={Dashboard} />
 								<Route path="/manager" component={File} />

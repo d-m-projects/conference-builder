@@ -5,7 +5,7 @@ import { useLocation, useHistory } from "react-router-dom";
 import moment from "moment";
 
 // antd components
-import { Skeleton, Table, Card, Button, Space, Popconfirm, message, Tooltip, Divider, } from "antd";
+import { Skeleton, Table, Card, Button, Space, Popconfirm, message, Tooltip, Divider, Row, Col } from "antd";
 import { EditOutlined, DeleteOutlined, UnorderedListOutlined } from "@ant-design/icons";
 
 // Components
@@ -146,6 +146,16 @@ const Agenda = (props) => {
 					setItemList={setItemList}
 					single={single}
 				/>
+				<Row>
+					<Col span={24}>
+						<Space>
+							<Button type="primary">Add Session</Button>
+							<Button type="primary">Add Presentation</Button>
+							<Button type="primary">Edit Program Name / Date Range</Button>
+						</Space>
+					</Col>
+				</Row>
+				<Divider />
 				<Card title={program.name} extra={programdata(program)}>
 					<Table className="program-agenda" showHeader={false} size="small" dataSource={program.days} pagination={false}>
 						<Column title="Date" dataIndex="date"
