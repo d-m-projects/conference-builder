@@ -25,6 +25,7 @@ const ProgramProvider = (props) => {
 
 	useEffect(() => {
 		if (program.id && program.dateStart) {
+			// console.log(`Program.js 28: Would have updated.`,)
 			db.update(program)
 				.then((x) => {
 					console.log("Context > DB Updated ", x);
@@ -64,6 +65,22 @@ const ProgramProvider = (props) => {
 		console.log(`Program.js 62: `, program.days)
 		setProgram(program)
 	};
+
+	const editDay = (dayId, dayData) => {
+		setProgram({
+			...program,
+			days: program.days.map(day => {
+				if (day.id === dayId) {
+					// Day we want to modify
+					return {
+						...day,
+						...dayData
+					}
+				}
+				return day;
+			})
+		});
+	}
 
 	const createSession = (newSession) => {
 		/*
@@ -449,6 +466,7 @@ const ProgramProvider = (props) => {
 				...program,
 				createProgram,
 				updateProgram,
+				editDay,
 				createSession,
 				editSession,
 				deleteSession,

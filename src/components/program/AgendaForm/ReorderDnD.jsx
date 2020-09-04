@@ -8,7 +8,7 @@ import { Drawer, Button, Empty } from "antd";
 function ReorderDnD(props) {
 	const { visible, setVisible, itemList, setItemList, single } = props;
 	const program = useContext(ProgramContext);
-	const { editSession } = program
+	const { editSession, editDay } = program
 
 	const closeDrawer = () => {
 		setVisible(false);
@@ -38,10 +38,22 @@ function ReorderDnD(props) {
 		}
 		// Re-order presenter array with changes
 		const orderedList = reorderList(itemList, result.source.index, result.destination.index);
-		const newSession = {...single, presentations: orderedList}
 
-		setItemList(orderedList);
-		editSession(newSession.id, newSession)
+		let newParent = {}
+
+		if (Object.keys(single).find((e) => e === "sessions")) {
+			console.log(`ReorderDnD.jsx 43: session stuff`,)
+			newParent = { ...single, sessions: orderedList }
+			setItemList(orderedList)
+			editDay(newParent.id, newParent)
+		} else {
+			console.log(`ReorderDnD.jsx 45: presentations`,)
+			newParent = { ...single, presentations: orderedList }
+			setItemList(orderedList);
+			editSession(newParent.id, newParent)
+		}
+
+
 	};
 
 	// This is the style for each draggable element
