@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { ProgramContext } from "../../../contexts/Program";
 
-import {useHistory} from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 import moment from "moment";
 
@@ -18,45 +18,52 @@ function PresentationForm(props) {
   const { initialFormMode, initialFormValues, setModalVisible } = props;
 
   const program = useContext(ProgramContext);
-  const { selectSessionByPresentationId, selectedSessionId, getSessionById, createPresentation, editPresentation } = program;
+  const { selectedSessionId, getSessionById, createPresentation, editPresentation } = program;
+  console.log("Session Selected", selectedSessionId);
 
   const history = useHistory();
 
+  // "add" / "edit"
   const [formMode, setFormMode] = useState(initialFormMode);
 
   // State for dynamic presenters
-  const [presenters, setPresenters] = useState(initialFormValues ? initialFormValues.presenters : []);
+  const [presenters, setPresenters] = useState(
+    initialFormValues && initialFormValues.presenters ? initialFormValues.presenters : []
+  );
 
   // State for dynamic credits
-  const [credits, setCredits] = useState(initialFormValues ? initialFormValues.credits : {});
+  const [credits, setCredits] = useState(
+    initialFormValues && initialFormValues.credits ? initialFormValues.credits : {}
+  );
 
   // Friendly strings for list to render credits
-  const [creditsList, setCreditsList] = useState(initialFormValues ? initialFormValues.creditsList : []);
+  const [creditsList, setCreditsList] = useState(
+    initialFormValues && initialFormValues.creditsList ? initialFormValues.creditsList : []
+  );
 
-  // Drawer
+  // DnD Drawer
   const [drawerVisible, setDrawerVisible] = useState(false);
 
   const [form] = Form.useForm();
 
-  let prefillValues = {} 
-
-  if ( initialFormValues ) {
-    prefillValues = {
-      ...initialFormValues,
-      presentationLength: [
-        moment(initialFormValues.presentationLength[0]),
-        moment(initialFormValues.presentationLength[1])
-      ]
-    }
-  }
+  // Input prefill
+  const [prefillValues, setPrefillValues] = useState({});
 
   useEffect(() => {
-    if (formMode === "edit") {
-      selectSessionByPresentationId(initialFormValues.id);
-    } else {
-      form.resetFields();
+    if (initialFormValues) {
+      setPrefillValues({
+        ...initialFormValues,
+        presentationLength: [
+          moment(initialFormValues.presentationLength[0]),
+          moment(initialFormValues.presentationLength[1]),
+        ],
+      });
     }
-  }, [formMode]);
+  }, [initialFormValues]);
+
+  useEffect(() => {
+    form.resetFields();
+  }, [formMode, prefillValues]);
 
   const formSubmit = (values) => {
     // Date range validation helper func
@@ -100,7 +107,7 @@ function PresentationForm(props) {
             presenters: presenters.map((presenter) => presenter.name),
             credits: credits,
           });
-  
+
           message.success(`Presentation ${values.presentationName} modified!`);
 
           // TEMP
@@ -113,10 +120,9 @@ function PresentationForm(props) {
             presenters: presenters.map((presenter) => presenter.name),
             credits: credits,
           });
-  
+
           message.success(`Presentation ${values.presentationName} created!`);
         }
-        
 
         setTimeout(() => {
           setModalVisible(true);
@@ -149,7 +155,7 @@ function PresentationForm(props) {
   const disabledDate = (date) => {
     const session = getSessionById(selectedSessionId);
 
-    if(session) {
+    if (session) {
       return date.isBefore(session.dateStart, "day") || date.isAfter(session.dateEnd, "day");
     }
   };
@@ -161,27 +167,22 @@ function PresentationForm(props) {
     Credit Type + Credit Value * Dynamic, Add credit btn
   */
 
-  return (
-    selectedSessionId >= 0 ?
+  return selectedSessionId >= 0 ? (
     <div className="presentation-form-container">
-      {/* DnD Presenter Drawer */}
       <PresenterDnD
         visible={drawerVisible}
         setVisible={setDrawerVisible}
         presenters={presenters}
         setPresenters={setPresenters}
       />
-      {/* THE BIG FORM */}
+
       <Form
         form={form}
         name="presentationForm"
-        initialValues={formMode === "edit" ? prefillValues : {
-          creditAmount: 0,
-        }}
+        initialValues={prefillValues}
         onFinish={formSubmit}
         autoComplete="off"
         hideRequiredMark>
-        {/* PRESENTATION NAME */}
         <Row>
           <Col span={24}>
             <Form.Item
@@ -194,7 +195,6 @@ function PresentationForm(props) {
           </Col>
         </Row>
 
-        {/* PRESENTATION TIME RANGE */}
         <Row>
           <Col span={24}>
             <Form.Item
@@ -214,7 +214,6 @@ function PresentationForm(props) {
 
         <Divider />
 
-        {/* PRESENTER SUB-COMPONENT */}
         <PresenterInput
           parentForm={form}
           presenters={presenters}
@@ -224,7 +223,6 @@ function PresentationForm(props) {
 
         <Divider />
 
-        {/* CREDIT SUB-COMPONENT */}
         <CreditInput
           parentForm={form}
           credits={credits}
@@ -235,7 +233,6 @@ function PresentationForm(props) {
 
         <Divider />
 
-        {/* SUBMIT */}
         <Row>
           <Col span={24}>
             <Form.Item>
@@ -246,7 +243,9 @@ function PresentationForm(props) {
           </Col>
         </Row>
       </Form>
-    </div> : <Skeleton />
+    </div>
+  ) : (
+    <Skeleton />
   );
 }
 

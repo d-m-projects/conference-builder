@@ -27,7 +27,9 @@ function SessionForm(props) {
     if (initialFormValues) {
       setPrefillValues({
         ...initialFormValues,
-        sessionLength: [moment(initialFormValues.sessionLength[0]), moment(initialFormValues.sessionLength[1])],
+        sessionLength: initialFormValues.sessionLength
+          ? [moment(initialFormValues.sessionLength[0]), moment(initialFormValues.sessionLength[1])]
+          : [],
       });
     }
   }, [initialFormValues]);
