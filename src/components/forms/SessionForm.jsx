@@ -36,6 +36,10 @@ function SessionForm(props) {
     form.resetFields();
   }, [formMode, prefillValues]);
 
+  const getDateRange = () => {
+    return form.getFieldValue("sessionLength");
+  };
+
   const disabledDate = (date) => {
     return date.isBefore(program.dateStart, "day") || date.isAfter(program.dateEnd, "day");
   };
@@ -112,6 +116,7 @@ function SessionForm(props) {
         setVisibility={setModalVisible}
         setFormView={setFormView}
         setFormMode={setFormMode}
+        sessionLength={getDateRange()}
       />
       <div className="session-form-container">
         <Form
@@ -123,7 +128,6 @@ function SessionForm(props) {
           layout="vertical"
           hideRequiredMark
           initialValues={prefillValues}>
-          {/* SESSION NAME */}
           <Form.Item
             label="Session Name"
             name="sessionName"
@@ -131,7 +135,6 @@ function SessionForm(props) {
             <Input />
           </Form.Item>
 
-          {/* DATETIME RANGE */}
           <Form.Item
             label="Session Start & End Dates"
             name="sessionLength"
@@ -144,7 +147,6 @@ function SessionForm(props) {
             />
           </Form.Item>
 
-          {/* SUBMIT */}
           <Form.Item>
             <Button type="primary" htmlType="submit">
               {formMode === "edit" ? "Edit Session" : "Create Session"}

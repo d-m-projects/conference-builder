@@ -9,19 +9,24 @@ import GenericModal from "../GenericModal/GenericModal";
 import { VIEW } from "../../forms/FormManager";
 
 function FlowSwitchOneModal(props) {
-  const { isVisible, setVisibility, setFormView, setFormMode } = props;
+  const { isVisible, setVisibility, sessionLength } = props;
 
   const history = useHistory();
 
   const handleCreateSession = () => {
-    setFormMode("add")
-    setFormView(VIEW.SESSION);
+    history.push("/program", {
+      initialView: VIEW.SESSION,
+      initialFormValues: { sessionLength: [sessionLength[0]._d, sessionLength[1]._d] },
+    });
 
     setVisibility(false);
   };
 
   const handleAddPresentation = () => {
-    setFormView(VIEW.PRESENTATION);
+    history.push("/program", {
+      initialView: VIEW.PRESENTATION,
+      initialFormValues: { presentationLength: [sessionLength[0]._d, sessionLength[1]._d] },
+    });
 
     setVisibility(false);
   };
@@ -37,7 +42,9 @@ function FlowSwitchOneModal(props) {
       isVisible={isVisible}
       data={{
         // NOT REQUIRED BUT HERE FOR DOCUMENTATION PURPOSES
+        // Show 'x' close option
         // closable: true,
+        // Run on modal close
         // onCancel: function () {
         //   setVisibility(false);
         // },
