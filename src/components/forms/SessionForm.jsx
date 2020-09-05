@@ -21,21 +21,20 @@ function SessionForm(props) {
 
   const [form] = Form.useForm();
 
-  let prefillValues = {} 
-
-  if ( initialFormValues ) {
-    prefillValues = {
-      ...initialFormValues,
-      sessionLength: [
-        moment(initialFormValues.sessionLength[0]),
-        moment(initialFormValues.sessionLength[1])
-      ]
-    }
-  }
+  const [prefillValues, setPrefillValues] = useState({});
 
   useEffect(() => {
-      form.resetFields();
-  }, [formMode]);
+    if (initialFormValues) {
+      setPrefillValues({
+        ...initialFormValues,
+        sessionLength: [moment(initialFormValues.sessionLength[0]), moment(initialFormValues.sessionLength[1])],
+      });
+    }
+  }, [initialFormValues]);
+
+  useEffect(() => {
+    form.resetFields();
+  }, [formMode, prefillValues]);
 
   const disabledDate = (date) => {
     return date.isBefore(program.dateStart, "day") || date.isAfter(program.dateEnd, "day");
@@ -56,7 +55,7 @@ function SessionForm(props) {
       if (formMode === "edit") {
         editSession(program.selectedSessionId, {
           name: values.sessionName,
-  
+
           dateStart: start._d,
           dateEnd: end._d,
         });
@@ -65,21 +64,20 @@ function SessionForm(props) {
       } else {
         createSession({
           name: values.sessionName,
-  
+
           // Store datetime as string, not instance of moment
           dateStart: start._d,
           dateEnd: end._d,
-  
+
           presentations: [],
         });
-  
+
         message.success(`Session ${values.sessionName} created!`);
       }
 
       setTimeout(() => {
         setModalVisible(true);
       }, 200);
-
     } else {
       const programStartTime = moment(program.dateStart).format("HH:mm");
       const programEndTime = moment(program.dateEnd).format("HH:mm");
@@ -109,7 +107,12 @@ function SessionForm(props) {
 
   return (
     <>
-      <FlowSwitchOneModal isVisible={modalVisible} setVisibility={setModalVisible} setFormView={setFormView} setFormMode={setFormMode} />
+      <FlowSwitchOneModal
+        isVisible={modalVisible}
+        setVisibility={setModalVisible}
+        setFormView={setFormView}
+        setFormMode={setFormMode}
+      />
       <div className="session-form-container">
         <Form
           form={form}
@@ -119,8 +122,7 @@ function SessionForm(props) {
           autoComplete="off"
           layout="vertical"
           hideRequiredMark
-          initialValues={formMode === "edit" ? prefillValues : {}}
-          >
+          initialValues={prefillValues}>
           {/* SESSION NAME */}
           <Form.Item
             label="Session Name"
