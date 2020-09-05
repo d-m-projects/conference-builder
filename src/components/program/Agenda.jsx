@@ -92,7 +92,6 @@ function CustomEvent({ event, type }) {
 					<DeleteOutlined />
 				</Tooltip>
 			</Popconfirm>
-
 		</Space>
 	)
 }
@@ -103,10 +102,15 @@ const Agenda = (props) => {
 
 	// State for dynamic item list
 	const [itemList, setItemList] = useState([]);
-	const [single, setSingle] = useState({});
+  const [single, setSingle] = useState({});
+
+  const [presModalVisible, setPresModalVisible] = useState(false);
+  const [programModalVisible, setProgramModalVisible] = useState(false);
 
 	// Drawer
 	const [drawerVisible, setDrawerVisible] = useState(false);
+
+  const history = useHistory();
 
 	const location = useLocation()
 	let { initialView } = props
@@ -121,7 +125,21 @@ const Agenda = (props) => {
 	// (so you don't have to enter it manually)
 	// if (!program.dateStart) {
 	// 	program.injectTestData()
-	// }
+  // }
+  
+  const handleAddSession = () => {
+    history.push("/program", { initialView: VIEW.SESSION});
+  }
+  
+  const handleAddPresentation = () => {
+    // TODO MODAL FOR SELECTING A SESSION TO ADD A PRESENTATION TO
+    setPresModalVisible(true)
+  }
+  
+  const handleEditProgram = () => {
+    // TODO MODAL FOR EDITING PROGRAM NAME / ALTERING DATE RANGE
+    setProgramModalVisible(true)
+  }
 
 	const doReorder = (list, one) => {
 		setSingle(one)
@@ -149,9 +167,9 @@ const Agenda = (props) => {
 				<Row>
 					<Col span={24}>
 						<Space>
-							<Button type="primary">Add Session</Button>
-							<Button type="primary">Add Presentation</Button>
-							<Button type="primary">Edit Program Name / Date Range</Button>
+              <Button type="primary" onClick={handleAddSession}>Add Session</Button>
+              <Button type="primary" onClick={handleAddPresentation}>Add Presentation</Button>
+              <Button type="primary" onClick={handleEditProgram}>Edit Program Name / Date Range</Button>
 						</Space>
 					</Col>
 				</Row>
