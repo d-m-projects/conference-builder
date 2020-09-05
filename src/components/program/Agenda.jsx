@@ -1,17 +1,16 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import { ProgramContext } from "../../contexts/Program";
 import { useLocation, useHistory } from "react-router-dom";
 
 import moment from "moment";
 
 // antd components
-import { Skeleton, Table, Card, Button, Space, Popconfirm, message, Tooltip, Divider, Row, Col } from "antd";
-import { EditOutlined, DeleteOutlined, UnorderedListOutlined } from "@ant-design/icons";
+import { Skeleton, Table, Card, Button, Space, Popconfirm, message, Tooltip, Divider } from "antd";
+import { PlusOutlined, EditOutlined, DeleteOutlined, UnorderedListOutlined, SettingOutlined } from "@ant-design/icons";
 
 // Components
-import FormManager, { VIEW } from "../forms/FormManager";
+import { VIEW } from "../forms/FormManager";
 import ReorderDnD from "./AgendaForm/ReorderDnD";
-import { newest, modified } from "../create/components/events"
 
 // Dev test data
 import injection from "../../data/testdata"
@@ -32,7 +31,6 @@ function CustomEvent({ event, type }) {
 	}
 
 	const handleEdit = (event, type) => {
-
 		if (type === "session") {
 			selectSession(event.id);
 
@@ -79,7 +77,7 @@ function CustomEvent({ event, type }) {
 	}
 
 	return (
-		<Space>
+		<Space size={8}>
 			<Tooltip title={type === "session" ? `Edit Session ${event && event.name}` : `Edit Presentation ${event && event.name}`}>
 				<EditOutlined onClick={() => handleEdit(event, type)} />
 			</Tooltip>
@@ -104,9 +102,6 @@ const Agenda = (props) => {
 	const [itemList, setItemList] = useState([]);
   const [single, setSingle] = useState({});
 
-  const [presModalVisible, setPresModalVisible] = useState(false);
-  const [programModalVisible, setProgramModalVisible] = useState(false);
-
 	// Drawer
 	const [drawerVisible, setDrawerVisible] = useState(false);
 
@@ -117,7 +112,6 @@ const Agenda = (props) => {
 	location.state ? initialView = location.state.initialView : initialView = VIEW.PROGRAM
 
 	const program = useContext(ProgramContext);
-	const { editSession } = program
 
 	// DEV ONLY (by darrin)
 	// if `program` is empty, fill it with example data for visualization.
@@ -128,17 +122,17 @@ const Agenda = (props) => {
   // }
   
   const handleAddSession = () => {
+    // TODO IMPLEMENT
     history.push("/program", { initialView: VIEW.SESSION});
   }
   
   const handleAddPresentation = () => {
-    // TODO MODAL FOR SELECTING A SESSION TO ADD A PRESENTATION TO
-    setPresModalVisible(true)
+    // TODO IMPLEMENT
   }
   
   const handleEditProgram = () => {
     // TODO MODAL FOR EDITING PROGRAM NAME / ALTERING DATE RANGE
-    setProgramModalVisible(true)
+    console.log("Edit Program Name / Date Range")
   }
 
 	const doReorder = (list, one) => {
@@ -147,12 +141,24 @@ const Agenda = (props) => {
 		setDrawerVisible(true)
 	}
 
-	const programdata = (p) => {
+	const programHeaderDateRange = (p) => {
 		const programDateString = `${moment(p.dateStart).format("MMM DD")} - ${moment(p.dateEnd).format("MMM DD")}`
-		return (
+    
+    return (
 			<Button type="text" style={{ margin: 0, padding: 0 }}>{programDateString}</Button>
 		)
-	}
+  }
+  
+  const programHeader = (p) => {
+    return (
+      <Space size={8}>
+        <span>{p.name}</span>
+        <Tooltip title="Edit Program">
+          <SettingOutlined onClick={handleEditProgram}/> 
+        </Tooltip>
+      </Space>
+    )
+  }
 
 	return (
 		program.dateStart
@@ -164,24 +170,17 @@ const Agenda = (props) => {
 					setItemList={setItemList}
 					single={single}
 				/>
-				<Row>
-					<Col span={24}>
-						<Space>
-              <Button type="primary" onClick={handleAddSession}>Add Session</Button>
-              <Button type="primary" onClick={handleAddPresentation}>Add Presentation</Button>
-              <Button type="primary" onClick={handleEditProgram}>Edit Program Name / Date Range</Button>
-						</Space>
-					</Col>
-				</Row>
-				<Divider />
-				<Card title={program.name} extra={programdata(program)}>
+
+				<Card title={programHeader(program)} extra={programHeaderDateRange(program)}>
 					<Table className="program-agenda" showHeader={false} size="small" dataSource={program.days} pagination={false}>
 						<Column title="Date" dataIndex="date"
 							render={(dataIndex, singleDay, i) => (
 								<div key={i}>
-									{/* {console.log(`Agenda.jsx 153: Day`, i)} */}
-									<Space size={16}>
+									<Space size={8}>
 										<p>Program Day: {moment(dataIndex).format("ddd, MMM Do Y")}</p>
+                    <Tooltip title="Add Session">
+                      <PlusOutlined />
+                    </Tooltip>
 										<Tooltip title="Reorder Sessions">
 											<UnorderedListOutlined onClick={() => doReorder(singleDay.sessions, singleDay)} />
 										</Tooltip>
@@ -220,11 +219,15 @@ const Sessions = ({ visible, setVisible, itemList, setItemList, doReorder, singl
 			<Column title="Session Name" dataIndex="dateStart"
 				render={(dataIndex, single, i) => (
 					<div>
-						<Space size={16}>
+						<Space size={8}>
 							<p>Session: {sessiondata(single).sessionsDateString}</p>
+              <Tooltip title="Add Presentation">
+                <PlusOutlined />
+              </Tooltip>
 							<Tooltip title="Reorder Presentations">
 								<UnorderedListOutlined onClick={() => doReorder(single.presentations, single)} />
 							</Tooltip>
+              
 							<CustomEvent event={single} type={"session"} />
 						</Space>
 						<Presentations props={single} />
