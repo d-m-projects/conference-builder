@@ -26,54 +26,56 @@ function CustomEvent({ event, type }) {
 
 	const handleDelete = (event, type) => {
 		type === "session" ? deleteSession(event.id) : deletePresentation(event.id);
-
+    
 		message.success(`${event.name} deleted!`)
 	}
-
+  
 	const handleEdit = (event, type) => {
-		if (type === "session") {
-			selectSession(event.id);
+    console.log("Edit", event)
 
-			const initialFormValues = {
-				sessionName: event.name,
-				sessionLength: [event.dateStart, event.dateEnd]
-			}
+		// if (type === "session") {
+		// 	selectSession(event.id);
 
-			history.push("/program", {
-				initialView: VIEW.SESSION,
-				initialFormMode: "edit",
-				initialFormValues
-			});
+		// 	const initialFormValues = {
+		// 		sessionName: event.name,
+		// 		sessionLength: [event.dateStart, event.dateEnd]
+		// 	}
 
-		} else {
-			const presenters = [];
-			let pId = getNextPresenterId();
+		// 	history.push("/program", {
+		// 		initialView: VIEW.SESSION,
+		// 		initialFormMode: "edit",
+		// 		initialFormValues
+		// 	});
 
-			event.presenters.forEach(presenter => {
-				presenters.push({ name: presenter, id: String(pId) });
-				pId++;
-			})
+		// } else {
+		// 	const presenters = [];
+		// 	let pId = getNextPresenterId();
 
-			const creditList = [];
-			for (const key in event.credits) {
-				creditList.push(`${key} | ${event.credits[key]}`)
-			}
+		// 	event.presenters.forEach(presenter => {
+		// 		presenters.push({ name: presenter, id: String(pId) });
+		// 		pId++;
+		// 	})
 
-			const initialFormValues = {
-				id: event.id,
-				presentationName: event.name,
-				presentationLength: [event.start, event.end],
-				presenters: presenters,
-				credits: event.credits,
-				creditsList: creditList
-			}
+		// 	const creditList = [];
+		// 	for (const key in event.credits) {
+		// 		creditList.push(`${key} | ${event.credits[key]}`)
+		// 	}
 
-			history.push("/program", {
-				initialView: VIEW.PRESENTATION,
-				initialFormMode: "edit",
-				initialFormValues
-			});
-		}
+		// 	const initialFormValues = {
+		// 		id: event.id,
+		// 		presentationName: event.name,
+		// 		presentationLength: [event.start, event.end],
+		// 		presenters: presenters,
+		// 		credits: event.credits,
+		// 		creditsList: creditList
+		// 	}
+
+		// 	history.push("/program", {
+		// 		initialView: VIEW.PRESENTATION,
+		// 		initialFormMode: "edit",
+		// 		initialFormValues
+		// 	});
+		// }
 	}
 
 	return (
