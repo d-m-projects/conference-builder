@@ -60,7 +60,7 @@ function PresentationForm(props) {
     if (sessionId >= 0) {
       selectSession(sessionId);
     }
-  }, [sessionId, selectSession]);
+  }, [sessionId]);
 
   useEffect(() => {
     if (initialFormValues) {

@@ -19,14 +19,23 @@ const { Column } = Table;
 
 function CustomEvent({ event, type }) {
   const program = useContext(ProgramContext);
-  const { deleteSession, deletePresentation } = program;
+  const { deleteSession, deletePresentation, selectedSessionId } = program;
 
   const history = useHistory();
 
   const handleDelete = (event, type) => {
-    type === "session" ? deleteSession(event.id) : deletePresentation(event.id);
-
-    message.success(`${event.name} deleted!`);
+    if (type === "session") {
+      if (selectedSessionId === event.id) {
+        message.error("Cannot delete a session with a new presentation in progress!");
+      } else {
+        deleteSession(event.id);
+        message.success(`${event.name} deleted!`);
+      }
+    } else {
+      // Presentation
+      deletePresentation(event.id);
+      message.success(`${event.name} deleted!`);
+    }
   };
 
   const handleEdit = (event, type) => {
@@ -207,12 +216,17 @@ const Agenda = () => {
 const Sessions = ({ visible, setVisible, itemList, setItemList, doReorder, singleDay }) => {
   // 2nd level. descendent of `days`.
   // concerned with `sessions` and passing down `presentations` nested data.
+  const program = useContext(ProgramContext);
+  const { getSessionById } = program;
+
   const history = useHistory();
 
-  const handleAddPresentation = (day, sessionId) => {
+  const handleAddPresentation = (sessionId) => {
+    const session = getSessionById(sessionId);
+
     history.push("/program", {
       initialView: VIEW.PRESENTATION,
-      initialFormValues: { presentationLength: [day, day] },
+      initialFormValues: { presentationLength: [session.dateStart, session.dateEnd] },
       sessionId,
     });
   };
@@ -239,7 +253,7 @@ const Sessions = ({ visible, setVisible, itemList, setItemList, doReorder, singl
             <Space size={8}>
               <p>Session: {sessiondata(single).sessionsDateString}</p>
               <Tooltip title="Add Presentation">
-                <PlusOutlined onClick={() => handleAddPresentation(dataIndex, single.id)} />
+                <PlusOutlined onClick={() => handleAddPresentation(single.id)} />
               </Tooltip>
               <Tooltip title="Reorder Presentations">
                 <UnorderedListOutlined onClick={() => doReorder(single.presentations, single)} />
