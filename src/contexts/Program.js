@@ -15,9 +15,10 @@ const defaultProgram = {
   dateEnd: null,
   days: [],
   nextSessionId: 0,
+  nextPresentationId: 0,
+  nextPresenterId: 0,
   selectedSessionId: 0,
   globalPresenters: [],
-  nextPresenterId: 0,
 };
 
 const ProgramProvider = (props) => {
@@ -57,6 +58,7 @@ const ProgramProvider = (props) => {
       dateEnd: newProgram.dateEnd,
       days: newProgram.days,
       nextSessionId: 0,
+      nextPresentationId: 0,
       nextPresenterId: 0,
       selectedSessionId: 0,
       globalPresenters: [],
@@ -96,9 +98,10 @@ const ProgramProvider = (props) => {
     setProgram({
       ...program,
       days: program.days.map((day) => {
-        if (moment(day.date).dayOfYear() === moment(newSession.dateStart).dayOfYear()) {
-          return { ...day, sessions: [...day.sessions, { ...newSession, id: sessionId }] };
+        if (moment(day.date).isSame(newSession.dateStart, "day")) {
+          day.sessions.push({ ...newSession, id: sessionId });
         }
+
         return day;
       }),
       nextSessionId: program.nextSessionId + 1,
@@ -177,18 +180,22 @@ const ProgramProvider = (props) => {
   const createPresentation = (sessionId, presentation) => {
     // Add presentation to session by id
     console.log("CREATE PRESENTATION FOR SESSION", sessionId, "=>", presentation);
+
+    const presentationId = program.nextPresentationId;
+
     setProgram({
       ...program,
       days: program.days.map((day) => {
         day.sessions.map((session) => {
           if (session.id === sessionId) {
-            session.presentations.push(presentation);
+            session.presentations.push({ ...presentation, id: presentationId });
           }
 
           return session;
         });
         return day;
       }),
+      nextPresentationId: program.nextPresentationId + 1,
     });
   };
 
@@ -283,20 +290,29 @@ const ProgramProvider = (props) => {
     }
   };
 
-  //* Increments presentation counter and returns an id
-  const getNextPresenterId = () => {
-    const id = program.nextPresenterId;
-
-    setProgram({ ...program, nextPresenterId: program.nextPresenterId + 1 });
-
-    return id;
-  };
-
   //* Increments session counter and returns an id
   const getNextSessionId = () => {
     const id = program.nextSessionId;
 
     setProgram({ ...program, nextSessionId: program.nextSessionId + 1 });
+
+    return id;
+  };
+
+  //* Increments presentation counter and returns an id
+  const getNextPresentationId = () => {
+    const id = program.nextSessionId;
+
+    setProgram({ ...program, nextSessionId: program.nextSessionId + 1 });
+
+    return id;
+  };
+
+  //* Increments presenter counter and returns an id
+  const getNextPresenterId = () => {
+    const id = program.nextPresenterId;
+
+    setProgram({ ...program, nextPresenterId: program.nextPresenterId + 1 });
 
     return id;
   };
@@ -489,6 +505,7 @@ const ProgramProvider = (props) => {
         selectSession,
         getSessionById,
         getNextSessionId,
+        getNextPresentationId,
         // selectSessionByPresentationId,
         createPresentation,
         editPresentation,

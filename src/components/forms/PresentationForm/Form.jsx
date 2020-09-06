@@ -117,7 +117,6 @@ function PresentationForm(props) {
       if (isValidPresentationDateRange(start, end)) {
         if (formMode === "edit") {
           editPresentation(selectedSessionId, {
-            id: initialFormValues.id,
             name: values.presentationName,
             dateStart: start._d,
             dateEnd: end._d,
