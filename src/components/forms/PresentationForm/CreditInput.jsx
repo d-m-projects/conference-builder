@@ -42,7 +42,7 @@ function CreditInput(props) {
 
       setCredits({ ...credits, ...newCredit });
 
-      setCreditsList([...creditsList, `${creditType} | ${creditAmount}`]);
+      setCreditsList([...creditsList, `${creditType} | ${Number(creditAmount)}`]);
     } else {
       parentForm.setFields([
         {

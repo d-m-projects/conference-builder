@@ -54,7 +54,7 @@ function PresentationForm(props) {
   const [form] = Form.useForm();
 
   // Input prefill
-  const [prefillValues, setPrefillValues] = useState({});
+  const [prefillValues, setPrefillValues] = useState({ creditAmount: 0 });
 
   useEffect(() => {
     if (sessionId >= 0) {
@@ -70,6 +70,7 @@ function PresentationForm(props) {
           moment(initialFormValues.presentationLength[0]),
           moment(initialFormValues.presentationLength[1]),
         ],
+        creditAmount: 0,
       });
     }
   }, [initialFormValues]);
