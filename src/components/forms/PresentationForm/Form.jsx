@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import { ProgramContext } from "../../../contexts/Program";
 
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 
 import moment from "moment";
 
+import FlowSwitchTwoModal from "../../Modals/FlowSwitchTwo/FlowSwitchTwoModal";
 import PresenterDnD from "./PresenterDnD";
 import PresenterInput from "./PresenterInput";
 import CreditInput from "./CreditInput";
@@ -15,16 +16,22 @@ import { Form, Input, Button, DatePicker, message } from "antd";
 const { RangePicker } = DatePicker;
 
 function PresentationForm(props) {
-  const { initialFormMode, initialFormValues, setModalVisible } = props;
+  const { initialFormMode, initialFormValues } = props;
 
   const program = useContext(ProgramContext);
-  const { selectedSessionId, getSessionById, createPresentation, editPresentation } = program;
-  console.log("Session Selected", selectedSessionId);
+  const { selectedSessionId, selectSession, getSessionById, createPresentation, editPresentation } = program;
 
   const history = useHistory();
 
+  const location = useLocation();
+
+  const { sessionId } = location.state;
+
+  // UI  Modal
+  const [modalVisible, setModalVisible] = useState(false);
+
   // "add" / "edit"
-  const [formMode, setFormMode] = useState(initialFormMode);
+  const [formMode] = useState(initialFormMode);
 
   // State for dynamic presenters
   const [presenters, setPresenters] = useState(
@@ -50,6 +57,12 @@ function PresentationForm(props) {
   const [prefillValues, setPrefillValues] = useState({});
 
   useEffect(() => {
+    if (sessionId >= 0) {
+      selectSession(sessionId);
+    }
+  }, [sessionId, selectSession]);
+
+  useEffect(() => {
     if (initialFormValues) {
       setPrefillValues({
         ...initialFormValues,
@@ -63,7 +76,11 @@ function PresentationForm(props) {
 
   useEffect(() => {
     form.resetFields();
-  }, [formMode, prefillValues]);
+  }, [form, formMode, prefillValues]);
+
+  const getDateRange = () => {
+    return form.getFieldValue("presentationLength");
+  };
 
   const formSubmit = (values) => {
     // Date range validation helper func
@@ -110,7 +127,6 @@ function PresentationForm(props) {
 
           message.success(`Presentation ${values.presentationName} modified!`);
 
-          // TEMP
           history.push("/review");
         } else {
           createPresentation(selectedSessionId, {
@@ -122,18 +138,18 @@ function PresentationForm(props) {
           });
 
           message.success(`Presentation ${values.presentationName} created!`);
+
+          setTimeout(() => {
+            setModalVisible(true);
+          }, 200);
+
+          // Clear form data and old state in case user wants to add another presentation
+          setCredits({});
+          setPresenters([]);
+          setCreditsList([]);
+
+          form.resetFields();
         }
-
-        setTimeout(() => {
-          setModalVisible(true);
-        }, 200);
-
-        // Clear form data and old state in case user wants to add another presentation
-        setCredits({});
-        setPresenters([]);
-        setCreditsList([]);
-
-        form.resetFields();
       } else {
         const { dateStart, dateEnd } = getSessionById(selectedSessionId);
 
@@ -168,82 +184,90 @@ function PresentationForm(props) {
   */
 
   return selectedSessionId >= 0 ? (
-    <div className="presentation-form-container">
-      <PresenterDnD
-        visible={drawerVisible}
-        setVisible={setDrawerVisible}
-        presenters={presenters}
-        setPresenters={setPresenters}
+    <>
+      <FlowSwitchTwoModal
+        isVisible={modalVisible}
+        setVisibility={setModalVisible}
+        presentationLength={getDateRange()}
       />
 
-      <Form
-        form={form}
-        name="presentationForm"
-        initialValues={prefillValues}
-        onFinish={formSubmit}
-        autoComplete="off"
-        hideRequiredMark>
-        <Row>
-          <Col span={24}>
-            <Form.Item
-              label="Presentation Name"
-              labelCol={{ span: 24 }}
-              name="presentationName"
-              rules={[{ required: true, message: "Input a name for this presentation." }]}>
-              <Input />
-            </Form.Item>
-          </Col>
-        </Row>
-
-        <Row>
-          <Col span={24}>
-            <Form.Item
-              label="Presentation Start & End Times"
-              labelCol={{ span: 24 }}
-              name="presentationLength"
-              rules={[{ required: true, message: "Input a time range for this presentation." }]}>
-              <RangePicker
-                disabledDate={disabledDate}
-                showTime={{ format: "HH:mm" }}
-                format="YYYY-MM-DD HH:mm"
-                minuteStep={5}
-              />
-            </Form.Item>
-          </Col>
-        </Row>
-
-        <Divider />
-
-        <PresenterInput
-          parentForm={form}
+      <div className="presentation-form-container">
+        <PresenterDnD
+          visible={drawerVisible}
+          setVisible={setDrawerVisible}
           presenters={presenters}
           setPresenters={setPresenters}
-          setDrawerVisible={setDrawerVisible}
         />
 
-        <Divider />
+        <Form
+          form={form}
+          name="presentationForm"
+          initialValues={prefillValues}
+          onFinish={formSubmit}
+          autoComplete="off"
+          hideRequiredMark>
+          <Row>
+            <Col span={24}>
+              <Form.Item
+                label="Presentation Name"
+                labelCol={{ span: 24 }}
+                name="presentationName"
+                rules={[{ required: true, message: "Input a name for this presentation." }]}>
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
 
-        <CreditInput
-          parentForm={form}
-          credits={credits}
-          setCredits={setCredits}
-          creditsList={creditsList}
-          setCreditsList={setCreditsList}
-        />
+          <Row>
+            <Col span={24}>
+              <Form.Item
+                label="Presentation Start & End Times"
+                labelCol={{ span: 24 }}
+                name="presentationLength"
+                rules={[{ required: true, message: "Input a time range for this presentation." }]}>
+                <RangePicker
+                  disabledDate={disabledDate}
+                  showTime={{ format: "HH:mm" }}
+                  format="YYYY-MM-DD HH:mm"
+                  minuteStep={5}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
 
-        <Divider />
+          <Divider />
 
-        <Row>
-          <Col span={24}>
-            <Form.Item>
-              <Button type="primary" htmlType="submit">
-                {formMode === "edit" ? "Edit Presentation" : "Add Presentation"}
-              </Button>
-            </Form.Item>
-          </Col>
-        </Row>
-      </Form>
-    </div>
+          <PresenterInput
+            parentForm={form}
+            presenters={presenters}
+            setPresenters={setPresenters}
+            setDrawerVisible={setDrawerVisible}
+          />
+
+          <Divider />
+
+          <CreditInput
+            parentForm={form}
+            credits={credits}
+            setCredits={setCredits}
+            creditsList={creditsList}
+            setCreditsList={setCreditsList}
+          />
+
+          <Divider />
+
+          <Row>
+            <Col span={24}>
+              <Form.Item>
+                <Button type="primary" htmlType="submit">
+                  {formMode === "edit" ? "Edit Presentation" : "Add Presentation"}
+                </Button>
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </div>
+    </>
   ) : (
     <Skeleton />
   );
