@@ -34,6 +34,7 @@ function CustomEvent({ event, type }) {
 
     if (type === "session") {
       const initialFormValues = {
+        sessionId: event.id,
         sessionName: event.name,
         sessionLength: [event.dateStart, event.dateEnd],
       };
@@ -42,7 +43,6 @@ function CustomEvent({ event, type }) {
         initialView: VIEW.SESSION,
         initialFormMode: "edit",
         initialFormValues,
-        sessionId: event.id,
       });
     } else {
       console.log("Not Session");

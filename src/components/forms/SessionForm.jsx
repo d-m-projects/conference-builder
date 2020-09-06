@@ -63,9 +63,8 @@ function SessionForm(props) {
 
     if (validSessionDateRange(start, end)) {
       if (formMode === "edit") {
-        editSession(program.selectedSessionId, {
+        editSession(initialFormValues.sessionId, {
           name: values.sessionName,
-
           dateStart: start._d,
           dateEnd: end._d,
         });
@@ -76,11 +75,8 @@ function SessionForm(props) {
       } else {
         createSession({
           name: values.sessionName,
-
-          // Store datetime as string, not instance of moment
           dateStart: start._d,
           dateEnd: end._d,
-
           presentations: [],
         });
 
