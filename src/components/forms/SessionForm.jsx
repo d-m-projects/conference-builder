@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import { ProgramContext } from "../../contexts/Program";
 
+import { useHistory } from "react-router-dom";
+
 import moment from "moment";
 
 import { Form, Input, DatePicker, Button, message } from "antd";
@@ -15,13 +17,15 @@ function SessionForm(props) {
   const program = useContext(ProgramContext);
   const { createSession, editSession } = program;
 
-  const [formMode, setFormMode] = useState(initialFormMode);
+  const history = useHistory();
 
   const [modalVisible, setModalVisible] = useState(false);
 
-  const [form] = Form.useForm();
-
   const [prefillValues, setPrefillValues] = useState({});
+
+  const [formMode, setFormMode] = useState(initialFormMode);
+
+  const [form] = Form.useForm();
 
   useEffect(() => {
     if (initialFormValues) {
@@ -36,7 +40,7 @@ function SessionForm(props) {
 
   useEffect(() => {
     form.resetFields();
-  }, [formMode, prefillValues]);
+  }, [form, formMode, prefillValues]);
 
   const getDateRange = () => {
     return form.getFieldValue("sessionLength");
@@ -67,6 +71,8 @@ function SessionForm(props) {
         });
 
         message.success(`Session ${values.sessionName} modified!`);
+
+        history.push("/review");
       } else {
         createSession({
           name: values.sessionName,
@@ -79,11 +85,11 @@ function SessionForm(props) {
         });
 
         message.success(`Session ${values.sessionName} created!`);
-      }
 
-      setTimeout(() => {
-        setModalVisible(true);
-      }, 200);
+        setTimeout(() => {
+          setModalVisible(true);
+        }, 200);
+      }
     } else {
       const programStartTime = moment(program.dateStart).format("HH:mm");
       const programEndTime = moment(program.dateEnd).format("HH:mm");

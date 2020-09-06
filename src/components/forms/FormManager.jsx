@@ -49,7 +49,13 @@ function FormManager(props) {
       case VIEW.REVIEW:
         return <Agenda setFormView={setFormView} />;
       default:
-        return <ProgramForm setFormView={setFormView} initialFormValues={initialFormValues} />;
+        return (
+          <ProgramForm
+            setFormView={setFormView}
+            initialFormMode={initialFormMode}
+            initialFormValues={initialFormValues}
+          />
+        );
     }
   };
 
