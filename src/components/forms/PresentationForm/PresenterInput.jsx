@@ -96,6 +96,7 @@ function PresenterInput(props) {
               mode="multiple"
               onSelect={selectPresenter}
               onDeselect={deselectPresenter}
+              defaultValue={presenters.map((p) => p.name)}
               placeholder="Presenters previously used can be selected here.">
               {globalPresenters.map((presenter, idx) => {
                 return (

@@ -19,7 +19,7 @@ const { Column } = Table;
 
 function CustomEvent({ event, type }) {
   const program = useContext(ProgramContext);
-  const { deleteSession, deletePresentation, selectedSessionId } = program;
+  const { selectedSessionId, getNextPresenterId, deleteSession, deletePresentation } = program;
 
   const history = useHistory();
 
@@ -54,36 +54,34 @@ function CustomEvent({ event, type }) {
         initialFormValues,
       });
     } else {
-      console.log("Not Session");
+      const presenters = [];
+      let pId = getNextPresenterId();
+
+      event.presenters.forEach((presenter) => {
+        presenters.push({ name: presenter, id: String(pId) });
+        pId++;
+      });
+
+      const creditsList = [];
+      for (const key in event.credits) {
+        creditsList.push(`${key} | ${event.credits[key]}`);
+      }
+
+      const initialFormValues = {
+        presentationName: event.name,
+        presentationLength: [event.dateStart, event.dateEnd],
+        presenters: presenters,
+        credits: event.credits,
+        creditsList: creditsList,
+      };
+
+      history.push("/program", {
+        initialView: VIEW.PRESENTATION,
+        initialFormMode: "edit",
+        initialFormValues,
+        presentationId: event.id,
+      });
     }
-    // 	const presenters = [];
-    // 	let pId = getNextPresenterId();
-
-    // 	event.presenters.forEach(presenter => {
-    // 		presenters.push({ name: presenter, id: String(pId) });
-    // 		pId++;
-    // 	})
-
-    // 	const creditList = [];
-    // 	for (const key in event.credits) {
-    // 		creditList.push(`${key} | ${event.credits[key]}`)
-    // 	}
-
-    // 	const initialFormValues = {
-    // 		id: event.id,
-    // 		presentationName: event.name,
-    // 		presentationLength: [event.start, event.end],
-    // 		presenters: presenters,
-    // 		credits: event.credits,
-    // 		creditsList: creditList
-    // 	}
-
-    // 	history.push("/program", {
-    // 		initialView: VIEW.PRESENTATION,
-    // 		initialFormMode: "edit",
-    // 		initialFormValues
-    // 	});
-    // }
   };
 
   return (

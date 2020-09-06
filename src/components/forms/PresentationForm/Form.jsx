@@ -19,13 +19,20 @@ function PresentationForm(props) {
   const { initialFormMode, initialFormValues } = props;
 
   const program = useContext(ProgramContext);
-  const { selectedSessionId, selectSession, getSessionById, createPresentation, editPresentation } = program;
+  const {
+    selectedSessionId,
+    selectSession,
+    selectSessionByPresentationId,
+    getSessionById,
+    createPresentation,
+    editPresentation,
+  } = program;
 
   const history = useHistory();
 
   const location = useLocation();
 
-  const { sessionId } = location.state;
+  const { sessionId, presentationId } = location.state;
 
   // UI  Modal
   const [modalVisible, setModalVisible] = useState(false);
@@ -34,19 +41,13 @@ function PresentationForm(props) {
   const [formMode] = useState(initialFormMode);
 
   // State for dynamic presenters
-  const [presenters, setPresenters] = useState(
-    initialFormValues && initialFormValues.presenters ? initialFormValues.presenters : []
-  );
+  const [presenters, setPresenters] = useState([]);
 
   // State for dynamic credits
-  const [credits, setCredits] = useState(
-    initialFormValues && initialFormValues.credits ? initialFormValues.credits : {}
-  );
+  const [credits, setCredits] = useState({});
 
   // Friendly strings for list to render credits
-  const [creditsList, setCreditsList] = useState(
-    initialFormValues && initialFormValues.creditsList ? initialFormValues.creditsList : []
-  );
+  const [creditsList, setCreditsList] = useState([]);
 
   // DnD Drawer
   const [drawerVisible, setDrawerVisible] = useState(false);
@@ -56,6 +57,7 @@ function PresentationForm(props) {
   // Input prefill
   const [prefillValues, setPrefillValues] = useState({ creditAmount: 0 });
 
+  // Used when adding presentation from agenda
   useEffect(() => {
     if (sessionId >= 0) {
       selectSession(sessionId);
@@ -63,7 +65,21 @@ function PresentationForm(props) {
   }, [sessionId]);
 
   useEffect(() => {
+    // Handles all UI flows (add, add / edit from agenda)
     if (initialFormValues) {
+      if (presentationId) {
+        // From Edit Widget
+        selectSessionByPresentationId(presentationId);
+      }
+
+      if (initialFormValues.presentationName) {
+        // From Edit Widget
+        setPresenters(initialFormValues.presenters);
+        setCredits(initialFormValues.credits);
+        setCreditsList(initialFormValues.creditsList);
+      }
+
+      // Used by all UI flows
       setPrefillValues({
         ...initialFormValues,
         presentationLength: [

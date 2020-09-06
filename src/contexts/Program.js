@@ -152,29 +152,29 @@ const ProgramProvider = (props) => {
     });
   };
 
-  // const selectSessionByPresentationId = (presentationId) => {
-  // 	let foundSessionId = -1;
+  const selectSessionByPresentationId = (presentationId) => {
+    let foundSessionId = -1;
 
-  // 	program.days.some(day => {
-  // 		day.sessions.some(session => {
-  // 			session.presentations.some(presentation => {
-  // 				if (presentation.id === presentationId) {
-  // 					foundSessionId = session.id;
-  // 					return true;
-  // 				}
-  // 			});
-  // 		});
-  // 	});
+    program.days.some((day) => {
+      day.sessions.some((session) => {
+        session.presentations.some((presentation) => {
+          if (presentation.id === presentationId) {
+            foundSessionId = session.id;
+            return true;
+          }
+        });
+      });
+    });
 
-  // 	if (foundSessionId >= 0) {
-  // 		setProgram({
-  // 			...program,
-  // 			selectedSessionId: foundSessionId
-  // 		});
-  // 	} else {
-  // 		console.log("If you see this then either you broke presentation ids or are searching for an invalid session...");
-  // 	}
-  // }
+    if (foundSessionId >= 0) {
+      setProgram({
+        ...program,
+        selectedSessionId: foundSessionId,
+      });
+    } else {
+      console.log("If you see this then either you broke presentation ids or are searching for an invalid session...");
+    }
+  };
 
   //* Create a new presentation
   const createPresentation = (sessionId, presentation) => {
@@ -506,7 +506,7 @@ const ProgramProvider = (props) => {
         getSessionById,
         getNextSessionId,
         getNextPresentationId,
-        // selectSessionByPresentationId,
+        selectSessionByPresentationId,
         createPresentation,
         editPresentation,
         deletePresentation,
