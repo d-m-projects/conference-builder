@@ -65,6 +65,13 @@ const ProgramProvider = (props) => {
     });
   };
 
+  const editProgram = (programData) => {
+    setProgram({
+      ...program,
+      ...programData,
+    });
+  };
+
   const updateProgram = (program) => {
     console.log(`Program.js 62: `, program.days);
     setProgram(program);
@@ -504,6 +511,7 @@ const ProgramProvider = (props) => {
       value={{
         ...program,
         createProgram,
+        editProgram,
         updateProgram,
         editDay,
         createSession,

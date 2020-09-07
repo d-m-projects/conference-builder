@@ -12,6 +12,9 @@ import { PlusOutlined, EditOutlined, DeleteOutlined, UnorderedListOutlined, Sett
 import { VIEW } from "../forms/FormManager";
 import ReorderDnD from "./AgendaForm/ReorderDnD";
 
+// Edit Program Modal
+import EditProgramModal from "./AgendaModal/EditProgramModal";
+
 // Dev test data
 // import injection from "../../data/testdata";
 
@@ -36,12 +39,12 @@ function CustomEvent({ event, type }) {
         message.error("Cannot delete a session with modifications in progress!");
       } else {
         deleteSession(event.id);
-        message.success(`${event.name} deleted!`);
+        message.success(`"${event.name}" deleted!`);
       }
     } else {
       // Presentation
       deletePresentation(event.id);
-      message.success(`${event.name} deleted!`);
+      message.success(`"${event.name}" deleted!`);
     }
   };
 
@@ -86,6 +89,8 @@ function CustomEvent({ event, type }) {
         creditsList: creditsList,
       };
 
+      message.info(`Now editing "${event.name}"`);
+
       history.push("/program", {
         initialView: VIEW.PRESENTATION,
         initialFormMode: "edit",
@@ -97,8 +102,7 @@ function CustomEvent({ event, type }) {
 
   return (
     <Space size={8}>
-      <Tooltip
-        title={type === "session" ? `Edit Session ${event && event.name}` : `Edit Presentation ${event && event.name}`}>
+      <Tooltip title={type === "session" ? `Edit Session` : `Edit Presentation`}>
         <EditOutlined onClick={() => handleEdit(event, type)} />
       </Tooltip>
       <Popconfirm
@@ -106,10 +110,7 @@ function CustomEvent({ event, type }) {
         onConfirm={() => handleDelete(event, type)}
         okText="Yes"
         cancelText="No">
-        <Tooltip
-          title={
-            type === "session" ? `Delete Session ${event && event.name}` : `Delete Presentation ${event && event.name}`
-          }>
+        <Tooltip title={type === "session" ? `Delete Session` : `Delete Presentation`}>
           <DeleteOutlined />
         </Tooltip>
       </Popconfirm>
@@ -127,6 +128,9 @@ const Agenda = () => {
 
   // Drawer
   const [drawerVisible, setDrawerVisible] = useState(false);
+
+  // Edit Program Modal
+  const [modalVisible, setModalVisible] = useState(false);
 
   const history = useHistory();
 
@@ -149,8 +153,7 @@ const Agenda = () => {
   };
 
   const handleEditProgram = () => {
-    // TODO MODAL FOR EDITING PROGRAM NAME / ALTERING DATE RANGE
-    console.log("Edit Program Name / Date Range");
+    setModalVisible(true);
   };
 
   const doReorder = (list, one) => {
@@ -182,6 +185,7 @@ const Agenda = () => {
 
   return program.dateStart ? (
     <>
+      <EditProgramModal visible={modalVisible} setVisible={setModalVisible} />
       <ReorderDnD
         visible={drawerVisible}
         setVisible={setDrawerVisible}
