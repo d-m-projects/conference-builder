@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import moment from "moment";
+import * as dates from "date-arithmetic";
 
 import db from "../data/database";
 
@@ -66,9 +67,50 @@ const ProgramProvider = (props) => {
   };
 
   const editProgram = (programData) => {
+    // Build new date range, but don't overwrite existing days.
+    // Drop days that aren't in the range, but not if only the hours changed
+
+    // Original copy
+    const oldDays = program.days;
+
+    const newDays = [];
+
+    let current = programData.programLength[0];
+
+    while (dates.lte(current, programData.programLength[1], "day")) {
+      newDays.push({ date: current, sessions: [] });
+      current = dates.add(current, 1, "day");
+    }
+
+    // Fix time for last day
+    newDays[newDays.length - 1] = { date: programData.programLength[1], sessions: [] };
+
+    // Bring in sessions from old date range to new date range
+    const programDays = newDays.map((newDay) => {
+      const oldData = oldDays.find((day) => moment(day.date).isSame(newDay.date, "day"));
+
+      if (oldData) {
+        return {
+          ...newDay,
+          sessions: oldData.sessions,
+        };
+      }
+      return newDay;
+    });
+
+    // Handle last day case when date is same but hours changed
+    // const lastProgramDay = programDays[programDays.length - 1];
+    // const lastOldDay = oldDays[oldDays.length - 1];
+
+    // if (moment(lastProgramDay.date).isSame(lastOldDay.date, "day")) {
+    //   const sessions = lastOldDay.sessions.map(session => {
+
+    //   })
+    // }
+
     setProgram({
       ...program,
-      ...programData,
+      days: programDays,
     });
   };
 

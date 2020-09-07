@@ -49,7 +49,9 @@ function CustomEvent({ event, type }) {
   };
 
   const handleEdit = (event, type) => {
-    console.log("Edit", event);
+    // When the user clicks edit on something else and the form is the same,
+    // just throw a notification that yes we are editing what you last clicked.
+    message.info(`Now editing "${event.name}"`);
 
     if (type === "session") {
       const initialFormValues = {
@@ -74,6 +76,7 @@ function CustomEvent({ event, type }) {
         pId++;
       });
 
+      // Manually update presenter id
       setNextPresenterId(pId + 1);
 
       const creditsList = [];
@@ -88,8 +91,6 @@ function CustomEvent({ event, type }) {
         credits: event.credits,
         creditsList: creditsList,
       };
-
-      message.info(`Now editing "${event.name}"`);
 
       history.push("/program", {
         initialView: VIEW.PRESENTATION,
