@@ -65,8 +65,6 @@ function PresentationForm(props) {
         setPresenters(initialFormValues.presenters);
         setCredits(initialFormValues.credits);
         setCreditsList(initialFormValues.creditsList);
-
-        console.log("Setting data");
       }
 
       // Used by all UI flows

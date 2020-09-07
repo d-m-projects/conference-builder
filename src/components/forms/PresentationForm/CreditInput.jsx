@@ -7,8 +7,6 @@ const { Option } = Select;
 function CreditInput(props) {
   const { parentForm, credits, setCredits, creditsList, setCreditsList } = props;
 
-  console.log("Passed credits", creditsList);
-
   useEffect(() => {
     // Clear credit fields & update credit list select state
     parentForm.setFieldsValue({

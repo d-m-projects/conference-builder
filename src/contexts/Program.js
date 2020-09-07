@@ -26,7 +26,7 @@ const ProgramProvider = (props) => {
   const [program, setProgram] = useState(defaultProgram);
 
   useEffect(() => {
-    console.log("Program UseEffect", program);
+    // console.log("Program UseEffect", program);
     if (program.id && program.dateStart) {
       // console.log(`Program.js 28: Would have updated.`,)
       db.update(program)
@@ -142,7 +142,6 @@ const ProgramProvider = (props) => {
 		  2. Inc session id counter and set new session as target for presentations by default
 		*/
     const sessionId = program.nextSessionId;
-    console.log("CREATE SESSION", newSession, "ID", sessionId);
 
     setProgram({
       ...program,
@@ -160,7 +159,6 @@ const ProgramProvider = (props) => {
 
   //* Edit existing session
   const editSession = (sessionId, sessionData) => {
-    console.log("EDIT SESSION", sessionId, "=>", sessionData);
     setProgram({
       ...program,
       days: program.days.map((day) => {
@@ -181,7 +179,6 @@ const ProgramProvider = (props) => {
 
   //* Remove session
   const deleteSession = (sessionId) => {
-    console.log("DELETE SESSION", sessionId);
     setProgram({
       ...program,
       days: program.days.map((day) => {
@@ -194,7 +191,6 @@ const ProgramProvider = (props) => {
 
   //* Targets a session for adding a presentation
   const selectSession = (sessionId) => {
-    console.log("SELECT SESSION", sessionId);
     setProgram({
       ...program,
       selectedSessionId: sessionId,
@@ -215,8 +211,6 @@ const ProgramProvider = (props) => {
       });
     });
 
-    console.log("SELECTED SESSION", foundSessionId);
-
     if (foundSessionId >= 0) {
       setProgram({
         ...program,
@@ -230,8 +224,6 @@ const ProgramProvider = (props) => {
   //* Create a new presentation
   const createPresentation = (sessionId, presentation) => {
     // Add presentation to session by id
-    console.log("CREATE PRESENTATION FOR SESSION", sessionId, "=>", presentation);
-
     const presentationId = program.nextPresentationId;
 
     setProgram({
@@ -252,7 +244,6 @@ const ProgramProvider = (props) => {
 
   //* Modify existing presentation
   const editPresentation = (presentationId, presentationData) => {
-    console.log("EDIT PRESENTATION", presentationId, "=>", presentationData);
     setProgram({
       ...program,
       days: program.days.map((day) => {
@@ -279,7 +270,6 @@ const ProgramProvider = (props) => {
 
   //* Remove presentation
   const deletePresentation = (presentationId) => {
-    console.log("DELETE PRESENTATION", presentationId);
     setProgram({
       ...program,
       days: program.days.map((day) => {

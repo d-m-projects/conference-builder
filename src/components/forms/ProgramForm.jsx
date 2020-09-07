@@ -38,8 +38,6 @@ function ProgramForm(props) {
 
     setFormView(VIEW.SESSION);
 
-    console.log("New Program", newProgram);
-
     message.success(`Program '${values.programName}' created!`);
   };
 
