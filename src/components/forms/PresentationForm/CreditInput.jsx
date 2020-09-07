@@ -7,6 +7,8 @@ const { Option } = Select;
 function CreditInput(props) {
   const { parentForm, credits, setCredits, creditsList, setCreditsList } = props;
 
+  console.log("Passed credits", creditsList);
+
   useEffect(() => {
     // Clear credit fields & update credit list select state
     parentForm.setFieldsValue({
@@ -14,7 +16,7 @@ function CreditInput(props) {
       creditAmount: 0,
       creditList: creditsList,
     });
-  }, [parentForm, creditsList]);
+  }, [creditsList]);
 
   const addCredit = () => {
     // HELPER FUNC
@@ -57,8 +59,30 @@ function CreditInput(props) {
     }
   };
 
-  const removeCredit = (values) => {
-    setCredits(values);
+  const selectCredit = (credit) => {
+    const splitCreds = credit.split(" ");
+
+    const creditKey = splitCreds[0];
+    const creditAmount = splitCreds[2];
+
+    const newCredit = {};
+
+    newCredit[creditKey] = creditAmount;
+
+    setCredits({ ...credits, ...newCredit });
+
+    setCreditsList([...creditsList, credit]);
+  };
+
+  const deselectCredit = (credit) => {
+    const creditKey = credit.split(" ")[0];
+    const modCredits = credits;
+
+    delete modCredits[creditKey];
+
+    setCredits(modCredits);
+
+    setCreditsList(creditsList.filter((c) => c !== credit));
   };
 
   return (
@@ -92,12 +116,13 @@ function CreditInput(props) {
           <Form.Item label="Current Credits" labelCol={{ span: 24 }} name="creditList">
             <Select
               mode="multiple"
-              onChange={removeCredit}
+              onSelect={selectCredit}
+              onDeselect={deselectCredit}
               defaultValue={creditsList}
               placeholder="Credits will display here as they are added.">
               {creditsList.map((credit, idx) => {
                 return (
-                  <Option key={idx} value={credit}>
+                  <Option key={credit} value={credit}>
                     {credit}
                   </Option>
                 );

@@ -19,14 +19,21 @@ const { Column } = Table;
 
 function CustomEvent({ event, type }) {
   const program = useContext(ProgramContext);
-  const { selectedSessionId, getNextPresenterId, deleteSession, deletePresentation } = program;
+  const {
+    selectedSessionId,
+    getNextPresenterId,
+    setNextPresenterId,
+    selectSessionByPresentationId,
+    deleteSession,
+    deletePresentation,
+  } = program;
 
   const history = useHistory();
 
   const handleDelete = (event, type) => {
     if (type === "session") {
       if (selectedSessionId === event.id) {
-        message.error("Cannot delete a session with a new presentation in progress!");
+        message.error("Cannot delete a session with modifications in progress!");
       } else {
         deleteSession(event.id);
         message.success(`${event.name} deleted!`);
@@ -54,6 +61,8 @@ function CustomEvent({ event, type }) {
         initialFormValues,
       });
     } else {
+      selectSessionByPresentationId(event.id);
+
       const presenters = [];
       let pId = getNextPresenterId();
 
@@ -61,6 +70,8 @@ function CustomEvent({ event, type }) {
         presenters.push({ name: presenter, id: String(pId) });
         pId++;
       });
+
+      setNextPresenterId(pId + 1);
 
       const creditsList = [];
       for (const key in event.credits) {
@@ -130,7 +141,11 @@ const Agenda = () => {
   // }
 
   const handleAddSession = (day) => {
-    history.push("/program", { initialView: VIEW.SESSION, initialFormValues: { sessionLength: [day, day] } });
+    history.push("/program", {
+      initialView: VIEW.SESSION,
+      initialFormMode: "add",
+      initialFormValues: { sessionLength: [day, day] },
+    });
   };
 
   const handleEditProgram = () => {
@@ -224,6 +239,7 @@ const Sessions = ({ visible, setVisible, itemList, setItemList, doReorder, singl
 
     history.push("/program", {
       initialView: VIEW.PRESENTATION,
+      initialFormMode: "add",
       initialFormValues: { presentationLength: [session.dateStart, session.dateEnd] },
       sessionId,
     });

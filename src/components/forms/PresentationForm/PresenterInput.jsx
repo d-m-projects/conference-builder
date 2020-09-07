@@ -19,7 +19,7 @@ function PresenterInput(props) {
     });
 
     parentForm.setFieldsValue({ presenter: "", presenterList: names });
-  }, [parentForm, presenters]);
+  }, [presenters]);
 
   const addPresenter = () => {
     /*
@@ -50,8 +50,9 @@ function PresenterInput(props) {
       3. Inc next id
     */
 
-    setPresenters([...presenters, { name: presenter, id: String(getNextPresenterId()) }]);
     addGlobalPresenter(presenter);
+
+    setPresenters([...presenters, { name: presenter, id: String(getNextPresenterId()) }]);
   };
 
   const deselectPresenter = (presenter) => {

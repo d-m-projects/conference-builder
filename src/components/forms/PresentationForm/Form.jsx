@@ -19,14 +19,7 @@ function PresentationForm(props) {
   const { initialFormMode, initialFormValues } = props;
 
   const program = useContext(ProgramContext);
-  const {
-    selectedSessionId,
-    selectSession,
-    selectSessionByPresentationId,
-    getSessionById,
-    createPresentation,
-    editPresentation,
-  } = program;
+  const { selectedSessionId, selectSession, getSessionById, createPresentation, editPresentation } = program;
 
   const history = useHistory();
 
@@ -67,25 +60,21 @@ function PresentationForm(props) {
   useEffect(() => {
     // Handles all UI flows (add, add / edit from agenda)
     if (initialFormValues) {
-      if (presentationId) {
-        // From Edit Widget
-        selectSessionByPresentationId(presentationId);
-      }
-
       if (initialFormValues.presentationName) {
         // From Edit Widget
         setPresenters(initialFormValues.presenters);
         setCredits(initialFormValues.credits);
         setCreditsList(initialFormValues.creditsList);
+
+        console.log("Setting data");
       }
 
       // Used by all UI flows
       setPrefillValues({
         ...initialFormValues,
-        presentationLength: [
-          moment(initialFormValues.presentationLength[0]),
-          moment(initialFormValues.presentationLength[1]),
-        ],
+        presentationLength: initialFormValues.presentationLength
+          ? [moment(initialFormValues.presentationLength[0]), moment(initialFormValues.presentationLength[1])]
+          : [],
         creditAmount: 0,
       });
     }
@@ -93,7 +82,7 @@ function PresentationForm(props) {
 
   useEffect(() => {
     form.resetFields();
-  }, [form, formMode, prefillValues]);
+  }, [formMode, prefillValues]);
 
   const getDateRange = () => {
     return form.getFieldValue("presentationLength");
@@ -133,7 +122,7 @@ function PresentationForm(props) {
 
       if (isValidPresentationDateRange(start, end)) {
         if (formMode === "edit") {
-          editPresentation(selectedSessionId, {
+          editPresentation(presentationId, {
             name: values.presentationName,
             dateStart: start._d,
             dateEnd: end._d,

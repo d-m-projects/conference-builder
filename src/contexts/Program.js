@@ -166,6 +166,8 @@ const ProgramProvider = (props) => {
       });
     });
 
+    console.log("SELECTED SESSION", foundSessionId);
+
     if (foundSessionId >= 0) {
       setProgram({
         ...program,
@@ -315,6 +317,11 @@ const ProgramProvider = (props) => {
     setProgram({ ...program, nextPresenterId: program.nextPresenterId + 1 });
 
     return id;
+  };
+
+  //* For edit presentation widget
+  const setNextPresenterId = (id) => {
+    setProgram({ ...program, nextPresenterId: id });
   };
 
   //* Returns session by ID
@@ -506,6 +513,7 @@ const ProgramProvider = (props) => {
         getSessionById,
         getNextSessionId,
         getNextPresentationId,
+        setNextPresenterId,
         selectSessionByPresentationId,
         createPresentation,
         editPresentation,
