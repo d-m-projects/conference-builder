@@ -111,10 +111,13 @@ const File = () => {
 
     let current = newProgram.dateStart;
 
-    while (dates.lte(current, newProgram.dateEnd, "day")) {
+    while (dates.lt(current, newProgram.dateEnd, "day")) {
       newProgram.days.push({ date: current, sessions: [] });
       current = dates.add(current, 1, "day");
     }
+
+    // Fix for last date time
+    newProgram.days.push({ date: newProgram.dateEnd, sessions: [] });
 
     createProgram(newProgram);
 
