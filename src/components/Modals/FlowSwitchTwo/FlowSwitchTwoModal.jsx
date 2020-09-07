@@ -9,13 +9,15 @@ import GenericModal from "../GenericModal/GenericModal";
 import { VIEW } from "../../forms/FormManager";
 
 function FlowSwitchTwoModal(props) {
-  const { isVisible, setVisibility, setFormView, setFormMode } = props;
+  const { isVisible, setVisibility, presentationLength } = props;
 
   const history = useHistory();
 
   const handleAddPresentation = () => {
-    setFormMode("add")
-    setFormView(VIEW.PRESENTATION);
+    history.push("/program", {
+      initialView: VIEW.PRESENTATION,
+      initialFormValues: { presentationLength: [presentationLength[0]._d, presentationLength[1]._d] },
+    });
 
     setVisibility(false);
   };
@@ -26,13 +28,14 @@ function FlowSwitchTwoModal(props) {
     setVisibility(false);
   };
 
-
   return (
     <GenericModal
       isVisible={isVisible}
       data={{
         // NOT REQUIRED BUT HERE FOR DOCUMENTATION PURPOSES
+        // Show 'x' close option
         // closable: true,
+        // Run on modal close
         // onCancel: function () {
         //   setVisibility(false);
         // },
@@ -54,7 +57,7 @@ function FlowSwitchTwoModal(props) {
             </Button>
           </>,
         ],
-        footer: {},
+        footer: [],
       }}
     />
   );

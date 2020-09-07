@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import { ProgramContext } from "../../contexts/Program";
 
+import { useHistory } from "react-router-dom";
+
 import moment from "moment";
 
 import { Form, Input, DatePicker, Button, message } from "antd";
@@ -15,27 +17,34 @@ function SessionForm(props) {
   const program = useContext(ProgramContext);
   const { createSession, editSession } = program;
 
-  const [formMode, setFormMode] = useState(initialFormMode);
+  const history = useHistory();
 
   const [modalVisible, setModalVisible] = useState(false);
 
+  const [prefillValues, setPrefillValues] = useState({});
+
+  const [formMode, setFormMode] = useState(initialFormMode);
+
   const [form] = Form.useForm();
 
-  let prefillValues = {} 
-
-  if ( initialFormValues ) {
-    prefillValues = {
-      ...initialFormValues,
-      sessionLength: [
-        moment(initialFormValues.sessionLength[0]),
-        moment(initialFormValues.sessionLength[1])
-      ]
+  useEffect(() => {
+    if (initialFormValues) {
+      setPrefillValues({
+        ...initialFormValues,
+        sessionLength: initialFormValues.sessionLength
+          ? [moment(initialFormValues.sessionLength[0]), moment(initialFormValues.sessionLength[1])]
+          : [],
+      });
     }
-  }
+  }, [initialFormValues]);
 
   useEffect(() => {
-      form.resetFields();
-  }, [formMode]);
+    form.resetFields();
+  }, [form, formMode, prefillValues]);
+
+  const getDateRange = () => {
+    return form.getFieldValue("sessionLength");
+  };
 
   const disabledDate = (date) => {
     return date.isBefore(program.dateStart, "day") || date.isAfter(program.dateEnd, "day");
@@ -54,32 +63,29 @@ function SessionForm(props) {
 
     if (validSessionDateRange(start, end)) {
       if (formMode === "edit") {
-        editSession(program.selectedSessionId, {
+        editSession(initialFormValues.sessionId, {
           name: values.sessionName,
-  
           dateStart: start._d,
           dateEnd: end._d,
         });
 
         message.success(`Session ${values.sessionName} modified!`);
+
+        history.push("/review");
       } else {
         createSession({
           name: values.sessionName,
-  
-          // Store datetime as string, not instance of moment
           dateStart: start._d,
           dateEnd: end._d,
-  
           presentations: [],
         });
-  
+
         message.success(`Session ${values.sessionName} created!`);
+
+        setTimeout(() => {
+          setModalVisible(true);
+        }, 200);
       }
-
-      setTimeout(() => {
-        setModalVisible(true);
-      }, 200);
-
     } else {
       const programStartTime = moment(program.dateStart).format("HH:mm");
       const programEndTime = moment(program.dateEnd).format("HH:mm");
@@ -109,7 +115,13 @@ function SessionForm(props) {
 
   return (
     <>
-      <FlowSwitchOneModal isVisible={modalVisible} setVisibility={setModalVisible} setFormView={setFormView} setFormMode={setFormMode} />
+      <FlowSwitchOneModal
+        isVisible={modalVisible}
+        setVisibility={setModalVisible}
+        setFormView={setFormView}
+        setFormMode={setFormMode}
+        sessionLength={getDateRange()}
+      />
       <div className="session-form-container">
         <Form
           form={form}
@@ -119,9 +131,7 @@ function SessionForm(props) {
           autoComplete="off"
           layout="vertical"
           hideRequiredMark
-          initialValues={formMode === "edit" ? prefillValues : {}}
-          >
-          {/* SESSION NAME */}
+          initialValues={prefillValues}>
           <Form.Item
             label="Session Name"
             name="sessionName"
@@ -129,7 +139,6 @@ function SessionForm(props) {
             <Input />
           </Form.Item>
 
-          {/* DATETIME RANGE */}
           <Form.Item
             label="Session Start & End Dates"
             name="sessionLength"
@@ -142,7 +151,6 @@ function SessionForm(props) {
             />
           </Form.Item>
 
-          {/* SUBMIT */}
           <Form.Item>
             <Button type="primary" htmlType="submit">
               {formMode === "edit" ? "Edit Session" : "Create Session"}

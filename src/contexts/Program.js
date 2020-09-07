@@ -1,497 +1,578 @@
 import React, { useState, useEffect } from "react";
 
 import moment from "moment";
+import * as dates from "date-arithmetic";
 
 import db from "../data/database";
 
 // Dev test data
-import injection from "../data/testdata"
+import injection from "../data/testdata";
 
 const ProgramContext = React.createContext();
 
 const defaultProgram = {
-	name: "",
-	dateStart: null,
-	dateEnd: null,
-	days: [],
-	nextSessionId: 0,
-	selectedSessionId: 0,
-	globalPresenters: [],
-	nextPresenterId: 0,
+  name: "",
+  dateStart: null,
+  dateEnd: null,
+  days: [],
+  nextSessionId: 0,
+  nextPresentationId: 0,
+  nextPresenterId: 0,
+  selectedSessionId: 0,
+  globalPresenters: [],
 };
 
 const ProgramProvider = (props) => {
-	const [program, setProgram] = useState(defaultProgram);
+  const [program, setProgram] = useState(defaultProgram);
 
-	useEffect(() => {
-		if (program.id && program.dateStart) {
-			// console.log(`Program.js 28: Would have updated.`,)
-			db.update(program)
-				.then((x) => {
-					console.log("Context > DB Updated ", x);
-				})
-				.catch((err) => {
-					console.error("Context > DB Update failed", err);
-				});
-		} else if (!program.id && program.dateStart) {
-			db.insert(program)
-				.then((x) => {
-					setProgram({ ...program, id: x });
-					console.log("Context > DB Inserted. ID:", x);
-				})
-				.catch((err) => {
-					console.error("Context > DB Insert failed", err);
-				});
-		} else {
-			console.log(`Program.js 39: Missing program.dateStart.`);
-		}
-	}, [program]);
+  useEffect(() => {
+    // console.log("Program UseEffect", program);
+    if (program.id && program.dateStart) {
+      // console.log(`Program.js 28: Would have updated.`,)
+      db.update(program)
+        .then((x) => {
+          console.log("Context > DB Updated ", x);
+        })
+        .catch((err) => {
+          console.error("Context > DB Update failed", err);
+        });
+    } else if (!program.id && program.dateStart) {
+      db.insert(program)
+        .then((x) => {
+          setProgram({ ...program, id: x });
+          console.log("Context > DB Inserted. ID:", x);
+        })
+        .catch((err) => {
+          console.error("Context > DB Insert failed", err);
+        });
+    } else {
+      console.log(`Program.js 39: Missing program.dateStart.`);
+    }
+  }, [program]);
 
-	const createProgram = (newProgram) => {
-		setProgram({
-			...program,
-			name: newProgram.name,
-			dateStart: newProgram.dateStart,
-			dateEnd: newProgram.dateEnd,
-			days: newProgram.days,
-			nextSessionId: 0,
-			nextPresenterId: 0,
-			selectedSessionId: 0,
-			globalPresenters: []
-		});
-	};
+  //* Initializes a new program
+  const createProgram = (newProgram) => {
+    setProgram({
+      ...program,
+      name: newProgram.name,
+      dateStart: newProgram.dateStart,
+      dateEnd: newProgram.dateEnd,
+      days: newProgram.days,
+      nextSessionId: 0,
+      nextPresentationId: 0,
+      nextPresenterId: 0,
+      selectedSessionId: 0,
+      globalPresenters: [],
+    });
+  };
 
-	const updateProgram = (program) => {
-		console.log(`Program.js 62: `, program.days)
-		setProgram(program)
-	};
+  const editProgram = (programData) => {
+    // Build new date range, but don't overwrite existing days.
+    // Drop days that aren't in the range, but not if only the hours changed
 
-	const editDay = (dayId, dayData) => {
-		setProgram({
-			...program,
-			days: program.days.map(day => {
-				if (day.id === dayId) {
-					// Day we want to modify
-					return {
-						...day,
-						...dayData
-					}
-				}
-				return day;
-			})
-		});
-	}
+    // Original copy
+    const oldDays = program.days;
 
-	const createSession = (newSession) => {
-		/*
+    const newDays = [];
+
+    let current = programData.programLength[0];
+
+    while (dates.lte(current, programData.programLength[1], "day")) {
+      newDays.push({ date: current, sessions: [] });
+      current = dates.add(current, 1, "day");
+    }
+
+    // Fix time for last day
+    newDays[newDays.length - 1] = { date: programData.programLength[1], sessions: [] };
+
+    // Bring in sessions from old date range to new date range
+    const programDays = newDays.map((newDay) => {
+      const oldData = oldDays.find((day) => moment(day.date).isSame(newDay.date, "day"));
+
+      if (oldData) {
+        return {
+          ...newDay,
+          sessions: oldData.sessions,
+        };
+      }
+      return newDay;
+    });
+
+    // Handle last day case when date is same but hours changed
+    // const lastProgramDay = programDays[programDays.length - 1];
+    // const lastOldDay = oldDays[oldDays.length - 1];
+
+    // if (moment(lastProgramDay.date).isSame(lastOldDay.date, "day")) {
+    //   const sessions = lastOldDay.sessions.map(session => {
+
+    //   })
+    // }
+
+    setProgram({
+      ...program,
+      days: programDays,
+    });
+  };
+
+  const updateProgram = (program) => {
+    console.log(`Program.js 62: `, program.days);
+    setProgram(program);
+  };
+
+  const editDay = (dayId, dayData) => {
+    setProgram({
+      ...program,
+      days: program.days.map((day) => {
+        if (day.id === dayId) {
+          // Day we want to modify
+          return {
+            ...day,
+            ...dayData,
+          };
+        }
+        return day;
+      }),
+    });
+  };
+
+  //* Create a session
+  const createSession = (newSession) => {
+    /*
 		  1. Create a new session object and insert into program day
 		  2. Inc session id counter and set new session as target for presentations by default
 		*/
+    const sessionId = program.nextSessionId;
 
-		const sessionId = program.nextSessionId;
+    setProgram({
+      ...program,
+      days: program.days.map((day) => {
+        if (moment(day.date).isSame(newSession.dateStart, "day")) {
+          day.sessions.push({ ...newSession, id: sessionId });
+        }
 
-		setProgram({
-			...program,
-			days: program.days.map((day) => {
-				if (moment(day.date).dayOfYear() === moment(newSession.dateStart).dayOfYear()) {
-					return { ...day, sessions: [...day.sessions, { ...newSession, id: sessionId }] };
-				}
-				return day;
-			}),
-			nextSessionId: program.nextSessionId + 1,
-			selectedSessionId: sessionId,
-		});
-	};
+        return day;
+      }),
+      nextSessionId: program.nextSessionId + 1,
+      selectedSessionId: sessionId,
+    });
+  };
 
-	const editSession = (sessionId, sessionData) => {
-		setProgram({
-			...program,
-			days: program.days.map(day => {
-				day.sessions = day.sessions.map(session => {
-					if (session.id === sessionId) {
-						// Session we want to modify
-						// console.log(program.selectedSessionId, "Context modified", session.name , "=>", sessionData.name)
-						return {
-							...session,
-							...sessionData
-							// name: sessionData.name,
-							// dateStart: sessionData.dateStart,
-							// dateEnd: sessionData.dateEnd
-						}
-					}
-					return session;
-				});
+  //* Edit existing session
+  const editSession = (sessionId, sessionData) => {
+    setProgram({
+      ...program,
+      days: program.days.map((day) => {
+        day.sessions = day.sessions.map((session) => {
+          if (session.id === sessionId) {
+            return {
+              ...session,
+              ...sessionData,
+            };
+          }
+          return session;
+        });
 
-				return day;
-			})
-		});
-	}
+        return day;
+      }),
+    });
+  };
 
-	const deleteSession = (sessionId) => {
-		setProgram({
-			...program,
-			days: program.days.map((day) => {
-				day.sessions = day.sessions.filter(session => session.id !== sessionId);
+  //* Remove session
+  const deleteSession = (sessionId) => {
+    setProgram({
+      ...program,
+      days: program.days.map((day) => {
+        day.sessions = day.sessions.filter((session) => session.id !== sessionId);
 
-				return day;
-			})
-		});
-	}
+        return day;
+      }),
+    });
+  };
 
-	const selectSession = (sessionId) => {
-		setProgram({
-			...program,
-			selectedSessionId: sessionId
-		});
-	}
+  //* Targets a session for adding a presentation
+  const selectSession = (sessionId) => {
+    setProgram({
+      ...program,
+      selectedSessionId: sessionId,
+    });
+  };
 
-	const selectSessionByPresentationId = (presentationId) => {
-		let foundSessionId = -1;
+  const selectSessionByPresentationId = (presentationId) => {
+    let foundSessionId = -1;
 
-		program.days.some(day => {
-			day.sessions.some(session => {
-				session.presentations.some(presentation => {
-					if (presentation.id === presentationId) {
-						foundSessionId = session.id;
-						return true;
-					}
-				});
-			});
-		});
+    program.days.some((day) => {
+      day.sessions.some((session) => {
+        session.presentations.some((presentation) => {
+          if (presentation.id === presentationId) {
+            foundSessionId = session.id;
+            return true;
+          }
+        });
+      });
+    });
 
-		if (foundSessionId >= 0) {
-			setProgram({
-				...program,
-				selectedSessionId: foundSessionId
-			});
-		} else {
-			console.log("If you see this then either you broke presentation ids or are searching for an invalid session...");
-		}
-	}
+    if (foundSessionId >= 0) {
+      setProgram({
+        ...program,
+        selectedSessionId: foundSessionId,
+      });
+    } else {
+      console.log("If you see this then either you broke presentation ids or are searching for an invalid session...");
+    }
+  };
 
-	const createPresentation = (sessionId, presentation) => {
-		// Add presentation to session by id
+  //* Create a new presentation
+  const createPresentation = (sessionId, presentation) => {
+    // Add presentation to session by id
+    const presentationId = program.nextPresentationId;
 
-		setProgram({
-			...program,
-			days: program.days.map(day => {
-				day.sessions.map(session => {
-					if (session.id === sessionId) {
-						session.presentations.push(presentation);
-					}
+    setProgram({
+      ...program,
+      days: program.days.map((day) => {
+        day.sessions.map((session) => {
+          if (session.id === sessionId) {
+            session.presentations.push({ ...presentation, id: presentationId });
+          }
 
-					return session;
-				});
-				return day;
-			}),
-		});
-	};
+          return session;
+        });
+        return day;
+      }),
+      nextPresentationId: program.nextPresentationId + 1,
+    });
+  };
 
-	const editPresentation = (presentationId, presentationData) => {
-		setProgram({
-			...program,
-			days: program.days.map(day => {
-				day.sessions = day.sessions.map(session => {
-					session.presentations = session.presentations.map(presentation => {
-						if (presentation.id === presentationId) {
-							// Pres we want to modify
-							return {
-								...presentation,
-								...presentationData
-							}
-						}
+  //* Modify existing presentation
+  const editPresentation = (presentationId, presentationData) => {
+    setProgram({
+      ...program,
+      days: program.days.map((day) => {
+        day.sessions = day.sessions.map((session) => {
+          session.presentations = session.presentations.map((presentation) => {
+            if (presentation.id === presentationId) {
+              // Pres we want to modify
+              return {
+                ...presentation,
+                ...presentationData,
+              };
+            }
 
-						return presentation;
-					})
+            return presentation;
+          });
 
-					return session;
-				})
+          return session;
+        });
 
-				return day;
-			})
-		})
-	}
+        return day;
+      }),
+    });
+  };
 
-	const deletePresentation = (presentationId) => {
-		setProgram({
-			...program,
-			days: program.days.map(day => {
-				day.sessions = day.sessions.map(session => {
-					session.presentations = session.presentations.filter(presentation => presentation.id !== presentationId);
+  //* Remove presentation
+  const deletePresentation = (presentationId) => {
+    setProgram({
+      ...program,
+      days: program.days.map((day) => {
+        day.sessions = day.sessions.map((session) => {
+          session.presentations = session.presentations.filter((presentation) => presentation.id !== presentationId);
 
-					return session;
-				});
+          return session;
+        });
 
-				return day;
-			})
-		});
-	}
+        return day;
+      }),
+    });
+  };
 
-	const addGlobalPresenter = (presenter) => {
-		// Will add a presenter to the global list if he/she doesn't already exist.
-		const alreadyExists = program.globalPresenters.includes(presenter);
+  //* Add presenter to global list
+  const addGlobalPresenter = (presenter) => {
+    // Will add a presenter to the global list if he/she doesn't already exist.
+    const alreadyExists = program.globalPresenters.includes(presenter);
 
-		if (alreadyExists) return;
+    if (alreadyExists) return;
 
-		setProgram({
-			...program,
-			globalPresenters: [...program.globalPresenters, presenter],
-			nextPresenterId: program.nextPresenterId + 1,
-		});
-	};
+    setProgram({
+      ...program,
+      globalPresenters: [...program.globalPresenters, presenter],
+      nextPresenterId: program.nextPresenterId + 1,
+    });
+  };
 
-	const deleteGlobalPresenter = (presenter, force = false) => {
-		/*
+  //* Removes a presenter from global list
+  const deleteGlobalPresenter = (presenter, force = false) => {
+    /*
 		  Deletes a presenter from the global list if he/she isn't in use elsewhere in the program by default.
 		  force = true -> overrides this and will always delete name from list.
 		*/
 
-		// Deletion helper func
-		const remove = () => {
-			setProgram({
-				...program,
-				globalPresenters: program.globalPresenters.filter((p) => (p !== presenter ? true : false)),
-			});
-		};
+    // Deletion helper func
+    const remove = () => {
+      setProgram({
+        ...program,
+        globalPresenters: program.globalPresenters.filter((p) => (p !== presenter ? true : false)),
+      });
+    };
 
-		if (force) {
-			remove();
-		} else {
-			// Determine if presenter in use elsewhere in program
-			// Using .some will break the looping on first truthy return so it's faster
-			const inUse = program.days.some((day) => {
-				return day.sessions.some((session) => {
-					return session.presentations.some((presentation) =>
-						presentation.presenters.includes(presenter) ? true : false
-					);
-				});
-			});
+    if (force) {
+      remove();
+    } else {
+      // Determine if presenter in use elsewhere in program
+      const inUse = program.days.some((day) => {
+        return day.sessions.some((session) => {
+          return session.presentations.some((presentation) =>
+            presentation.presenters.includes(presenter) ? true : false
+          );
+        });
+      });
 
-			if (!inUse) {
-				remove();
-			}
-		}
-	};
+      if (!inUse) {
+        remove();
+      }
+    }
+  };
 
-	const getNextPresenterId = () => {
-		// Getter for a unique presenter id.
-		const id = program.nextPresenterId;
+  //* Increments session counter and returns an id
+  const getNextSessionId = () => {
+    const id = program.nextSessionId;
 
-		setProgram({ ...program, nextPresenterId: program.nextPresenterId + 1 });
+    setProgram({ ...program, nextSessionId: program.nextSessionId + 1 });
 
-		return id;
-	};
+    return id;
+  };
 
-	const getSessionById = (sessionId) => {
-		let foundSession = 0;
+  //* Increments presentation counter and returns an id
+  const getNextPresentationId = () => {
+    const id = program.nextSessionId;
 
-		// Using .some will break the looping on first truthy return so it's faster
-		program.days.some((day) => {
-			return day.sessions.some((session) => {
-				if (session.id === sessionId) {
-					foundSession = session;
-					return true;
-				}
-			});
-		});
+    setProgram({ ...program, nextSessionId: program.nextSessionId + 1 });
 
-		if (foundSession) {
-			return foundSession;
-		} else {
-			console.log("If you see this then either you broke session ids or are searching for an invalid one...");
-		}
-	};
+    return id;
+  };
 
+  //* Increments presenter counter and returns an id
+  const getNextPresenterId = () => {
+    const id = program.nextPresenterId;
 
+    setProgram({ ...program, nextPresenterId: program.nextPresenterId + 1 });
 
-	const injectDB = (x) => {
-		// 
-		// Call this method in your code somewhere to put a sample object in the DB.
-		// 
-		// Either pass in a well-shaped program object to inject specific data,
-		// OR allow it to use the object defined at the bottom of this file.
-		// 
-		db.insert(x || injection)
-			.then((x) => {
-				console.log("DB Injection. ID:", x)
-			})
-			.catch((err) => {
-				console.error("DB Injection failed", err)
-			})
-	}
+    return id;
+  };
 
-	const injectTestData = (data) => {
-		// 
-		// Call this method in your code somewhere to put a sample object
-		// into the program object in your component.
-		// 
-		// Either pass in a well-shaped program object to inject specific data,
-		// OR allow it to use the object imported `from testdata`.
-		// 
-		// SIDEEFFECT: It will write the object to the DB on each refresh.
-		// but at least you won't have to manually fill in the program EVERY TIME. 
-		setProgram(data || injection)
-	}
+  //* For edit presentation widget
+  const setNextPresenterId = (id) => {
+    setProgram({ ...program, nextPresenterId: id });
+  };
 
-	const loadProgram = async (id) => {
-		const read = db.read(id);
-		setProgram(await read);
-	};
+  //* Returns session by ID
+  const getSessionById = (sessionId) => {
+    let foundSession = 0;
 
-	function handleDnd(t, e) {
-		const moveSession = (e) => {
-			const { dayIndex, sessionIndex } = e.event.origIndex
-			let working = { ...program }
-			let target = working.days[dayIndex].sessions[sessionIndex]   // digging the session out by index
-			let origin = working.days[dayIndex]   // getting the origin day
+    // Search for session and break when found
+    program.days.some((day) => {
+      return day.sessions.some((session) => {
+        if (session.id === sessionId) {
+          foundSession = session;
+          return true;
+        }
+        return false;
+      });
+    });
 
-			const checkDrop = rangeCheck(e)
-			if (!checkDrop.ok) { return }
+    if (foundSession) {
+      return foundSession;
+    } else {
+      console.log("If you see this then either you broke session ids or are searching for an invalid one...");
+    }
+  };
 
-			target = {
-				...target,
-				dateStart: `${moment(e.start).format()}`,
-				dateEnd: `${moment(e.end).format()}`,
-			}
+  const injectDB = (x) => {
+    //
+    // Call this method in your code somewhere to put a sample object in the DB.
+    //
+    // Either pass in a well-shaped program object to inject specific data,
+    // OR allow it to use the object defined at the bottom of this file.
+    //
+    db.insert(x || injection)
+      .then((x) => {
+        console.log("DB Injection. ID:", x);
+      })
+      .catch((err) => {
+        console.error("DB Injection failed", err);
+      });
+  };
 
-			const dayDrop = working.days.map(d => d.id).indexOf(checkDrop.newDayId)
+  const injectTestData = (data) => {
+    //
+    // Call this method in your code somewhere to put a sample object
+    // into the program object in your component.
+    //
+    // Either pass in a well-shaped program object to inject specific data,
+    // OR allow it to use the object imported `from testdata`.
+    //
+    // SIDEEFFECT: It will write the object to the DB on each refresh.
+    // but at least you won't have to manually fill in the program EVERY TIME.
+    setProgram(data || injection);
+  };
 
-			const destination = working.days[dayDrop].sessions
-			destination.push(target)
-			origin.sessions.splice(sessionIndex, 1)
+  const loadProgram = async (id) => {
+    const read = db.read(id);
+    setProgram(await read);
+  };
 
-			setProgram({ ...working })
-		}
+  function handleDnd(t, e) {
+    const moveSession = (e) => {
+      const { dayIndex, sessionIndex } = e.event.origIndex;
+      let working = { ...program };
+      let target = working.days[dayIndex].sessions[sessionIndex]; // digging the session out by index
+      let origin = working.days[dayIndex]; // getting the origin day
 
-		const movePresentation = (e) => {
-			const { dayIndex, sessionIndex, presIndex } = e.event.origIndex
-			// const { dayId, sessionId, presId } = e.event.origData
-			let working = { ...program }
-			let target = working.days[dayIndex].sessions[sessionIndex].presentations[presIndex]   // digging the pres out by index
-			let origin = working.days[dayIndex].sessions[sessionIndex]   // getting the origin session
+      const checkDrop = rangeCheck(e);
+      if (!checkDrop.ok) {
+        return;
+      }
 
-			const checkDrop = rangeCheck(e)
-			if (!checkDrop.ok) { return }
+      target = {
+        ...target,
+        dateStart: `${moment(e.start).format()}`,
+        dateEnd: `${moment(e.end).format()}`,
+      };
 
-			target = {
-				...target,
-				dateStart: `${moment(e.start).format()}`,
-				dateEnd: `${moment(e.end).format()}`,
-			}
+      const dayDrop = working.days.map((d) => d.id).indexOf(checkDrop.newDayId);
 
-			const dayDrop = working.days.map(d => d.id).indexOf(checkDrop.newDayId)
-			const sessionDrop = working.days[dayDrop].sessions.map(s => s.id).indexOf(checkDrop.newSessionId)
+      const destination = working.days[dayDrop].sessions;
+      destination.push(target);
+      origin.sessions.splice(sessionIndex, 1);
 
-			const destination = working.days[dayDrop].sessions[sessionDrop].presentations
-			destination.push(target)
-			origin.presentations.splice(presIndex, 1)
+      setProgram({ ...working });
+    };
 
-			setProgram({ ...working })
-		}
+    const movePresentation = (e) => {
+      const { dayIndex, sessionIndex, presIndex } = e.event.origIndex;
+      // const { dayId, sessionId, presId } = e.event.origData
+      let working = { ...program };
+      let target = working.days[dayIndex].sessions[sessionIndex].presentations[presIndex]; // digging the pres out by index
+      let origin = working.days[dayIndex].sessions[sessionIndex]; // getting the origin session
 
-		const rangeCheck = (e) => {
-			const { type } = e.event
-			const dayRange = [program.dateStart, program.dateEnd]
-			const dayCount = moment(program.dateEnd).diff(moment(program.dateStart))
-			const sessionRange = []
+      const checkDrop = rangeCheck(e);
+      if (!checkDrop.ok) {
+        return;
+      }
 
-			for (const pDay of program.days) {
-				for (const pSession of pDay.sessions) {
-					sessionRange.push([pSession.dateStart, pSession.dateEnd, pSession.id, pDay.id])
-				}
-			}
+      target = {
+        ...target,
+        dateStart: `${moment(e.start).format()}`,
+        dateEnd: `${moment(e.end).format()}`,
+      };
 
-			if (type === "session") {
-				for (const day of program.days) {
-					const chkDayDate =
-						(moment(e.start).format("DD MM YYYY") === moment(day.date).format("DD MM YYYY"))
-					if (chkDayDate) {
-						const send = {
-							ok: true,
-							newDayId: day.id
-						}
-						return send;
-					}
-				}
-			}
+      const dayDrop = working.days.map((d) => d.id).indexOf(checkDrop.newDayId);
+      const sessionDrop = working.days[dayDrop].sessions.map((s) => s.id).indexOf(checkDrop.newSessionId);
 
-			if (type === "presentation") {
-				for (const range of sessionRange) {
-					const chkStart =
-						moment(e.start)
-							.isBetween(range[0], range[1], "minute", "[]")
-					const chkEnd =
-						moment(e.end)
-							.isBetween(range[0], range[1], "minute", "[]")
-					if (chkStart && chkEnd) {
-						const send = {
-							ok: true,
-							newSessionId: range[2],
-							newDayId: range[3]
-						}
-						return send;
-					}
-				}
-			}
-			return {
-				ok: false,
-				newSessionId: -1,
-				newDayId: -1
-			}
-		}
+      const destination = working.days[dayDrop].sessions[sessionDrop].presentations;
+      destination.push(target);
+      origin.presentations.splice(presIndex, 1);
 
-		switch (t) {
-			case "onDragStart":
-				// console.log(`onDragStart: `, e)
-				break;
+      setProgram({ ...working });
+    };
 
-			case "onEventDrop":
-				// console.log(`onEventDrop: `, e.event.type)
-				const type =
-					e.event.type === "session"
-						? moveSession(e)
-						: movePresentation(e)
+    const rangeCheck = (e) => {
+      const { type } = e.event;
+      // const dayRange = [program.dateStart, program.dateEnd];
+      // const dayCount = moment(program.dateEnd).diff(moment(program.dateStart));
+      const sessionRange = [];
 
-				break;
+      for (const pDay of program.days) {
+        for (const pSession of pDay.sessions) {
+          sessionRange.push([pSession.dateStart, pSession.dateEnd, pSession.id, pDay.id]);
+        }
+      }
 
-			default:
-				console.log(`handleDnd fallthru ${t}`, e)
-				break;
-		}
-	}
+      if (type === "session") {
+        for (const day of program.days) {
+          const chkDayDate = moment(e.start).format("DD MM YYYY") === moment(day.date).format("DD MM YYYY");
+          if (chkDayDate) {
+            const send = {
+              ok: true,
+              newDayId: day.id,
+            };
+            return send;
+          }
+        }
+      }
 
-	return (
-		<ProgramContext.Provider
-			value={{
-				...program,
-				createProgram,
-				updateProgram,
-				editDay,
-				createSession,
-				editSession,
-				deleteSession,
-				selectSession,
-				getSessionById,
-				selectSessionByPresentationId,
-				createPresentation,
-				editPresentation,
-				deletePresentation,
-				getNextPresenterId,
-				addGlobalPresenter,
-				deleteGlobalPresenter,
-				handleDnd,
-				loadProgram,
-				// clearProgram,
-				//Dev Only. call directly in a component when...
-				// ...you need a DB entry.
-				injectDB,
-				// ...you need test data in your component.
-				injectTestData,
-			}}>
-			{props.children}
-		</ProgramContext.Provider>
-	);
+      if (type === "presentation") {
+        for (const range of sessionRange) {
+          const chkStart = moment(e.start).isBetween(range[0], range[1], "minute", "[]");
+          const chkEnd = moment(e.end).isBetween(range[0], range[1], "minute", "[]");
+          if (chkStart && chkEnd) {
+            const send = {
+              ok: true,
+              newSessionId: range[2],
+              newDayId: range[3],
+            };
+            return send;
+          }
+        }
+      }
+      return {
+        ok: false,
+        newSessionId: -1,
+        newDayId: -1,
+      };
+    };
+
+    switch (t) {
+      case "onDragStart":
+        // console.log(`onDragStart: `, e)
+        break;
+
+      case "onEventDrop":
+        // console.log(`onEventDrop: `, e.event.type)
+        // const type = e.event.type === "session" ? moveSession(e) : movePresentation(e);
+        e.event.type === "session" ? moveSession(e) : movePresentation(e);
+
+        break;
+
+      default:
+        console.log(`handleDnd fallthru ${t}`, e);
+        break;
+    }
+  }
+
+  return (
+    <ProgramContext.Provider
+      value={{
+        ...program,
+        createProgram,
+        editProgram,
+        updateProgram,
+        editDay,
+        createSession,
+        editSession,
+        deleteSession,
+        selectSession,
+        getSessionById,
+        getNextSessionId,
+        getNextPresentationId,
+        setNextPresenterId,
+        selectSessionByPresentationId,
+        createPresentation,
+        editPresentation,
+        deletePresentation,
+        getNextPresenterId,
+        addGlobalPresenter,
+        deleteGlobalPresenter,
+        handleDnd,
+        loadProgram,
+        // clearProgram,
+        //Dev Only. call directly in a component when...
+        // ...you need a DB entry.
+        injectDB,
+        // ...you need test data in your component.
+        injectTestData,
+      }}>
+      {props.children}
+    </ProgramContext.Provider>
+  );
 };
 
 export { ProgramProvider, ProgramContext };
-

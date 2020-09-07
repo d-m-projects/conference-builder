@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import ProgramForm from "./ProgramForm";
 import SessionForm from "./SessionForm";
@@ -16,18 +16,46 @@ function FormManager(props) {
   const { initialView, initialFormMode, initialFormValues } = props;
   const [formView, setFormView] = useState(initialView ? initialView : VIEW.PROGRAM);
 
+  useEffect(() => {
+    setFormView(initialView);
+  }, [initialView]);
+
   const getFormComponentForView = () => {
     switch (formView) {
       case VIEW.PROGRAM:
-        return <ProgramForm setFormView={setFormView} initialFormMode={initialFormMode} initialFormValues={initialFormValues} />;
+        return (
+          <ProgramForm
+            setFormView={setFormView}
+            initialFormMode={initialFormMode}
+            initialFormValues={initialFormValues}
+          />
+        );
       case VIEW.SESSION:
-        return <SessionForm setFormView={setFormView} initialFormMode={initialFormMode} initialFormValues={initialFormValues} />;
+        return (
+          <SessionForm
+            setFormView={setFormView}
+            initialFormMode={initialFormMode}
+            initialFormValues={initialFormValues}
+          />
+        );
       case VIEW.PRESENTATION:
-        return <PresentationForm setFormView={setFormView} initialFormMode={initialFormMode} initialFormValues={initialFormValues} />;
+        return (
+          <PresentationForm
+            setFormView={setFormView}
+            initialFormMode={initialFormMode}
+            initialFormValues={initialFormValues}
+          />
+        );
       case VIEW.REVIEW:
         return <Agenda setFormView={setFormView} />;
       default:
-        return <ProgramForm setFormView={setFormView} initialFormValues={initialFormValues} />;
+        return (
+          <ProgramForm
+            setFormView={setFormView}
+            initialFormMode={initialFormMode}
+            initialFormValues={initialFormValues}
+          />
+        );
     }
   };
 

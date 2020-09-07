@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import { ProgramContext } from "../../../contexts/Program";
 
-import {useHistory} from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 
 import moment from "moment";
 
+import FlowSwitchTwoModal from "../../Modals/FlowSwitchTwo/FlowSwitchTwoModal";
 import PresenterDnD from "./PresenterDnD";
 import PresenterInput from "./PresenterInput";
 import CreditInput from "./CreditInput";
@@ -15,48 +16,75 @@ import { Form, Input, Button, DatePicker, message } from "antd";
 const { RangePicker } = DatePicker;
 
 function PresentationForm(props) {
-  const { initialFormMode, initialFormValues, setModalVisible } = props;
+  const { initialFormMode, initialFormValues } = props;
 
   const program = useContext(ProgramContext);
-  const { selectSessionByPresentationId, selectedSessionId, getSessionById, createPresentation, editPresentation } = program;
+  const { selectedSessionId, selectSession, getSessionById, createPresentation, editPresentation } = program;
 
   const history = useHistory();
 
-  const [formMode, setFormMode] = useState(initialFormMode);
+  const location = useLocation();
+
+  const { sessionId, presentationId } = location.state;
+
+  // UI  Modal
+  const [modalVisible, setModalVisible] = useState(false);
+
+  // "add" / "edit"
+  const [formMode] = useState(initialFormMode);
 
   // State for dynamic presenters
-  const [presenters, setPresenters] = useState(initialFormValues ? initialFormValues.presenters : []);
+  const [presenters, setPresenters] = useState([]);
 
   // State for dynamic credits
-  const [credits, setCredits] = useState(initialFormValues ? initialFormValues.credits : {});
+  const [credits, setCredits] = useState({});
 
   // Friendly strings for list to render credits
-  const [creditsList, setCreditsList] = useState(initialFormValues ? initialFormValues.creditsList : []);
+  const [creditsList, setCreditsList] = useState([]);
 
-  // Drawer
+  // DnD Drawer
   const [drawerVisible, setDrawerVisible] = useState(false);
 
   const [form] = Form.useForm();
 
-  let prefillValues = {} 
+  // Input prefill
+  const [prefillValues, setPrefillValues] = useState({ creditAmount: 0 });
 
-  if ( initialFormValues ) {
-    prefillValues = {
-      ...initialFormValues,
-      presentationLength: [
-        moment(initialFormValues.presentationLength[0]),
-        moment(initialFormValues.presentationLength[1])
-      ]
+  // Used when adding presentation from agenda
+  useEffect(() => {
+    if (sessionId >= 0) {
+      selectSession(sessionId);
     }
-  }
+  }, [sessionId]);
 
   useEffect(() => {
-    if (formMode === "edit") {
-      selectSessionByPresentationId(initialFormValues.id);
-    } else {
-      form.resetFields();
+    // Handles all UI flows (add, add / edit from agenda)
+    if (initialFormValues) {
+      if (initialFormValues.presentationName) {
+        // From Edit Widget
+        setPresenters(initialFormValues.presenters);
+        setCredits(initialFormValues.credits);
+        setCreditsList(initialFormValues.creditsList);
+      }
+
+      // Used by all UI flows
+      setPrefillValues({
+        ...initialFormValues,
+        presentationLength: initialFormValues.presentationLength
+          ? [moment(initialFormValues.presentationLength[0]), moment(initialFormValues.presentationLength[1])]
+          : [],
+        creditAmount: 0,
+      });
     }
-  }, [formMode]);
+  }, [initialFormValues]);
+
+  useEffect(() => {
+    form.resetFields();
+  }, [formMode, prefillValues]);
+
+  const getDateRange = () => {
+    return form.getFieldValue("presentationLength");
+  };
 
   const formSubmit = (values) => {
     // Date range validation helper func
@@ -92,18 +120,16 @@ function PresentationForm(props) {
 
       if (isValidPresentationDateRange(start, end)) {
         if (formMode === "edit") {
-          editPresentation(selectedSessionId, {
-            id: initialFormValues.id,
+          editPresentation(presentationId, {
             name: values.presentationName,
             dateStart: start._d,
             dateEnd: end._d,
             presenters: presenters.map((presenter) => presenter.name),
             credits: credits,
           });
-  
+
           message.success(`Presentation ${values.presentationName} modified!`);
 
-          // TEMP
           history.push("/review");
         } else {
           createPresentation(selectedSessionId, {
@@ -113,21 +139,20 @@ function PresentationForm(props) {
             presenters: presenters.map((presenter) => presenter.name),
             credits: credits,
           });
-  
+
           message.success(`Presentation ${values.presentationName} created!`);
+
+          setTimeout(() => {
+            setModalVisible(true);
+          }, 200);
+
+          // Clear form data and old state in case user wants to add another presentation
+          setCredits({});
+          setPresenters([]);
+          setCreditsList([]);
+
+          form.resetFields();
         }
-        
-
-        setTimeout(() => {
-          setModalVisible(true);
-        }, 200);
-
-        // Clear form data and old state in case user wants to add another presentation
-        setCredits({});
-        setPresenters([]);
-        setCreditsList([]);
-
-        form.resetFields();
       } else {
         const { dateStart, dateEnd } = getSessionById(selectedSessionId);
 
@@ -149,7 +174,7 @@ function PresentationForm(props) {
   const disabledDate = (date) => {
     const session = getSessionById(selectedSessionId);
 
-    if(session) {
+    if (session) {
       return date.isBefore(session.dateStart, "day") || date.isAfter(session.dateEnd, "day");
     }
   };
@@ -161,92 +186,93 @@ function PresentationForm(props) {
     Credit Type + Credit Value * Dynamic, Add credit btn
   */
 
-  return (
-    selectedSessionId >= 0 ?
-    <div className="presentation-form-container">
-      {/* DnD Presenter Drawer */}
-      <PresenterDnD
-        visible={drawerVisible}
-        setVisible={setDrawerVisible}
-        presenters={presenters}
-        setPresenters={setPresenters}
+  return selectedSessionId >= 0 ? (
+    <>
+      <FlowSwitchTwoModal
+        isVisible={modalVisible}
+        setVisibility={setModalVisible}
+        presentationLength={getDateRange()}
       />
-      {/* THE BIG FORM */}
-      <Form
-        form={form}
-        name="presentationForm"
-        initialValues={formMode === "edit" ? prefillValues : {
-          creditAmount: 0,
-        }}
-        onFinish={formSubmit}
-        autoComplete="off"
-        hideRequiredMark>
-        {/* PRESENTATION NAME */}
-        <Row>
-          <Col span={24}>
-            <Form.Item
-              label="Presentation Name"
-              labelCol={{ span: 24 }}
-              name="presentationName"
-              rules={[{ required: true, message: "Input a name for this presentation." }]}>
-              <Input />
-            </Form.Item>
-          </Col>
-        </Row>
 
-        {/* PRESENTATION TIME RANGE */}
-        <Row>
-          <Col span={24}>
-            <Form.Item
-              label="Presentation Start & End Times"
-              labelCol={{ span: 24 }}
-              name="presentationLength"
-              rules={[{ required: true, message: "Input a time range for this presentation." }]}>
-              <RangePicker
-                disabledDate={disabledDate}
-                showTime={{ format: "HH:mm" }}
-                format="YYYY-MM-DD HH:mm"
-                minuteStep={5}
-              />
-            </Form.Item>
-          </Col>
-        </Row>
-
-        <Divider />
-
-        {/* PRESENTER SUB-COMPONENT */}
-        <PresenterInput
-          parentForm={form}
+      <div className="presentation-form-container">
+        <PresenterDnD
+          visible={drawerVisible}
+          setVisible={setDrawerVisible}
           presenters={presenters}
           setPresenters={setPresenters}
-          setDrawerVisible={setDrawerVisible}
         />
 
-        <Divider />
+        <Form
+          form={form}
+          name="presentationForm"
+          initialValues={prefillValues}
+          onFinish={formSubmit}
+          autoComplete="off"
+          hideRequiredMark>
+          <Row>
+            <Col span={24}>
+              <Form.Item
+                label="Presentation Name"
+                labelCol={{ span: 24 }}
+                name="presentationName"
+                rules={[{ required: true, message: "Input a name for this presentation." }]}>
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
 
-        {/* CREDIT SUB-COMPONENT */}
-        <CreditInput
-          parentForm={form}
-          credits={credits}
-          setCredits={setCredits}
-          creditsList={creditsList}
-          setCreditsList={setCreditsList}
-        />
+          <Row>
+            <Col span={24}>
+              <Form.Item
+                label="Presentation Start & End Times"
+                labelCol={{ span: 24 }}
+                name="presentationLength"
+                rules={[{ required: true, message: "Input a time range for this presentation." }]}>
+                <RangePicker
+                  disabledDate={disabledDate}
+                  showTime={{ format: "HH:mm" }}
+                  format="YYYY-MM-DD HH:mm"
+                  minuteStep={5}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
 
-        <Divider />
+          <Divider />
 
-        {/* SUBMIT */}
-        <Row>
-          <Col span={24}>
-            <Form.Item>
-              <Button type="primary" htmlType="submit">
-                {formMode === "edit" ? "Edit Presentation" : "Add Presentation"}
-              </Button>
-            </Form.Item>
-          </Col>
-        </Row>
-      </Form>
-    </div> : <Skeleton />
+          <PresenterInput
+            parentForm={form}
+            presenters={presenters}
+            setPresenters={setPresenters}
+            setDrawerVisible={setDrawerVisible}
+          />
+
+          <Divider />
+
+          <CreditInput
+            parentForm={form}
+            credits={credits}
+            setCredits={setCredits}
+            creditsList={creditsList}
+            setCreditsList={setCreditsList}
+          />
+
+          <Divider />
+
+          <Row>
+            <Col span={24}>
+              <Form.Item>
+                <Button type="primary" htmlType="submit">
+                  {formMode === "edit" ? "Edit Presentation" : "Add Presentation"}
+                </Button>
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </div>
+    </>
+  ) : (
+    <Skeleton />
   );
 }
 

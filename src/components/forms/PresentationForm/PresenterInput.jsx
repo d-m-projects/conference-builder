@@ -50,8 +50,9 @@ function PresenterInput(props) {
       3. Inc next id
     */
 
-    setPresenters([...presenters, { name: presenter, id: String(getNextPresenterId()) }]);
     addGlobalPresenter(presenter);
+
+    setPresenters([...presenters, { name: presenter, id: String(getNextPresenterId()) }]);
   };
 
   const deselectPresenter = (presenter) => {
@@ -96,6 +97,7 @@ function PresenterInput(props) {
               mode="multiple"
               onSelect={selectPresenter}
               onDeselect={deselectPresenter}
+              defaultValue={presenters.map((p) => p.name)}
               placeholder="Presenters previously used can be selected here.">
               {globalPresenters.map((presenter, idx) => {
                 return (

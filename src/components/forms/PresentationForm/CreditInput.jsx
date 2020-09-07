@@ -32,7 +32,7 @@ function CreditInput(props) {
     };
 
     const creditType = parentForm.getFieldValue("creditType");
-    const creditAmount = parentForm.getFieldValue("creditAmount");
+    const creditAmount = Number(parentForm.getFieldValue("creditAmount"));
 
     const newCredit = {};
     newCredit[creditType] = creditAmount;
@@ -57,8 +57,30 @@ function CreditInput(props) {
     }
   };
 
-  const removeCredit = (values) => {
-    setCredits(values);
+  const selectCredit = (credit) => {
+    const splitCreds = credit.split(" ");
+
+    const creditKey = splitCreds[0];
+    const creditAmount = splitCreds[2];
+
+    const newCredit = {};
+
+    newCredit[creditKey] = creditAmount;
+
+    setCredits({ ...credits, ...newCredit });
+
+    setCreditsList([...creditsList, credit]);
+  };
+
+  const deselectCredit = (credit) => {
+    const creditKey = credit.split(" ")[0];
+    const modCredits = credits;
+
+    delete modCredits[creditKey];
+
+    setCredits(modCredits);
+
+    setCreditsList(creditsList.filter((c) => c !== credit));
   };
 
   return (
@@ -90,10 +112,15 @@ function CreditInput(props) {
       <Row>
         <Col span={24}>
           <Form.Item label="Current Credits" labelCol={{ span: 24 }} name="creditList">
-            <Select mode="multiple" onChange={removeCredit} placeholder="Credits will display here as they are added.">
+            <Select
+              mode="multiple"
+              onSelect={selectCredit}
+              onDeselect={deselectCredit}
+              defaultValue={creditsList}
+              placeholder="Credits will display here as they are added.">
               {creditsList.map((credit, idx) => {
                 return (
-                  <Option key={idx} value={credit}>
+                  <Option key={credit} value={credit}>
                     {credit}
                   </Option>
                 );
