@@ -112,6 +112,8 @@ const ProgramProvider = (props) => {
       ...program,
       name: programData.programName,
       days: programDays,
+      dateStart: programData.programLength[0],
+      dateEnd: programData.programLength[1],
     });
   };
 
