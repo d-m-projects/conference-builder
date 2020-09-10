@@ -28,7 +28,6 @@ const ProgramProvider = (props) => {
   const [program, setProgram] = useState(defaultProgram);
 
   useEffect(() => {
-    console.log("Program UseEffect", program);
     if (program.id && program.dateStart) {
       // console.log(`Program.js 28: Would have updated.`,)
       db.update(program)
@@ -48,7 +47,7 @@ const ProgramProvider = (props) => {
           console.error("Context > DB Insert failed", err);
         });
     } else {
-      console.log(`Program.js 39: Missing program.dateStart.`);
+      console.log(`Context > NOTE: Missing program.dateStart.`);
     }
   }, [program]);
 

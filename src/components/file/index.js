@@ -1,11 +1,17 @@
 import React, { useContext, useState, useEffect } from "react";
 import { ProgramContext } from "../../contexts/Program";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 
 import shortid from "shortid";
+import * as dates from "date-arithmetic";
+import moment from "moment";
+import YAML from "yaml";
+import FileSaver from "file-saver";
+
+import db from "../../data/database";
 
 // antd components
-import { Divider, DatePicker, message, Card, Form, Input, Space, Button, Modal, List } from "antd";
+import { Divider, DatePicker, message, Card, Form, Input, Space, Button, Modal, List, Skeleton} from "antd";
 import {
 	EditOutlined,
 	DownloadOutlined,
@@ -16,14 +22,9 @@ import {
 	PlusOutlined
 } from "@ant-design/icons";
 
-import * as dates from "date-arithmetic";
-import moment from "moment";
-import db from "../../data/database";
-
+// Components
 import { VIEW } from "../forms/FormManager";
-
-import YAML from "yaml";
-import FileSaver from "file-saver";
+import ProgramModal from "../Modals/ProgramModal";
 
 const { RangePicker } = DatePicker;
 const { confirm } = Modal;
@@ -33,9 +34,15 @@ const File = () => {
 	const { loadProgram, createProgram } = program;
 
 	const history = useHistory();
+	const location = useLocation();
 
 	const [fileman, setFileman] = useState([]);
-	const [deleted, setDeleted] = useState(false); // trigger useEffect rerender when a program is deleted
+	const [deleted, setDeleted] = useState(false); // reload database when a program is deleted
+	const [creatorVisible, setCreatorVisible] = useState(false); // show the create program modal
+
+	const doCreateProgram = () => {
+		setCreatorVisible(true)
+	}
 
 	const doEditClick = async (id) => {
 		await loadProgram(id);
@@ -143,80 +150,85 @@ const File = () => {
 		getall();
 	}, [deleted]);
 
-	const CreateModal = () => {
+	// const CreateModal = () => {
 
-		const ModalCreateText = () => {
-			return (
-				<Form onFinish={onFinish} key="0">
-					<Divider />
-					<Space direction="vertical">
-						<Form.Item name="programName" rules={[{ required: true, message: "Please input a valid name." }]}>
-							<Input placeholder="New Program Name" />
-						</Form.Item>
-						<Form.Item name="programLength" rules={[{ required: true, message: "Please select a valid date range." }]}>
-							<RangePicker showTime={{ format: "HH:mm" }} format="YYYY-MM-DD HH:mm" minuteStep={15} />
-						</Form.Item>
-					</Space>
-				</Form>
-			);
-		}
-		const Corntinue = () => {
-			return (
-				<>Continue < DoubleRightOutlined /></>
-			)
+	// 	const ModalCreateText = () => {
+	// 		return (
+	// 			<Form onFinish={onFinish} key="0">
+	// 				<Divider />
+	// 				<Space direction="vertical">
+	// 					<Form.Item name="programName" rules={[{ required: true, message: "Please input a valid name." }]}>
+	// 						<Input placeholder="New Program Name" />
+	// 					</Form.Item>
+	// 					<Form.Item name="programLength" rules={[{ required: true, message: "Please select a valid date range." }]}>
+	// 						<RangePicker showTime={{ format: "HH:mm" }} format="YYYY-MM-DD HH:mm" minuteStep={15} />
+	// 					</Form.Item>
+	// 				</Space>
+	// 			</Form>
+	// 		);
+	// 	}
+	// 	const Corntinue = () => {
+	// 		return (
+	// 			<>Continue < DoubleRightOutlined /></>
+	// 		)
 
-		}
-		confirm({
-			title: "Create new program",
-			icon: <PlusOutlined />,
-			content: <ModalCreateText />,
-			okText: <Corntinue />,
-			cancelText: "Cancel",
-			onOk() { onFinish() },
-			onCancel() {
-				console.log(`Creation CANCELLED.`);
-			},
-		});
-	};
+	// 	}
+	// 	confirm({
+	// 		title: "Create new program",
+	// 		icon: <PlusOutlined />,
+	// 		content: <ModalCreateText />,
+	// 		okText: <Corntinue />,
+	// 		cancelText: "Cancel",
+	// 		onOk() { onFinish() },
+	// 		onCancel() {
+	// 			console.log(`Creation CANCELLED.`);
+	// 		},
+	// 	});
+	// };
 
-	return (
-		<List
-			header={
-				<div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-					<h3>All Programs</h3>
-					<Button style={{ float: "right" }} type="primary" htmlType="submit" shape="round"
-						onClick={CreateModal}
-					>
-						<PlusOutlined />
+	return fileman ? (
+		<>
+			<ProgramModal visible={creatorVisible} setVisible={setCreatorVisible} />
+			<List
+				header={
+					<div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+						<h3>All Programs</h3>
+						<Button style={{ float: "right" }} type="primary" htmlType="submit" shape="round"
+							onClick={doCreateProgram}
+						>
+							<PlusOutlined />
 						Create
 					</Button>
-				</div>
-			}
-			bordered
-			// size="large"
-			dataSource={fileman}
-			renderItem={item => (
-				<List.Item
-					actions={[
-						<EditOutlined onClick={() => doEditClick(item.id)} />,
-						<DownloadOutlined onClick={() => doDownloadClick(item.id)} />,
-						<CopyOutlined onClick={() => doCopyClick(item.id)} />,
-						<DeleteTwoTone onClick={() => doDelete(item)} twoToneColor="red" />,
-					]}
-				>
-					<List.Item.Meta
-						title={item.name}
-						description={
-							<p>{moment(item.dateStart).format("ddd, MMM Do Y")} - {moment(item.dateEnd).format("ddd, MMM Do Y")}
-								<br />
-								{item.nextSessionId} Sessions, {item.nextPresentationId} Presentations, {item.nextPresenterId} Presenters
+					</div>
+				}
+				bordered
+				// size="large"
+				dataSource={fileman}
+				renderItem={item => (
+					<List.Item
+						actions={[
+							<EditOutlined onClick={() => doEditClick(item.id)} />,
+							<DownloadOutlined onClick={() => doDownloadClick(item.id)} />,
+							<CopyOutlined onClick={() => doCopyClick(item.id)} />,
+							<DeleteTwoTone onClick={() => doDelete(item)} twoToneColor="red" />,
+						]}
+					>
+						<List.Item.Meta
+							title={item.name}
+							description={
+								<p>{moment(item.dateStart).format("ddd, MMM Do Y")} - {moment(item.dateEnd).format("ddd, MMM Do Y")}
+									<br />
+									{item.nextSessionId} Sessions, {item.nextPresentationId} Presentations, {item.nextPresenterId} Presenters
 							</p>
-						}
-					/>
-				</List.Item>
-			)}
-		/>
-	)
+							}
+						/>
+					</List.Item>
+				)}
+			/>
+		</>
+	) : (
+		<Skeleton />
+	);
 
 	// return (
 	// 	<>

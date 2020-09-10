@@ -11,9 +11,8 @@ import { PlusOutlined, UnorderedListOutlined, SettingOutlined } from "@ant-desig
 // Components
 import { VIEW } from "../forms/FormManager";
 import ReorderDnD from "./AgendaForm/ReorderDnD";
-
 import Sessions from "./Sessions";
-import EditProgramModal from "./AgendaModal/EditProgramModal";
+import ProgramModal from "../Modals/ProgramModal";
 
 import { formatDataSource } from "./formatDataSource";
 
@@ -89,7 +88,7 @@ function Agenda() {
 
   return program.dateStart ? (
     <>
-      <EditProgramModal visible={modalVisible} setVisible={setModalVisible} />
+      <ProgramModal visible={modalVisible} setVisible={setModalVisible} />
       <ReorderDnD
         visible={drawerVisible}
         setVisible={setDrawerVisible}
