@@ -28,6 +28,8 @@ function EditProgramModal(props) {
       programName,
       programLength: [programLength[0]._d, programLength[1]._d],
     });
+
+    setVisible(false);
   };
 
   const checkRange = (range) => {

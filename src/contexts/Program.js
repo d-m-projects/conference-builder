@@ -110,6 +110,7 @@ const ProgramProvider = (props) => {
 
     setProgram({
       ...program,
+      name: programData.programName,
       days: programDays,
     });
   };
