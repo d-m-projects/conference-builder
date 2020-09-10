@@ -93,6 +93,7 @@ const File = () => {
 			okType: "danger",
 			cancelText: "Cancel",
 			onOk() {
+				message.info(`Program '${props.name}' deleted!`);
 				db.delete(props.id);
 				setDeleted(true);
 			},
@@ -103,7 +104,6 @@ const File = () => {
 	};
 
 	const onFinish = async (values) => {
-		console.log(`index.js 35: `, values);
 		const newProgram = {
 			name: values.programName,
 			dateStart: values.programLength[0].second(0).millisecond(0)._d,
@@ -122,9 +122,7 @@ const File = () => {
 		newProgram.days.push({ date: newProgram.dateEnd, sessions: [], id: shortid.generate() });
 
 		createProgram(newProgram);
-
 		history.push("/program", { initialView: VIEW.SESSION });
-
 		message.success(`Program '${values.programName}' Started!`);
 	};
 
@@ -134,7 +132,6 @@ const File = () => {
 		ret.sort((x, y) => (x.name > y.name ? 1 : -1));
 		setDeleted(false);
 		setFileman([...ret]);
-		// setFileman([defaultFileman, ...ret]);
 	};
 
 	useEffect(() => {
@@ -159,7 +156,7 @@ const File = () => {
 						<Form.Item>
 							<Button style={{ float: "right" }} type="primary" htmlType="submit" shape="round">
 								Create
-                <DoubleRightOutlined />
+                			<DoubleRightOutlined />
 							</Button>
 						</Form.Item>
 					</Space>
@@ -172,18 +169,26 @@ const File = () => {
 		<List
 			// header={}
 			bordered
-			size="large"
+			// size="large"
 			dataSource={fileman}
 			renderItem={item => (
-
 				<List.Item
 					actions={[
 						<EditOutlined onClick={() => doEditClick(item.id)} />,
 						<DownloadOutlined onClick={() => doDownloadClick(item.id)} />,
 						<CopyOutlined onClick={() => doCopyClick(item.id)} />,
+						<DeleteTwoTone onClick={() => doDelete(item)} twoToneColor="red" />,
 					]}
 				>
-					{item.name}
+					<List.Item.Meta
+						title={item.name}
+						description={
+							<p>{moment(item.dateStart).format("ddd, MMM Do Y")} - {moment(item.dateEnd).format("ddd, MMM Do Y")}
+								<br />
+								{item.nextSessionId} Sessions, {item.nextPresentationId} Presentations, {item.nextPresenterId} Presenters
+							</p>
+						}
+					/>
 				</List.Item>
 			)}
 		/>
@@ -224,10 +229,3 @@ const File = () => {
 };
 
 export default File;
-
-// {/* {data.map( item => {
-// 	<Card>{item.name}</Card>
-// 	// <Card */}
-// 	// >
-// 	// </Card>
-// // })}
