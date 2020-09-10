@@ -5,7 +5,7 @@ import { useHistory } from "react-router-dom";
 import shortid from "shortid";
 
 // antd components
-import { Row, Col, DatePicker, message, Card, Form, Input, Space, Button, Modal, List } from "antd";
+import { Divider, DatePicker, message, Card, Form, Input, Space, Button, Modal, List } from "antd";
 import {
 	EditOutlined,
 	DownloadOutlined,
@@ -13,6 +13,7 @@ import {
 	CopyOutlined,
 	DeleteTwoTone,
 	ExclamationCircleOutlined,
+	PlusOutlined
 } from "@ant-design/icons";
 
 import * as dates from "date-arithmetic";
@@ -129,7 +130,7 @@ const File = () => {
 	const getall = async () => {
 
 		let ret = await db.readAll();
-		ret.sort((x, y) => (x.name > y.name ? 1 : -1));
+		ret.sort((x, y) => (x.dateStart > y.dateStart ? 1 : -1));
 		setDeleted(false);
 		setFileman([...ret]);
 	};
@@ -142,10 +143,12 @@ const File = () => {
 		getall();
 	}, [deleted]);
 
-	const CreateCard = () => {
-		return (
-			<Form onFinish={onFinish} key="0">
-				<Card title="Create New Program" className="fileman-card">
+	const CreateModal = () => {
+
+		const ModalCreateText = () => {
+			return (
+				<Form onFinish={onFinish} key="0">
+					<Divider />
 					<Space direction="vertical">
 						<Form.Item name="programName" rules={[{ required: true, message: "Please input a valid name." }]}>
 							<Input placeholder="New Program Name" />
@@ -153,21 +156,42 @@ const File = () => {
 						<Form.Item name="programLength" rules={[{ required: true, message: "Please select a valid date range." }]}>
 							<RangePicker showTime={{ format: "HH:mm" }} format="YYYY-MM-DD HH:mm" minuteStep={15} />
 						</Form.Item>
-						<Form.Item>
-							<Button style={{ float: "right" }} type="primary" htmlType="submit" shape="round">
-								Create
-                			<DoubleRightOutlined />
-							</Button>
-						</Form.Item>
 					</Space>
-				</Card>
-			</Form>
-		);
+				</Form>
+			);
+		}
+		const Corntinue = () => {
+			return (
+				<>Continue < DoubleRightOutlined /></>
+			)
+
+		}
+		confirm({
+			title: "Create new program",
+			icon: <PlusOutlined />,
+			content: <ModalCreateText />,
+			okText: <Corntinue />,
+			cancelText: "Cancel",
+			onOk() { onFinish() },
+			onCancel() {
+				console.log(`Creation CANCELLED.`);
+			},
+		});
 	};
 
 	return (
 		<List
-			// header={}
+			header={
+				<div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+					<h3>All Programs</h3>
+					<Button style={{ float: "right" }} type="primary" htmlType="submit" shape="round"
+						onClick={CreateModal}
+					>
+						<PlusOutlined />
+						Create
+					</Button>
+				</div>
+			}
 			bordered
 			// size="large"
 			dataSource={fileman}
