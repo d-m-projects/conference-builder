@@ -44,9 +44,9 @@ function Agenda() {
   // if `program` is empty, fill it with example data for visualization.
   // Use when you need complete data in `program`
   // (so you don't have to enter it manually)
-  // if (!program.dateStart) {
-  // 	program.injectTestData()
-  // }
+  if (!program.dateStart) {
+  	program.injectTestData()
+  }
 
   const handleAddSession = (day) => {
     history.push("/program", {
