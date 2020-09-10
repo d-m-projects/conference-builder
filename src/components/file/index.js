@@ -2,6 +2,8 @@ import React, { useContext, useState, useEffect } from "react";
 import { ProgramContext } from "../../contexts/Program";
 import { useHistory } from "react-router-dom";
 
+import shortid from "shortid";
+
 // antd components
 import { Row, Col, DatePicker, message, Card, Form, Input, Space, Button, Modal } from "antd";
 import {
@@ -112,12 +114,12 @@ const File = () => {
     let current = newProgram.dateStart;
 
     while (dates.lt(current, newProgram.dateEnd, "day")) {
-      newProgram.days.push({ date: current, sessions: [] });
+      newProgram.days.push({ date: current, sessions: [], id: shortid.generate() });
       current = dates.add(current, 1, "day");
     }
 
     // Fix for last date time
-    newProgram.days.push({ date: newProgram.dateEnd, sessions: [] });
+    newProgram.days.push({ date: newProgram.dateEnd, sessions: [], id: shortid.generate() });
 
     createProgram(newProgram);
 

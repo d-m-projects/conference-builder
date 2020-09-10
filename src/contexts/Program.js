@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import moment from "moment";
 import * as dates from "date-arithmetic";
 
+import shortid from "shortid";
+
 import db from "../data/database";
 
 // Dev test data
@@ -26,7 +28,7 @@ const ProgramProvider = (props) => {
   const [program, setProgram] = useState(defaultProgram);
 
   useEffect(() => {
-    // console.log("Program UseEffect", program);
+    console.log("Program UseEffect", program);
     if (program.id && program.dateStart) {
       // console.log(`Program.js 28: Would have updated.`,)
       db.update(program)
@@ -78,12 +80,12 @@ const ProgramProvider = (props) => {
     let current = programData.programLength[0];
 
     while (dates.lte(current, programData.programLength[1], "day")) {
-      newDays.push({ date: current, sessions: [] });
+      newDays.push({ date: current, sessions: [], id: shortid.generate() });
       current = dates.add(current, 1, "day");
     }
 
     // Fix time for last day
-    newDays[newDays.length - 1] = { date: programData.programLength[1], sessions: [] };
+    newDays[newDays.length - 1] = { date: programData.programLength[1], sessions: [], id: shortid.generate() };
 
     // Bring in sessions from old date range to new date range
     const programDays = newDays.map((newDay) => {
@@ -110,7 +112,10 @@ const ProgramProvider = (props) => {
 
     setProgram({
       ...program,
+      name: programData.programName,
       days: programDays,
+      dateStart: programData.programLength[0],
+      dateEnd: programData.programLength[1],
     });
   };
 
