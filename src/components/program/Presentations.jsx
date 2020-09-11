@@ -13,10 +13,21 @@ function Presentations({ presentations }) {
   // 3rd level. descendent of `sessions`.
   // concerned with `presentations` nested data.
 
-  // Format presentation data for output
-  const presdata = (p) => {
-    p.presDateString = `${p.name}`;
-    return p;
+  const creditDisplay = (presentation) => {
+    if (presentation.credits) {
+      const sortedPairs = Object.entries(presentation.credits).sort();
+
+      let creditString = "";
+
+      for (const [key, value] of sortedPairs) {
+        creditString += `${key}: ${value}, `;
+      }
+
+      creditString = creditString.slice(0, creditString.length - 2);
+
+      return <div>Credits: {creditString}</div>;
+    }
+    return null;
   };
 
   return (
@@ -38,7 +49,8 @@ function Presentations({ presentations }) {
               <span>{presentation.name}</span>
               <EditDeleteWidget event={presentation} type="presentation" />
             </Space>
-            <div>By: {presentation.presenters.join(", ")}</div>
+            {creditDisplay(presentation)}
+            <div>Presenters: {presentation.presenters.join(", ")}</div>
           </div>
         )}
       />
