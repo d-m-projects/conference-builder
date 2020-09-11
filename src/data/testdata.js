@@ -1,11 +1,16 @@
 export const injection = {
-	name: "Networked Radical Product",
-	dateStart: "2020-09-01T12:00:00.000Z",
-	dateEnd: "2020-09-04T22:00:00.000Z",
+	name: "Diversified Commercial Services",
+	dateStart: "2020-09-20T12:00:00.000Z",
+	dateEnd: "2020-09-23T22:00:00.000Z",
 	days: [
 		{
 			id: 0,
-			date: "2020-09-01T12:00:00.000Z",
+			date: "2020-09-20T12:00:00.000Z",
+			sessions: []
+		},
+		{
+			id: 1,
+			date: "2020-09-21T12:00:00.000Z",
 			sessions: [
 				{
 					id: 0,
@@ -66,8 +71,8 @@ export const injection = {
 			]
 		},
 		{
-			id: 1,
-			date: "2020-09-02T12:00:00.000Z",
+			id: 2,
+			date: "2020-09-22T12:00:00.000Z",
 			sessions: [
 				{
 					id: 2,
@@ -125,17 +130,12 @@ export const injection = {
 				}
 			]
 		}, {
-			id: 2,
-			date: "2020-09-03T12:00:00.000Z",
+			id: 3,
+			date: "2020-09-23T12:00:00.000Z",
 			sessions: []
 		},
-		{
-			id: 3,
-			date: "2020-09-04T12:00:00.000Z",
-			sessions: []
-		}
 	],
-	// id: 1,
+	id: 1,
 	globalPresenters: [
 		"Sully Pittel",
 		"Tiffanie Skough",

@@ -13,7 +13,7 @@ import { VIEW } from "../forms/FormManager";
 import ReorderDnD from "./AgendaForm/ReorderDnD";
 import Sessions from "./Sessions";
 import ProgramModal from "../Modals/ProgramModal";
-import renderNoData from "../components/Empty"
+import renderNoData from "../components/NoData"
 
 import { formatDataSource } from "./formatDataSource";
 
@@ -23,113 +23,116 @@ import { formatDataSource } from "./formatDataSource";
 const { Column } = Table;
 
 function Agenda() {
-  // Top level of the agenda
-  // concerned with `days` and passing down `sessions` nested data.
+	// Top level of the agenda
+	// concerned with `days` and passing down `sessions` nested data.
 
-  const program = useContext(ProgramContext);
+	const program = useContext(ProgramContext);
 
-  const history = useHistory();
+	const history = useHistory();
 
-  // State for dynamic item list
-  const [itemList, setItemList] = useState([]);
-  const [single, setSingle] = useState({});
+	// State for dynamic item list
+	const [itemList, setItemList] = useState([]);
+	const [single, setSingle] = useState({});
 
-  // Drawer
-  const [drawerVisible, setDrawerVisible] = useState(false);
+	// Drawer
+	const [drawerVisible, setDrawerVisible] = useState(false);
 
-  // Edit Program Modal
-  const [modalVisible, setModalVisible] = useState(false);
+	// Edit Program Modal
+	const [modalVisible, setModalVisible] = useState(false);
 
-  // DEV ONLY (by darrin)
-  // if `program` is empty, fill it with example data for visualization.
-  // Use when you need complete data in `program`
-  // (so you don't have to enter it manually)
-//   if (!program.dateStart) {
-//   	program.injectTestData()
-//   }
+	// ConfigProvider
 
-  const handleAddSession = (day) => {
-    history.push("/program", {
-      initialView: VIEW.SESSION,
-      initialFormMode: "add",
-      initialFormValues: { sessionLength: [day, day] },
-    });
-  };
+	// DEV ONLY (by darrin)
+	// if `program` is empty, fill it with example data for visualization.
+	// Use when you need complete data in `program`
+	// (so you don't have to enter it manually)
+	if (!program.dateStart) {
+		program.injectTestData()
+	}
 
-  const handleEditProgram = () => {
-    setModalVisible(true);
-  };
+	const handleAddSession = (day) => {
+		history.push("/program", {
+			initialView: VIEW.SESSION,
+			initialFormMode: "add",
+			initialFormValues: { sessionLength: [day, day] },
+		});
+	};
 
-  const doReorder = (list, one) => {
-    setSingle(one);
-    setItemList(list);
-    setDrawerVisible(true);
-  };
+	const handleEditProgram = () => {
+		setModalVisible(true);
+	};
 
-  const programHeaderDateRange = (p) => {
-    const programDateString = `${moment(p.dateStart).format("MMM DD")} - ${moment(p.dateEnd).format("MMM DD")}`;
+	const doReorder = (list, one) => {
+		setSingle(one);
+		setItemList(list);
+		setDrawerVisible(true);
+	};
 
-    return (
-      <Button type="text" style={{ margin: 0, padding: 0 }}>
-        {programDateString}
-      </Button>
-    );
-  };
+	const programHeaderDateRange = (p) => {
+		const programDateString = `${moment(p.dateStart).format("MMM DD")} - ${moment(p.dateEnd).format("MMM DD")}`;
 
-  const programHeader = (p) => {
-    return (
-      <Space size={8}>
-        <span>{p.name}</span>
-        <Tooltip title="Edit Program">
-          <SettingOutlined onClick={handleEditProgram} />
-        </Tooltip>
-      </Space>
-    );
-  };
+		return (
+			<Button type="text" style={{ margin: 0, padding: 0 }}>
+				{programDateString}
+			</Button>
+		);
+	};
 
-  return program.dateStart ? (
-	  <ConfigProvider renderEmpty={renderNoData}>
-      <ProgramModal visible={modalVisible} setVisible={setModalVisible} />
-      <ReorderDnD
-        visible={drawerVisible}
-        setVisible={setDrawerVisible}
-        itemList={itemList}
-        setItemList={setItemList}
-        single={single}
-      />
+	const programHeader = (p) => {
+		return (
+			<Space size={8}>
+				<span>{p.name}</span>
+				<Tooltip title="Edit Program">
+					<SettingOutlined onClick={handleEditProgram} />
+				</Tooltip>
+			</Space>
+		);
+	};
 
-      <Card title={programHeader(program)} extra={programHeaderDateRange(program)}>
-        <Table
-          className="program-agenda"
-          showHeader={false}
-          size="small"
-          dataSource={formatDataSource(program.days)}
-          pagination={false}>
-          <Column
-            title="Date"
-            dataIndex="date"
-            render={(date, day, i) => (
-              <div>
-                <Space size={8}>
-                  <p>Program Day: {moment(date).format("ddd, MMM Do Y")}</p>
-                  <Tooltip title="Add Session">
-                    <PlusOutlined onClick={() => handleAddSession(date)} />
-                  </Tooltip>
-                  <Tooltip title="Reorder Sessions">
-                    <UnorderedListOutlined onClick={() => doReorder(day.sessions, day)} />
-                  </Tooltip>
-                </Space>
-                <Sessions sessions={day.sessions} doReorder={doReorder} />
-                {i + 1 >= program.days.length ? null : <Divider />}
-              </div>
-            )}
-          />
-        </Table>
-      </Card>
-    </ConfigProvider>
-  ) : (
-    <Skeleton />
-  );
+	return program.dateStart ? (
+		<>
+			<ProgramModal visible={modalVisible} setVisible={setModalVisible} />
+			<ReorderDnD
+				visible={drawerVisible}
+				setVisible={setDrawerVisible}
+				itemList={itemList}
+				setItemList={setItemList}
+				single={single}
+			/>
+			<Card title={programHeader(program)} extra={programHeaderDateRange(program)}>
+				<ConfigProvider renderEmpty={() => renderNoData({ type: "program" })}>
+					<Table
+						className="program-agenda"
+						showHeader={false}
+						size="small"
+						dataSource={formatDataSource(program.days)}
+						pagination={false}>
+						<Column
+							title="Date"
+							dataIndex="date"
+							render={(date, day, i) => (
+								<div>
+									<Space size={8}>
+										<p>Program Day: {moment(date).format("ddd, MMM Do Y")}</p>
+										<Tooltip title="Add Session">
+											<PlusOutlined onClick={() => handleAddSession(date)} />
+										</Tooltip>
+										<Tooltip title="Reorder Sessions">
+											<UnorderedListOutlined onClick={() => doReorder(day.sessions, day)} />
+										</Tooltip>
+									</Space>
+									<Sessions sessions={day.sessions} doReorder={doReorder} />
+									{i + 1 >= program.days.length ? null : <Divider />}
+								</div>
+							)}
+						/>
+					</Table>
+				</ConfigProvider>
+			</Card>
+		</>
+	) : (
+			<Skeleton />
+		);
 }
 
 export default Agenda;

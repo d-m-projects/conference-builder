@@ -109,7 +109,7 @@ const File = () => {
 
 	const getall = async () => {
 		let ret = await db.readAll();
-		ret.sort((x, y) => (x.dateStart > y.dateStart ? 1 : -1));
+		ret.sort((x, y) => (x.dateStart < y.dateStart ? 1 : -1));
 		setDeleted(false);
 		setFileman([...ret]);
 	};
