@@ -5,7 +5,7 @@ import { useHistory } from "react-router-dom";
 import moment from "moment";
 
 // antd components
-import { Skeleton, Table, Card, Button, Space, Tooltip, Divider } from "antd";
+import { Skeleton, Table, Card, Button, Space, Tooltip, Divider, ConfigProvider } from "antd";
 import { PlusOutlined, UnorderedListOutlined, SettingOutlined } from "@ant-design/icons";
 
 // Components
@@ -13,6 +13,7 @@ import { VIEW } from "../forms/FormManager";
 import ReorderDnD from "./AgendaForm/ReorderDnD";
 import Sessions from "./Sessions";
 import ProgramModal from "../Modals/ProgramModal";
+import renderNoData from "../components/Empty"
 
 import { formatDataSource } from "./formatDataSource";
 
@@ -87,7 +88,7 @@ function Agenda() {
   };
 
   return program.dateStart ? (
-    <>
+	  <ConfigProvider renderEmpty={renderNoData}>
       <ProgramModal visible={modalVisible} setVisible={setModalVisible} />
       <ReorderDnD
         visible={drawerVisible}
@@ -125,7 +126,7 @@ function Agenda() {
           />
         </Table>
       </Card>
-    </>
+    </ConfigProvider>
   ) : (
     <Skeleton />
   );
