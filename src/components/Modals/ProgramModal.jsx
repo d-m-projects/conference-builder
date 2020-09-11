@@ -78,7 +78,9 @@ function ProgramModal(props) {
 
 		// Start date same or before program date
 		// End date same or after program date
-		// If so then we don't need to delete any existing days, so no popconfirm dialog
+    // If so then we don't need to delete any existing days, so no popconfirm dialog
+
+    if (history.location.pathname === "/manager") return;
 
 		if (range[0].isSameOrBefore(program.dateStart, "minute") && range[1].isSameOrAfter(program.dateEnd, "minute")) {
 			setRangeCondition(true);
