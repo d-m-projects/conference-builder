@@ -4,3 +4,9 @@
 
 @import "./components/program/program.scss";
 @import "./components/file/file.scss";
+
+body {font-family: "Lato", Arial, Helvetica, sans-serif;}
+.ant-btn-primary {
+	background-color: #0067BD;
+	border: 1px solid #0067BD;
+}
