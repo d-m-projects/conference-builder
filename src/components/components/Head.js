@@ -1,5 +1,6 @@
 //Packages
 import React from "react";
+import {ReactComponent as Logo} from "./ethos.flat_.svg"
 
 import { Layout } from "antd"
 
@@ -12,7 +13,7 @@ const { Header } = Layout
 function Head() {
 	return (
 		<Header>
-			<div className="logo">This is the Logo in the Head!</div>
+			<div className="logo"><Logo /></div>
 			<Nav />
 		</Header>
 	);
