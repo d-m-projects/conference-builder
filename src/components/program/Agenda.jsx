@@ -100,9 +100,12 @@ function Agenda() {
 				single={single}
 			/>
 			<Card title={programHeader(program)} extra={programHeaderDateRange(program)}>
-				<ConfigProvider renderEmpty={() => renderNoData({ type: "program" })}>
+				<ConfigProvider renderEmpty={() => renderNoData({
+					type: "session",
+					// doAdd: handleAddSession,
+				})}>
 					<Table
-						
+
 						className="program-agenda"
 						showHeader={false}
 						size="small"
@@ -113,16 +116,24 @@ function Agenda() {
 							dataIndex="date"
 							render={(date, day, i) => (
 								<div className="agendaItems">
+									{/* {console.log(`Agenda.jsx 117: `, day.sessions.length)} */}
 									<Space size={8}>
 										<p>Program Day: {moment(date).format("ddd, MMM Do Y")}</p>
 										<Tooltip title="Add Session">
 											<PlusOutlined onClick={() => handleAddSession(date)} />
 										</Tooltip>
-										<Tooltip title="Reorder Sessions">
-											<UnorderedListOutlined onClick={() => doReorder(day.sessions, day)} />
-										</Tooltip>
+										{day.sessions.length > 1
+											? <Tooltip title="Reorder Sessions">
+												<UnorderedListOutlined onClick={() => doReorder(day.sessions, day)} />
+											</Tooltip>
+											: null
+										}
 									</Space>
-									<Sessions sessions={day.sessions} doReorder={doReorder} />
+										{day.sessions.length > 0
+											? <Sessions sessions={day.sessions} doReorder={doReorder} type="presentation"/>
+											: <Sessions sessions={day.sessions} doReorder={doReorder} type="session" />
+										}
+
 									{i + 1 >= program.days.length ? null : <Divider />}
 								</div>
 							)}

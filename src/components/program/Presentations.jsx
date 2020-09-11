@@ -21,31 +21,28 @@ function Presentations({ presentations }) {
 	};
 
 	return (
-		<ConfigProvider renderEmpty={() => renderNoData({ type: "presentation" })}>
-			<Table
-				style={{ marginLeft: "20px", padding: "10px 0 0 10px" }}
-				className={`program-presentation`}
-				showHeader={false}
-				size="small"
-				dataSource={formatDataSource(presentations)}
-				pagination={false}>
-				<Column
-					title="Presentation"
-					dataIndex="name"
-					key="name"
-					render={(_, presentation) => (
-						<div className={`presentationItems`}>
-							<Space size="large">
-								<span>{presentation.name}</span>
-								<EditDeleteWidget event={presentation} type="presentation" />
-							</Space>
-							<div>By: {presentation.presenters.join(", ")}</div>
-						</div>
-					)}
-				/>
-			</Table>
-		</ConfigProvider>
-
+		<Table
+			style={{ marginLeft: "20px", padding: "10px 0 0 10px" }}
+			className={`program-presentation`}
+			showHeader={false}
+			size="small"
+			dataSource={formatDataSource(presentations)}
+			pagination={false}>
+			<Column
+				title="Presentation"
+				dataIndex="name"
+				key="name"
+				render={(_, presentation) => (
+					<div className={`presentationItems`}>
+						<Space size="large">
+							<span>{presentation.name}</span>
+							<EditDeleteWidget event={presentation} type="presentation" />
+						</Space>
+						<div>By: {presentation.presenters.join(", ")}</div>
+					</div>
+				)}
+			/>
+		</Table>
 	);
 }
 

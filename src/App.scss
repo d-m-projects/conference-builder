@@ -1,11 +1,18 @@
+$fontColor: rgba(0,0,0,0.65);
+
 @import "./components/components/Head.scss";
 @import "./components/components/Nav.scss";
 @import "./components/components/Foot.scss";
+@import "./components/components/NoData.scss";
 
 @import "./components/program/program.scss";
 @import "./components/file/file.scss";
 
-body {font-family: "Lato", Arial, Helvetica, sans-serif;}
+
+body {
+	font-family: "Lato", Arial, Helvetica, sans-serif;
+	color: $fontColor;
+}
 .ant-btn-primary {
 	background-color: #0067BD;
 	border: 1px solid #0067BD;

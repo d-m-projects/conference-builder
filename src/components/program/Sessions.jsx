@@ -18,7 +18,7 @@ import { formatDataSource } from "./formatDataSource";
 
 const { Column } = Table;
 
-function Sessions({ doReorder, sessions }) {
+function Sessions({ doReorder, sessions, type }) {
 	// 2nd level. descendent of `days`.
 	// concerned with `sessions` and passing down `presentations` nested data.
 	const program = useContext(ProgramContext);
@@ -43,8 +43,13 @@ function Sessions({ doReorder, sessions }) {
 		return s;
 	};
 
+// console.log(`Sessions.jsx 46: `, type)
+	
 	return (
-		<ConfigProvider renderEmpty={() => renderNoData({ type: "session" })}>
+		<ConfigProvider renderEmpty={() => renderNoData({
+			type: type,
+			sessions,
+			})}>
 			<Table
 				className="program-session"
 				showHeader={false}
@@ -63,20 +68,25 @@ function Sessions({ doReorder, sessions }) {
 									<Tooltip title="Add Presentation">
 										<PlusOutlined onClick={() => handleAddPresentation(session.id)} />
 									</Tooltip>
-									<Tooltip title="Reorder Presentations">
-										<UnorderedListOutlined onClick={() => doReorder(session.presentations, session)} />
-									</Tooltip>
-
+									
+									{session.presentations.length > 1
+										? <Tooltip title="Reorder Presentations">
+											<UnorderedListOutlined onClick={() => doReorder(session.presentations, session)} />
+										</Tooltip>
+										: null
+									}
 									<EditDeleteWidget event={session} type="session" />
 								</Space>
-								<Presentations {...session} />
+								{sessions.length > 0
+									? <Presentations {...session} />
+									: null
+								}
 							</div>
 						);
 					}}
 				/>
 			</Table>
 		</ConfigProvider >
-
 	);
 }
 
