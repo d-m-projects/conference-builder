@@ -34,7 +34,7 @@ function Presentations({ presentations }) {
         key="name"
         render={(_, presentation) => (
           <div>
-            <Space size="large">
+            <Space size={8}>
               <span>{presentation.name}</span>
               <EditDeleteWidget event={presentation} type="presentation" />
             </Space>

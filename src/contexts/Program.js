@@ -100,6 +100,7 @@ const ProgramProvider = (props) => {
       return newDay;
     });
 
+    // TODO -> [Fix] If user only shortens last day by x hours, all sessions on that day will still carry over, instead of the expected deletion of sessions that go past the new time range on the last day
     // Handle last day case when date is same but hours changed
     // const lastProgramDay = programDays[programDays.length - 1];
     // const lastOldDay = oldDays[oldDays.length - 1];
@@ -202,6 +203,7 @@ const ProgramProvider = (props) => {
     });
   };
 
+  //* Target session by presentation ID
   const selectSessionByPresentationId = (presentationId) => {
     let foundSessionId = -1;
 

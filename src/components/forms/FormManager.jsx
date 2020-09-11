@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
 
-import ProgramForm from "./ProgramForm";
 import SessionForm from "./SessionForm";
 import PresentationForm from "./PresentationForm/PresentationForm";
 import Agenda from "../program/Agenda";
 
 const VIEW = {
-  PROGRAM: 0,
   SESSION: 1,
   PRESENTATION: 2,
   REVIEW: 3,
@@ -14,7 +12,7 @@ const VIEW = {
 
 function FormManager(props) {
   const { initialView, initialFormMode, initialFormValues } = props;
-  const [formView, setFormView] = useState(initialView ? initialView : VIEW.PROGRAM);
+  const [formView, setFormView] = useState(initialView ? initialView : VIEW.SESSION);
 
   useEffect(() => {
     setFormView(initialView);
@@ -22,14 +20,6 @@ function FormManager(props) {
 
   const getFormComponentForView = () => {
     switch (formView) {
-      case VIEW.PROGRAM:
-        return (
-          <ProgramForm
-            setFormView={setFormView}
-            initialFormMode={initialFormMode}
-            initialFormValues={initialFormValues}
-          />
-        );
       case VIEW.SESSION:
         return (
           <SessionForm
@@ -50,7 +40,7 @@ function FormManager(props) {
         return <Agenda setFormView={setFormView} />;
       default:
         return (
-          <ProgramForm
+          <SessionForm
             setFormView={setFormView}
             initialFormMode={initialFormMode}
             initialFormValues={initialFormValues}
