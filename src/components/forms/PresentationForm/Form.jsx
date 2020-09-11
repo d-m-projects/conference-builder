@@ -3,23 +3,22 @@ import { ProgramContext } from "../../../contexts/Program";
 
 import { useHistory, useLocation } from "react-router-dom";
 
-import moment from "moment";
-
 import FlowSwitchTwoModal from "../../Modals/FlowSwitchTwo/FlowSwitchTwoModal";
 import PresenterDnD from "./PresenterDnD";
 import PresenterInput from "./PresenterInput";
 import CreditInput from "./CreditInput";
 
 import { Row, Col, Divider, Skeleton } from "antd";
-import { Form, Input, Button, DatePicker, message } from "antd";
+import { Form, Input, Button, message } from "antd";
 
-const { RangePicker } = DatePicker;
+// Styles for getting dnd drawer working correctly
+import "./styles.scss";
 
 function PresentationForm(props) {
   const { initialFormMode, initialFormValues } = props;
 
   const program = useContext(ProgramContext);
-  const { selectedSessionId, selectSession, getSessionById, createPresentation, editPresentation } = program;
+  const { selectedSessionId, selectSession, createPresentation, editPresentation } = program;
 
   const history = useHistory();
 
@@ -61,18 +60,15 @@ function PresentationForm(props) {
     // Handles all UI flows (add, add / edit from agenda)
     if (initialFormValues) {
       if (initialFormValues.presentationName) {
-        // From Edit Widget
+        // This control flow is when a user clicks edit
         setPresenters(initialFormValues.presenters);
         setCredits(initialFormValues.credits);
         setCreditsList(initialFormValues.creditsList);
       }
 
-      // Used by all UI flows
+      // This is used by all flows regardless
       setPrefillValues({
         ...initialFormValues,
-        presentationLength: initialFormValues.presentationLength
-          ? [moment(initialFormValues.presentationLength[0]), moment(initialFormValues.presentationLength[1])]
-          : [],
         creditAmount: 0,
       });
     }
@@ -82,23 +78,8 @@ function PresentationForm(props) {
     form.resetFields();
   }, [formMode, prefillValues]);
 
-  const getDateRange = () => {
-    return form.getFieldValue("presentationLength");
-  };
-
   const formSubmit = (values) => {
-    // Date range validation helper func
-    const isValidPresentationDateRange = (start, end) => {
-      const session = getSessionById(selectedSessionId);
-
-      if (start.isBefore(session.dateStart) || end.isAfter(session.dateEnd)) {
-        return false;
-      }
-      return true;
-    };
-
-    // Error handling for select inputs on form submit
-    // We need 1 presenter and 1 credit type minimum
+    // We need 1 presenter minimum
     if (presenters.length === 0) {
       form.setFields([
         {
@@ -106,93 +87,47 @@ function PresentationForm(props) {
           errors: ["Must have atleast 1 presenter."],
         },
       ]);
-    } else if (Object.keys(credits).length === 0) {
-      form.setFields([
-        {
-          name: "creditList",
-          errors: ["Must have atleast 1 credit type added."],
-        },
-      ]);
     } else {
-      // Use mix of form data & state from inputs to create a new presentation
-      const start = values.presentationLength[0].second(0).millisecond(0);
-      const end = values.presentationLength[1].second(0).millisecond(0);
+      const presentation = {
+        name: values.presentationName,
+        presenters: presenters.map((presenter) => presenter.name),
+        credits: credits,
+      };
 
-      if (isValidPresentationDateRange(start, end)) {
-        if (formMode === "edit") {
-          editPresentation(presentationId, {
-            name: values.presentationName,
-            dateStart: start._d,
-            dateEnd: end._d,
-            presenters: presenters.map((presenter) => presenter.name),
-            credits: credits,
-          });
+      if (formMode === "edit") {
+        editPresentation(presentationId, presentation);
 
-          message.success(`Presentation ${values.presentationName} modified!`);
+        message.success(`Presentation ${values.presentationName} modified!`);
 
-          history.push("/review");
-        } else {
-          createPresentation(selectedSessionId, {
-            name: values.presentationName,
-            dateStart: start._d,
-            dateEnd: end._d,
-            presenters: presenters.map((presenter) => presenter.name),
-            credits: credits,
-          });
-
-          message.success(`Presentation ${values.presentationName} created!`);
-
-          setTimeout(() => {
-            setModalVisible(true);
-          }, 200);
-
-          // Clear form data and old state in case user wants to add another presentation
-          setCredits({});
-          setPresenters([]);
-          setCreditsList([]);
-
-          form.resetFields();
-        }
+        history.push("/review");
       } else {
-        const { dateStart, dateEnd } = getSessionById(selectedSessionId);
+        createPresentation(selectedSessionId, presentation);
 
-        const sessionStart = moment(dateStart).format("HH:mm");
-        const sessionEnd = moment(dateEnd).format("HH:mm");
+        message.success(`Presentation ${values.presentationName} created!`);
 
-        message.error(`Presentation time range must be between ${sessionStart}-${sessionEnd}`, 5);
+        setTimeout(() => {
+          setModalVisible(true);
+        }, 200);
 
-        form.setFields([
-          {
-            name: "presentationLength",
-            errors: [`Time selected outside range of session (${sessionStart}-${sessionEnd})`],
-          },
-        ]);
+        // Clear form data and old state in case user wants to add another presentation
+        setCredits({});
+        setPresenters([]);
+        setCreditsList([]);
+
+        form.resetFields();
       }
-    }
-  };
-
-  const disabledDate = (date) => {
-    const session = getSessionById(selectedSessionId);
-
-    if (session) {
-      return date.isBefore(session.dateStart, "day") || date.isAfter(session.dateEnd, "day");
     }
   };
 
   /* FORM FIELD REQUIREMENTS
     Presentation Name
-    DateTime start / end
     Presenters * Dynamic, Add presenter btn, Re-order presenters dnd
     Credit Type + Credit Value * Dynamic, Add credit btn
   */
 
   return selectedSessionId >= 0 ? (
     <>
-      <FlowSwitchTwoModal
-        isVisible={modalVisible}
-        setVisibility={setModalVisible}
-        presentationLength={getDateRange()}
-      />
+      <FlowSwitchTwoModal isVisible={modalVisible} setVisibility={setModalVisible} />
 
       <div className="presentation-form-container">
         <PresenterDnD
@@ -217,23 +152,6 @@ function PresentationForm(props) {
                 name="presentationName"
                 rules={[{ required: true, message: "Input a name for this presentation." }]}>
                 <Input />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col span={24}>
-              <Form.Item
-                label="Presentation Start & End Times"
-                labelCol={{ span: 24 }}
-                name="presentationLength"
-                rules={[{ required: true, message: "Input a time range for this presentation." }]}>
-                <RangePicker
-                  disabledDate={disabledDate}
-                  showTime={{ format: "HH:mm" }}
-                  format="YYYY-MM-DD HH:mm"
-                  minuteStep={5}
-                />
               </Form.Item>
             </Col>
           </Row>

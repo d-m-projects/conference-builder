@@ -9,14 +9,13 @@ import GenericModal from "../GenericModal/GenericModal";
 import { VIEW } from "../../forms/FormManager";
 
 function FlowSwitchTwoModal(props) {
-  const { isVisible, setVisibility, presentationLength } = props;
+  const { isVisible, setVisibility } = props;
 
   const history = useHistory();
 
   const handleAddPresentation = () => {
     history.push("/program", {
       initialView: VIEW.PRESENTATION,
-      initialFormValues: { presentationLength: [presentationLength[0]._d, presentationLength[1]._d] },
     });
 
     setVisibility(false);
@@ -44,14 +43,14 @@ function FlowSwitchTwoModal(props) {
         content: [
           <>
             <h3>Option A</h3>
-            <p>Save current presentation and add another.</p>
+            <p>Save presentation and add another.</p>
             <Button type="primary" onClick={handleAddPresentation}>
               Add Presentation
             </Button>
           </>,
           <>
             <h3>Option B</h3>
-            <p>Save and view entire program / agenda.</p>
+            <p>Save and review program.</p>
             <Button type="primary" onClick={handleReviewProgram}>
               Review Program
             </Button>

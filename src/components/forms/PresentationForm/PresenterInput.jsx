@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useRef, useContext } from "react";
 import { ProgramContext } from "../../../contexts/Program";
 
 import { Row, Col } from "antd";
@@ -10,6 +10,8 @@ function PresenterInput(props) {
 
   const program = useContext(ProgramContext);
   const { addGlobalPresenter, deleteGlobalPresenter, globalPresenters, getNextPresenterId } = program;
+
+  const presenterInputElement = useRef(null);
 
   // List data render handling
   useEffect(() => {
@@ -41,6 +43,9 @@ function PresenterInput(props) {
         },
       ]);
     }
+
+    // Set focus back to presenter input
+    presenterInputElement.current.focus();
   };
 
   const selectPresenter = (presenter) => {
@@ -79,7 +84,7 @@ function PresenterInput(props) {
       <Row gutter={16}>
         <Col span={16}>
           <Form.Item name="presenter">
-            <Input />
+            <Input ref={presenterInputElement} />
           </Form.Item>
         </Col>
         <Col span={8}>
