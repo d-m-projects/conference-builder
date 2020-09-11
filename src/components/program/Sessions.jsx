@@ -57,7 +57,7 @@ function Sessions({ doReorder, sessions }) {
 					dataIndex="dateStart"
 					render={(_, session) => {
 						return (
-							<div>
+							<div className="sessionItems" style={{ padding: "11px 0 11px 11px" }}>
 								<Space size={8}>
 									<p>Session: {sessiondata(session).sessionsDateString}</p>
 									<Tooltip title="Add Presentation">
@@ -70,7 +70,6 @@ function Sessions({ doReorder, sessions }) {
 									<EditDeleteWidget event={session} type="session" />
 								</Space>
 								<Presentations {...session} />
-								<p>&nbsp;</p>
 							</div>
 						);
 					}}

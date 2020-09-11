@@ -23,7 +23,7 @@ function Presentations({ presentations }) {
 	return (
 		<ConfigProvider renderEmpty={() => renderNoData({ type: "presentation" })}>
 			<Table
-				style={{ marginLeft: "20px", padding: "10px" }}
+				style={{ marginLeft: "20px", padding: "10px 0 0 10px" }}
 				className={`program-presentation`}
 				showHeader={false}
 				size="small"
@@ -34,7 +34,7 @@ function Presentations({ presentations }) {
 					dataIndex="name"
 					key="name"
 					render={(_, presentation) => (
-						<div className={`program-presentation-item`}>
+						<div className={`presentationItems`}>
 							<Space size="large">
 								<span>{presentation.name}</span>
 								<EditDeleteWidget event={presentation} type="presentation" />

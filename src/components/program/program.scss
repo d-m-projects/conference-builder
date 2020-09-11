@@ -9,20 +9,9 @@ $bg: rgba(255, 225, 225, 0.774);
 	.ant-table-tbody {
 		& > tr > td {
 			border-bottom: 0px;
-			padding-right: 0px;
-			padding-bottom: 0px;
-			// @include rotateColor($bg);
-			background-color: rgba(232,242,244,.774);
-			// border: 1px solid salmon;
-
-			// .program-session  {
-			// 	// padding: 10px;
-			// }
-			
-			// .program-presentation  {
-			// 	@include rotateColor($bg);
-			// 	// border: 1px solid black;
-			// }
+			// padding-right: 0px;
+			// padding-bottom: 0px;
+			padding: 0px;
 		}
 		p {
 			margin: 0;
@@ -30,14 +19,23 @@ $bg: rgba(255, 225, 225, 0.774);
 	}
 }
 
+.program-agenda .ant-table-container {
+	background-color:rgba(232,242,244,.774);
+}
 .program-session .ant-table-container {
-	background-color: salmon;
+	background-color:rgba(225, 255, 233,.774);
 }
 .program-presentation .ant-table-container {
-	background-color: royalblue;
+	background-color: rgba(245, 255, 247,.774);
 }
 
-.program-presentation-item {
+.agendaItems {
+	padding: 12px 0 12px 12px;
+}
+.sessionItems {
+	padding: 11px 0 11px 11px;
+}
+.presentationItems {
 	padding: 5px 10px 10px 10px;
 }
 

@@ -102,6 +102,7 @@ function Agenda() {
 			<Card title={programHeader(program)} extra={programHeaderDateRange(program)}>
 				<ConfigProvider renderEmpty={() => renderNoData({ type: "program" })}>
 					<Table
+						
 						className="program-agenda"
 						showHeader={false}
 						size="small"
@@ -111,7 +112,7 @@ function Agenda() {
 							title="Date"
 							dataIndex="date"
 							render={(date, day, i) => (
-								<div>
+								<div className="agendaItems">
 									<Space size={8}>
 										<p>Program Day: {moment(date).format("ddd, MMM Do Y")}</p>
 										<Tooltip title="Add Session">
