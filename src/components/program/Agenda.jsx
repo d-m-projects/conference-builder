@@ -11,9 +11,8 @@ import { PlusOutlined, UnorderedListOutlined, SettingOutlined } from "@ant-desig
 // Components
 import { VIEW } from "../forms/FormManager";
 import ReorderDnD from "./AgendaForm/ReorderDnD";
-
 import Sessions from "./Sessions";
-import EditProgramModal from "./AgendaModal/EditProgramModal";
+import ProgramModal from "../Modals/ProgramModal";
 
 import { formatDataSource } from "./formatDataSource";
 
@@ -44,9 +43,9 @@ function Agenda() {
   // if `program` is empty, fill it with example data for visualization.
   // Use when you need complete data in `program`
   // (so you don't have to enter it manually)
-  // if (!program.dateStart) {
-  // 	program.injectTestData()
-  // }
+//   if (!program.dateStart) {
+//   	program.injectTestData()
+//   }
 
   const handleAddSession = (day) => {
     history.push("/program", {
@@ -89,7 +88,7 @@ function Agenda() {
 
   return program.dateStart ? (
     <>
-      <EditProgramModal visible={modalVisible} setVisible={setModalVisible} />
+      <ProgramModal visible={modalVisible} setVisible={setModalVisible} />
       <ReorderDnD
         visible={drawerVisible}
         setVisible={setDrawerVisible}
