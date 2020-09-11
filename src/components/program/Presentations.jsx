@@ -17,15 +17,17 @@ function Presentations({ presentations }) {
     if (presentation.credits) {
       const sortedPairs = Object.entries(presentation.credits).sort();
 
-      let creditString = "";
+      if (sortedPairs.length > 0) {
+        let creditString = "";
 
-      for (const [key, value] of sortedPairs) {
-        creditString += `${key}: ${value}, `;
+        for (const [key, value] of sortedPairs) {
+          creditString += `${key}: ${value}, `;
+        }
+
+        creditString = creditString.slice(0, creditString.length - 2);
+
+        return <div>Credits: {creditString}</div>;
       }
-
-      creditString = creditString.slice(0, creditString.length - 2);
-
-      return <div>Credits: {creditString}</div>;
     }
     return null;
   };
