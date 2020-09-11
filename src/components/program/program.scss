@@ -11,19 +11,18 @@ $bg: rgba(255, 225, 225, 0.774);
 			border-bottom: 0px;
 			padding-right: 0px;
 			padding-bottom: 0px;
-			@include rotateColor($bg);
-			// background-color: blue;
+			// @include rotateColor($bg);
+			background-color: rgba(232,242,244,.774);
 			// border: 1px solid salmon;
 
-			.program-session  {
-				@include rotateColor($bg);
-				// padding: 10px;
-			}
-
-			.program-presentation  {
-				@include rotateColor($bg);
-				// border: 1px solid black;
-			}
+			// .program-session  {
+			// 	// padding: 10px;
+			// }
+			
+			// .program-presentation  {
+			// 	@include rotateColor($bg);
+			// 	// border: 1px solid black;
+			// }
 		}
 		p {
 			margin: 0;
@@ -31,24 +30,24 @@ $bg: rgba(255, 225, 225, 0.774);
 	}
 }
 
-.program-session {
-	margin-top: 10px;
+.program-session .ant-table-container {
+	background-color: salmon;
 }
-.program-presentation {
-	margin-bottom: 10px;
+.program-presentation .ant-table-container {
+	background-color: royalblue;
+}
+
+.program-presentation-item {
+	padding: 5px 10px 10px 10px;
 }
 
 .agendaView .ant-card-body {
 	padding: 0px;
 	.program-agenda {
-		// border: 1px solid silver;
 		padding-top: 1px;
 		margin: 0;
 	}
 }
-// .ant-table-wrapper {
-// 	margin-left: -10px;
-// }
 
 // Container styling, push title to the right
 .event-card-widgets {
