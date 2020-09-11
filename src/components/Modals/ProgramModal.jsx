@@ -3,9 +3,14 @@ import { ProgramContext } from "../../contexts/Program";
 import { useHistory } from "react-router-dom";
 
 import moment from "moment";
+import shortid from "shortid";
+import * as dates from "date-arithmetic";
 
-import { Form, Input, DatePicker, Button, Popconfirm, Modal, Space } from "antd";
+import { Form, Input, DatePicker, Button, Popconfirm, Modal, Space, message } from "antd";
 import { DoubleRightOutlined } from "@ant-design/icons";
+
+// Components
+import { VIEW } from "../forms/FormManager";
 
 const { RangePicker } = DatePicker;
 
@@ -25,38 +30,43 @@ function ProgramModal(props) {
 	const [form] = Form.useForm();
 
 
-	useEffect(() => {
-		const programData = (history.location.pathname === "/manager")
-			? {  // if no program data, then we're Creating
-				programName: null,
-				programLength: [
-					moment(),
-					moment()
-				],
-				modalHeader: "Create New Program",
-				modalButton: "Continue <DoubleRightOutlined />"
-			}
-			: {  // if we're getting program data, then we're Editing
-				programName: program.name,
-				programLength: [
-					moment(program.dateStart),
-					moment(program.dateEnd)
-				],
-				modalHeader: `Edit Program ${program.name}`,
-				modalButton: "Edit Program"
-			}
-		setProgramInfo(programData)
-	}, [program])
-
-	const handleSubmit = () => {
+	const handleSubmit = (x) => {
 		// Executes via popover
 		// Runs the editProgram func
 		const { programName, programLength } = form.getFieldsValue(["programName", "programLength"]);
 
-		editProgram({
+		const doCreation = (values) => {
+			const newProgram = {
+				name: values.programName,
+				dateStart: values.programLength[0],
+				dateEnd: values.programLength[1],
+				days: [],
+			};
+
+			let current = newProgram.dateStart;
+
+			while (dates.lt(current, newProgram.dateEnd, "day")) {
+				newProgram.days.push({ date: current, sessions: [], id: shortid.generate() });
+				current = dates.add(current, 1, "day");
+			}
+
+			// Fix for last date time
+			newProgram.days.push({ date: newProgram.dateEnd, sessions: [], id: shortid.generate() });
+
+			createProgram(newProgram);
+			history.push("/program", { initialView: VIEW.SESSION });
+			message.success(`Program '${values.programName}' Started!`);
+		}
+
+		history.location.pathname === "/manager"
+		? doCreation({
 			programName,
 			programLength: [programLength[0]._d, programLength[1]._d],
-		});
+		})
+		: editProgram({
+			programName,
+			programLength: [programLength[0]._d, programLength[1]._d],
+		})
 
 		setVisible(false);
 	};
@@ -95,10 +105,33 @@ function ProgramModal(props) {
 		setVisible(false);
 	};
 
+	useEffect(() => {
+		const programData = (history.location.pathname === "/manager")
+			? {  // if no program data, then we're Creating
+				programName: null,
+				programLength: [
+					moment(),
+					moment()
+				],
+				modalHeader: "Create New Program",
+				modalButton: (<>Continue <DoubleRightOutlined /></>)
+			}
+			: {  // if we're getting program data, then we're Editing
+				programName: program.name,
+				programLength: [
+					moment(program.dateStart),
+					moment(program.dateEnd)
+				],
+				modalHeader: `Edit Program ${program.name}`,
+				modalButton: "Edit Program"
+			}
+		setProgramInfo(programData)
+	}, [program])
+
 	return (
 		<Modal
-		closable
-		title={programInfo.modalHeader} visible={visible} onCancel={handleClose} footer={[]}>
+			closable
+			title={programInfo.modalHeader} visible={visible} onCancel={handleClose} footer={[]}>
 			<Form
 				form={form}
 				name="editProgramForm"
@@ -131,12 +164,12 @@ function ProgramModal(props) {
 						okText="Yes"
 						cancelText="No">
 						<Button type="primary" htmlType="submit">
-							Edit Program
-            			</Button>
+							{programInfo.modalButton}
+						</Button>
 					</Popconfirm>
 					<Button type="primary" htmlType="button" onClick={handleClose}>
 						Cancel
-          </Button>
+					</Button>
 				</Space>
 			</Form>
 		</Modal>
