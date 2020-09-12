@@ -30,7 +30,7 @@ function PresentationForm(props) {
   const [modalVisible, setModalVisible] = useState(false);
 
   // "add" / "edit"
-  const [formMode] = useState(initialFormMode);
+  const [formMode, setFormMode] = useState(initialFormMode);
 
   // State for dynamic presenters
   const [presenters, setPresenters] = useState([]);
@@ -67,6 +67,7 @@ function PresentationForm(props) {
       }
 
       // This is used by all flows regardless
+      setFormMode(initialFormMode);
       setPrefillValues({
         ...initialFormValues,
         creditAmount: 0,
@@ -75,6 +76,13 @@ function PresentationForm(props) {
   }, [initialFormValues]);
 
   useEffect(() => {
+    if (formMode === "add") {
+      // Clear inputs for add
+      setPresenters([]);
+      setCredits({});
+      setCreditsList([]);
+    }
+
     form.resetFields();
   }, [formMode, prefillValues]);
 

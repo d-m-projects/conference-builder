@@ -51,10 +51,10 @@ function SessionForm(props) {
   };
 
   const validSessionDateRange = (start, end) => {
-    if (start.isBefore(program.dateStart) || end.isAfter(program.dateEnd)) {
-      return false;
+    if (start.isSameOrAfter(program.dateStart) && end.isSameOrBefore(program.dateEnd)) {
+      return true;
     }
-    return true;
+    return false;
   };
 
   const formSubmit = (values) => {
