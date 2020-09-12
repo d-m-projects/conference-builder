@@ -8,24 +8,17 @@ import { PlusOutlined, } from '@ant-design/icons';
 //Components
 
 function renderNoData(data) {
-	console.log(`Empty.js 11: `, data.type)
-
-	// const handleAddSession = (day) => {
-	// 	history.push("/program", {
-	// 		initialView: VIEW.SESSION,
-	// 		initialFormMode: "add",
-	// 		initialFormValues: { sessionLength: [day, day] },
-	// 	});
-	// };
+	const { type, date, doClick } = data
+	// console.log(`Empty.js 11: `, data)
 
 	const onClick = (e) => {
-		console.log(`NoData.js 22: `, data)
+		doClick(date)
 	}
 
 	return (
 		<div className="noData">
 			<Button type="primary" shape="round" icon={<PlusOutlined />} size="large" onClick={onClick}/>
-			<p>Add New {data.type.charAt(0).toUpperCase() + data.type.slice(1)}</p>
+			<p>Add New {type.charAt(0).toUpperCase() + type.slice(1)}</p>
 		</div>
 	)
 }

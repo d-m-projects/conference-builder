@@ -100,21 +100,22 @@ function Agenda() {
 				single={single}
 			/>
 			<Card title={programHeader(program)} extra={programHeaderDateRange(program)}>
-				<ConfigProvider renderEmpty={() => renderNoData({
-					type: "session",
-					// doAdd: handleAddSession,
-				})}>
-					<Table
+				<Table
 
-						className="program-agenda"
-						showHeader={false}
-						size="small"
-						dataSource={formatDataSource(program.days)}
-						pagination={false}>
-						<Column
-							title="Date"
-							dataIndex="date"
-							render={(date, day, i) => (
+					className="program-agenda"
+					showHeader={false}
+					size="small"
+					dataSource={formatDataSource(program.days)}
+					pagination={false}>
+					<Column
+						title="Date"
+						dataIndex="date"
+						render={(date, day, i) => (
+							<ConfigProvider renderEmpty={() => renderNoData({
+								type: "session",
+								doClick: handleAddSession,
+								date,
+							})}>
 								<div className="agendaItems">
 									{/* {console.log(`Agenda.jsx 117: `, day.sessions.length)} */}
 									<Space size={8}>
@@ -129,17 +130,17 @@ function Agenda() {
 											: null
 										}
 									</Space>
-										{day.sessions.length > 0
-											? <Sessions sessions={day.sessions} doReorder={doReorder} type="presentation"/>
-											: <Sessions sessions={day.sessions} doReorder={doReorder} type="session" />
-										}
+									{day.sessions.length > 0
+										? <Sessions sessions={day.sessions} doReorder={doReorder} type="presentation" />
+										: <Sessions sessions={day.sessions} doReorder={doReorder} type="session" />
+									}
 
 									{i + 1 >= program.days.length ? null : <Divider />}
 								</div>
-							)}
-						/>
-					</Table>
-				</ConfigProvider>
+							</ConfigProvider>
+						)}
+					/>
+				</Table>
 			</Card>
 		</>
 	) : (

@@ -46,10 +46,10 @@ function Sessions({ doReorder, sessions, type }) {
 // console.log(`Sessions.jsx 46: `, type)
 	
 	return (
-		<ConfigProvider renderEmpty={() => renderNoData({
-			type: type,
-			sessions,
-			})}>
+		// <ConfigProvider renderEmpty={() => renderNoData({
+		// 	type: type,
+		// 	sessions,
+		// 	})}>
 			<Table
 				className="program-session"
 				showHeader={false}
@@ -86,7 +86,7 @@ function Sessions({ doReorder, sessions, type }) {
 					}}
 				/>
 			</Table>
-		</ConfigProvider >
+		// </ConfigProvider >
 	);
 }
 
