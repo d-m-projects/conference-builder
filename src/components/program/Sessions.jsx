@@ -43,8 +43,6 @@ function Sessions({ doReorder, sessions, type }) {
 		return s;
 	};
 
-	console.log(`Sessions.jsx 46: `, type)
-
 	return (
 		<Table
 			className="program-session"

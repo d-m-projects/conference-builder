@@ -112,7 +112,7 @@ function Agenda() {
 						dataIndex="date"
 						render={(date, day, i) => (
 							<ConfigProvider renderEmpty={() => renderNoData({
-								type: "session",
+								type: "Session",
 								handleAddSession,
 								date,
 							})}>
@@ -131,8 +131,8 @@ function Agenda() {
 										}
 									</Space>
 									{day.sessions.length > 0
-										? <Sessions sessions={day.sessions} doReorder={doReorder} type="presentation" />
-										: <Sessions sessions={day.sessions} doReorder={doReorder} type="session" />
+										? <Sessions sessions={day.sessions} doReorder={doReorder} type="Presentation" />
+										: <Sessions sessions={day.sessions} doReorder={doReorder} type="Session" />
 									}
 
 									{i + 1 >= program.days.length ? null : <Divider />}

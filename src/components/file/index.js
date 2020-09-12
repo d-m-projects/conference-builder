@@ -127,7 +127,7 @@ const File = () => {
 		<>
 			<ProgramModal visible={creatorVisible} setVisible={setCreatorVisible} />
 			<ConfigProvider renderEmpty={() => renderNoData({
-				type: "program",
+				type: "Program",
 				doCreateProgram,
 			})}>
 			<List
