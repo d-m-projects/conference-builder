@@ -43,32 +43,33 @@ function Sessions({ doReorder, sessions, type }) {
 		return s;
 	};
 
-// console.log(`Sessions.jsx 46: `, type)
-	
+	console.log(`Sessions.jsx 46: `, type)
+
 	return (
-		// <ConfigProvider renderEmpty={() => renderNoData({
-		// 	type: type,
-		// 	sessions,
-		// 	})}>
-			<Table
-				className="program-session"
-				showHeader={false}
-				size="small"
-				style={{ marginLeft: "20px" }}
-				dataSource={formatDataSource(sessions)}
-				pagination={false}>
-				<Column
-					title="Session Name"
-					dataIndex="dateStart"
-					render={(_, session) => {
-						return (
+		<Table
+			className="program-session"
+			showHeader={false}
+			size="small"
+			style={{ marginLeft: "20px" }}
+			dataSource={formatDataSource(sessions)}
+			pagination={false}>
+			<Column
+				title="Session Name"
+				dataIndex="dateStart"
+				render={(_, session) => {
+					return (
+						<ConfigProvider renderEmpty={() => renderNoData({
+							type: type,
+							handleAddPresentation,
+							sessionId: session.id
+						})}>
 							<div className="sessionItems" style={{ padding: "11px 0 11px 11px" }}>
 								<Space size={8}>
 									<p>Session: {sessiondata(session).sessionsDateString}</p>
 									<Tooltip title="Add Presentation">
 										<PlusOutlined onClick={() => handleAddPresentation(session.id)} />
 									</Tooltip>
-									
+
 									{session.presentations.length > 1
 										? <Tooltip title="Reorder Presentations">
 											<UnorderedListOutlined onClick={() => doReorder(session.presentations, session)} />
@@ -82,11 +83,11 @@ function Sessions({ doReorder, sessions, type }) {
 									: null
 								}
 							</div>
-						);
-					}}
-				/>
-			</Table>
-		// </ConfigProvider >
+						</ConfigProvider >
+					);
+				}}
+			/>
+		</Table>
 	);
 }
 

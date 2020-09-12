@@ -113,7 +113,7 @@ function Agenda() {
 						render={(date, day, i) => (
 							<ConfigProvider renderEmpty={() => renderNoData({
 								type: "session",
-								doClick: handleAddSession,
+								handleAddSession,
 								date,
 							})}>
 								<div className="agendaItems">
