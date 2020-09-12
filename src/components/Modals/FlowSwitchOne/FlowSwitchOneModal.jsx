@@ -53,14 +53,14 @@ function FlowSwitchOneModal(props) {
         content: [
           <>
             <h3>Option A</h3>
-            <p>Save current session and create another for this program.</p>
+            <p>Save session and add another.</p>
             <Button type="primary" onClick={handleCreateSession}>
               Create Session
             </Button>
           </>,
           <>
             <h3>Option B</h3>
-            <p>Save current session and add one or more presentations to it.</p>
+            <p>Save session and add one or more presentations to it.</p>
             <Button type="primary" onClick={handleAddPresentation}>
               Add Presentation
             </Button>

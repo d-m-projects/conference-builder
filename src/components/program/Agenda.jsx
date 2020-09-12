@@ -6,7 +6,13 @@ import moment from "moment";
 
 // antd components
 import { Skeleton, Table, Card, Button, Space, Tooltip, Divider, ConfigProvider } from "antd";
-import { PlusOutlined, UnorderedListOutlined, SettingOutlined } from "@ant-design/icons";
+import {
+	PlusOutlined,
+	UnorderedListOutlined,
+	SettingOutlined,
+	DownloadOutlined,
+	CopyOutlined,
+} from "@ant-design/icons";
 
 // Components
 import { VIEW } from "../forms/FormManager";
@@ -16,6 +22,7 @@ import ProgramModal from "../Modals/ProgramModal";
 import renderNoData from "../components/NoData"
 
 import { formatDataSource } from "./formatDataSource";
+import { exportProgramToFile, copyProgramToClipboard } from "../file/yamlOperations";
 
 // Dev test data
 // import injection from "../../data/testdata";
@@ -40,15 +47,13 @@ function Agenda() {
 	// Edit Program Modal
 	const [modalVisible, setModalVisible] = useState(false);
 
-	// ConfigProvider
-
 	// DEV ONLY (by darrin)
 	// if `program` is empty, fill it with example data for visualization.
 	// Use when you need complete data in `program`
 	// (so you don't have to enter it manually)
-	if (!program.dateStart) {
-		program.injectTestData()
-	}
+	//   if (!program.dateStart) {
+	//   	program.injectTestData()
+	//   }
 
 	const handleAddSession = (day) => {
 		history.push("/program", {
@@ -68,24 +73,29 @@ function Agenda() {
 		setDrawerVisible(true);
 	};
 
-	const programHeaderDateRange = (p) => {
-		const programDateString = `${moment(p.dateStart).format("MMM DD")} - ${moment(p.dateEnd).format("MMM DD")}`;
-
+	const programWidgets = (p) => {
 		return (
-			<Button type="text" style={{ margin: 0, padding: 0 }}>
-				{programDateString}
-			</Button>
+			<Space size={10}>
+				<Tooltip title="Edit Program">
+					<SettingOutlined onClick={handleEditProgram} />
+				</Tooltip>
+				<Tooltip title="Export program to file">
+					<DownloadOutlined onClick={() => exportProgramToFile(program.id)} />
+				</Tooltip>
+				<Tooltip title="Copy program to clipboard">
+					<CopyOutlined onClick={() => copyProgramToClipboard(program.id)} />
+				</Tooltip>
+			</Space>
 		);
 	};
 
 	const programHeader = (p) => {
+		const programDateString = `${moment(p.dateStart).format("MMM DD")} - ${moment(p.dateEnd).format("MMM DD")}`;
+
 		return (
-			<Space size={8}>
-				<span>{p.name}</span>
-				<Tooltip title="Edit Program">
-					<SettingOutlined onClick={handleEditProgram} />
-				</Tooltip>
-			</Space>
+			<span>
+				{p.name} - ({programDateString})
+			</span>
 		);
 	};
 
@@ -99,9 +109,9 @@ function Agenda() {
 				setItemList={setItemList}
 				single={single}
 			/>
-			<Card title={programHeader(program)} extra={programHeaderDateRange(program)}>
-				<Table
 
+			<Card title={programHeader(program)} extra={programWidgets()}>
+				<Table
 					className="program-agenda"
 					showHeader={false}
 					size="small"
@@ -117,28 +127,27 @@ function Agenda() {
 								date,
 							})}>
 								<div className="agendaItems">
-									{/* {console.log(`Agenda.jsx 117: `, day.sessions.length)} */}
 									<Space size={8}>
 										<p>Program Day: {moment(date).format("ddd, MMM Do Y")}</p>
 										<Tooltip title="Add Session">
 											<PlusOutlined onClick={() => handleAddSession(date)} />
 										</Tooltip>
-										{day.sessions.length > 1
-											? <Tooltip title="Reorder Sessions">
-												<UnorderedListOutlined onClick={() => doReorder(day.sessions, day)} />
-											</Tooltip>
-											: null
+										{
+											day.sessions.length > 1
+												? <Tooltip title="Reorder Sessions">
+													<UnorderedListOutlined onClick={() => doReorder(day.sessions, day)} />
+												</Tooltip>
+												: null
 										}
-									</Space>
-									{day.sessions.length > 0
-										? <Sessions sessions={day.sessions} doReorder={doReorder} type="Presentation" />
-										: <Sessions sessions={day.sessions} doReorder={doReorder} type="Session" />
+									</Space >
+									{
+										day.sessions.length > 0
+											? <Sessions sessions={day.sessions} doReorder={doReorder} type="Presentation" />
+											: <Sessions sessions={day.sessions} doReorder={doReorder} type="Session" />
 									}
-
 									{i + 1 >= program.days.length ? null : <Divider />}
-								</div>
-							</ConfigProvider>
-						)}
+								</div >
+							</ConfigProvider >)}
 					/>
 				</Table>
 			</Card>

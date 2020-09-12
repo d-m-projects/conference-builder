@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 
 import { Row, Col } from "antd";
 import { Form, Input, Button, Select } from "antd";
@@ -6,6 +6,8 @@ const { Option } = Select;
 
 function CreditInput(props) {
   const { parentForm, credits, setCredits, creditsList, setCreditsList } = props;
+
+  const creditInputElement = useRef(null);
 
   useEffect(() => {
     // Clear credit fields & update credit list select state
@@ -42,7 +44,7 @@ function CreditInput(props) {
 
       setCredits({ ...credits, ...newCredit });
 
-      setCreditsList([...creditsList, `${creditType} | ${creditAmount}`]);
+      setCreditsList([...creditsList, `${creditType}: ${creditAmount}`]);
     } else {
       parentForm.setFields([
         {
@@ -55,6 +57,9 @@ function CreditInput(props) {
         },
       ]);
     }
+
+    // Set focus back to input
+    creditInputElement.current.focus();
   };
 
   const selectCredit = (credit) => {
@@ -88,7 +93,7 @@ function CreditInput(props) {
       <Row gutter={16}>
         <Col span={16}>
           <Form.Item label="Credit Type" labelCol={{ span: 24 }} name="creditType">
-            <Input />
+            <Input ref={creditInputElement} />
           </Form.Item>
         </Col>
         <Col span={8}>

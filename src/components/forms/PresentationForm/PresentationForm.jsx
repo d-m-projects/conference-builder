@@ -2,16 +2,10 @@ import React from "react";
 
 import Form from "./Form";
 
-import "./styles.scss";
-
 function PresentationForm(props) {
   const { initialFormMode, initialFormValues } = props;
 
-  return (
-    <div className="presentation-container">
-      <Form initialFormMode={initialFormMode} initialFormValues={initialFormValues} />
-    </div>
-  );
+  return <Form initialFormMode={initialFormMode} initialFormValues={initialFormValues} />;
 }
 
 export default PresentationForm;
