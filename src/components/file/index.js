@@ -9,7 +9,7 @@ import { exportProgramToFile, copyProgramToClipboard } from "../file/yamlOperati
 import db from "../../data/database";
 
 // antd components
-import { message, Card, Button, Modal, List, Skeleton, Tooltip} from "antd";
+import { message, Card, Button, Modal, List, Skeleton, Tooltip, ConfigProvider} from "antd";
 import {
 	EditOutlined,
 	DownloadOutlined,
@@ -22,6 +22,7 @@ import {
 // Components
 import { VIEW } from "../forms/FormManager";
 import ProgramModal from "../Modals/ProgramModal";
+import renderNoData from "../components/NoData"
 
 const { confirm } = Modal;
 
@@ -85,7 +86,7 @@ const File = () => {
 
 	const getall = async () => {
 		let ret = await db.readAll();
-		ret.sort((x, y) => (x.dateStart > y.dateStart ? 1 : -1));
+		ret.sort((x, y) => (x.dateStart < y.dateStart ? 1 : -1));
 		setDeleted(false);
 		setFileman([...ret]);
 	};
@@ -101,11 +102,15 @@ const File = () => {
 	return fileman ? (
 		<>
 			<ProgramModal visible={creatorVisible} setVisible={setCreatorVisible} />
+			<ConfigProvider renderEmpty={() => renderNoData({
+				type: "Program",
+				doCreateProgram,
+			})}>
 			<List
 				header={
 					<div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-						<h3>All Programs</h3>
-						<Button style={{ float: "right" }} type="primary" htmlType="submit" shape="round"
+						<h2 style={{margin:"0"}}>All Programs</h2>
+						<Button style={{ float: "right" }} type="primary" htmlType="submit"
 							onClick={doCreateProgram}
 						>
 							<PlusOutlined />
@@ -145,6 +150,7 @@ const File = () => {
 					</List.Item>
 				)}
 			/>
+			</ConfigProvider>
 		</>
 	) : (
 		<Skeleton />

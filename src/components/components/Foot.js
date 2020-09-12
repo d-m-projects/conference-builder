@@ -10,7 +10,7 @@ const { Footer } = Layout
 
 function Foot() {
 	return (
-		<Footer style={{ textAlign: 'center' }}><h4>This is the Footer!</h4></Footer>
+		<Footer style={{ textAlign: 'center' }}></Footer>
 	);
 }
 
