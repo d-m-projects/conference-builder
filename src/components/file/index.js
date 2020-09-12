@@ -9,7 +9,7 @@ import FileSaver from "file-saver";
 import db from "../../data/database";
 
 // antd components
-import { DatePicker, message, Card, Button, Modal, List, Skeleton} from "antd";
+import { DatePicker, message, Card, Button, Modal, List, Skeleton, ConfigProvider} from "antd";
 import {
 	EditOutlined,
 	DownloadOutlined,
@@ -22,6 +22,7 @@ import {
 // Components
 import { VIEW } from "../forms/FormManager";
 import ProgramModal from "../Modals/ProgramModal";
+import renderNoData from "../components/NoData"
 
 const { RangePicker } = DatePicker;
 const { confirm } = Modal;
@@ -125,6 +126,10 @@ const File = () => {
 	return fileman ? (
 		<>
 			<ProgramModal visible={creatorVisible} setVisible={setCreatorVisible} />
+			<ConfigProvider renderEmpty={() => renderNoData({
+				type: "program",
+				doCreateProgram,
+			})}>
 			<List
 				header={
 					<div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
@@ -161,6 +166,7 @@ const File = () => {
 					</List.Item>
 				)}
 			/>
+			</ConfigProvider>
 		</>
 	) : (
 		<Skeleton />

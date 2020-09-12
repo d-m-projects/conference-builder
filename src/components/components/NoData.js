@@ -8,17 +8,33 @@ import { PlusOutlined, } from '@ant-design/icons';
 //Components
 
 function renderNoData(data) {
-	const { type, date, handleAddSession, handleAddPresentation, sessionId } = data
+	const { type, date, sessionId, handleAddSession, handleAddPresentation, doCreateProgram } = data
 
-	if (type === "presentation") console.log(`type: `, type)
-	// if (type === "session") console.log(`func: `, doClick)
+	console.log(`NoData.js 13: doCreateProgram`, typeof doCreateProgram === "function")
+	console.log(`NoData.js 13: handleAddSession`, typeof handleAddSession === "function")
+	console.log(`NoData.js 13: handleAddPresentation`, typeof handleAddPresentation === "function")
 
 	const onClick = (e) => {
-		if (type === "session" && handleAddSession) {
-			handleAddSession(date)
-		} else if (type === "presentation" && handleAddPresentation){
-			handleAddPresentation(sessionId)
+		console.log(`NoData.js 17: `, doCreateProgram)
+		switch (true) {
+			case (type === "program" && typeof doCreateProgram === "function"):
+				console.log(`NoData.js 27: `, )
+				doCreateProgram()
+				break;
+		
+			case (type === "session" && handleAddSession):
+				handleAddSession(date)
+				break;
+		
+			case (type === "presentation" && handleAddPresentation):
+				handleAddPresentation(sessionId)
+				break;
+		
+			default:
+				console.log(`NoData.js 31: nothin`, )
+				break;
 		}
+
 	}
 
 	return (
