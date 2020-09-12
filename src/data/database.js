@@ -36,6 +36,7 @@ db.readAll = async (data) => {
 
 db.insert = (data) => {
 	const dataString = JSON.parse(JSON.stringify(data))
+	delete dataString.id
 	return db.programs.add(dataString)
 		.then((x) => {
 			conlog(">>> DB Added:", x, dataString)
@@ -68,18 +69,6 @@ db.update = (data) => {
 			console.warn(">>> DB Update error", err.inner.message)
 		})
 }
-
-// db.clean = () => {
-// 	const action = db.delete()
-// 		.then((x) => {
-// 			conlog(">>> DB Cleaned", x);
-// 		})
-// 		.catch((err) => {
-// 			console.error(">>> DB Clean error:", err);
-// 		})
-
-// 	return action
-// }
 
 export default db
 
