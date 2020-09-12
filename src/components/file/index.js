@@ -9,7 +9,7 @@ import { exportProgramToFile, copyProgramToClipboard } from "../file/yamlOperati
 import db from "../../data/database";
 
 // antd components
-import { message, Card, Button, Modal, List, Skeleton} from "antd";
+import { message, Card, Button, Modal, List, Skeleton, Tooltip} from "antd";
 import {
 	EditOutlined,
 	DownloadOutlined,
@@ -119,11 +119,19 @@ const File = () => {
 				renderItem={item => (
 					<List.Item
 						actions={[
-							<EditOutlined onClick={() => doEditClick(item.id)} />,
-							<DownloadOutlined onClick={() => exportProgramToFile(item.id)} />,
-							<CopyOutlined onClick={() => copyProgramToClipboard(item.id)} />,
-							<DeleteTwoTone onClick={() => doDelete(item)} twoToneColor="red" />,
-						]}
+              <Tooltip title="Edit Program">
+							  <EditOutlined onClick={() => doEditClick(item.id)} />
+              </Tooltip>,
+							<Tooltip title="Export program to file">
+                <DownloadOutlined onClick={() => exportProgramToFile(item.id)} />
+              </Tooltip>,
+              <Tooltip title="Copy program to clipboard">
+							  <CopyOutlined onClick={() => copyProgramToClipboard(item.id)} />
+              </Tooltip>,
+              <Tooltip title="Delete program">
+							  <DeleteTwoTone onClick={() => doDelete(item)} twoToneColor="red" />
+              </Tooltip>
+            ]}
 					>
 						<List.Item.Meta
 							title={item.name}
