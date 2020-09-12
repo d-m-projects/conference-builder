@@ -3,13 +3,13 @@ import { ProgramContext } from "../../contexts/Program";
 import { useHistory } from "react-router-dom";
 
 import moment from "moment";
-import YAML from "yaml";
-import FileSaver from "file-saver";
+
+import { exportProgramToFile, copyProgramToClipboard } from "../file/yamlOperations";
 
 import db from "../../data/database";
 
 // antd components
-import { DatePicker, message, Card, Button, Modal, List, Skeleton} from "antd";
+import { message, Card, Button, Modal, List, Skeleton} from "antd";
 import {
 	EditOutlined,
 	DownloadOutlined,
@@ -23,7 +23,6 @@ import {
 import { VIEW } from "../forms/FormManager";
 import ProgramModal from "../Modals/ProgramModal";
 
-const { RangePicker } = DatePicker;
 const { confirm } = Modal;
 
 const File = () => {
@@ -43,29 +42,6 @@ const File = () => {
 	const doEditClick = async (id) => {
 		await loadProgram(id);
 		history.push("/review", { initialView: VIEW.REVIEW });
-	};
-
-	const doDownloadClick = async (id) => {
-		const dbProgramData = await db.read(id);
-		const yamlProgram = YAML.stringify(dbProgramData);
-
-		const yamlFile = new Blob([yamlProgram], { type: "text/yaml;charset=utf-8" });
-
-		FileSaver.saveAs(yamlFile, `${dbProgramData.name}.yaml`);
-	};
-
-	const doCopyClick = async (id) => {
-		const dbProgramData = await db.read(id);
-		const yamlProgram = YAML.stringify(dbProgramData);
-
-		navigator.clipboard.writeText(yamlProgram).then(
-			() => {
-				message.success("Program YAML copied to clipboard!");
-			},
-			() => {
-				message.error("Could not copy yaml program to clipboard, try another browser?");
-			}
-		);
 	};
 
 	const doDelete = (props) => {
@@ -144,8 +120,8 @@ const File = () => {
 					<List.Item
 						actions={[
 							<EditOutlined onClick={() => doEditClick(item.id)} />,
-							<DownloadOutlined onClick={() => doDownloadClick(item.id)} />,
-							<CopyOutlined onClick={() => doCopyClick(item.id)} />,
+							<DownloadOutlined onClick={() => exportProgramToFile(item.id)} />,
+							<CopyOutlined onClick={() => copyProgramToClipboard(item.id)} />,
 							<DeleteTwoTone onClick={() => doDelete(item)} twoToneColor="red" />,
 						]}
 					>

@@ -5,8 +5,14 @@ import { useHistory } from "react-router-dom";
 import moment from "moment";
 
 // antd components
-import { Skeleton, Table, Card, Button, Space, Tooltip, Divider } from "antd";
-import { PlusOutlined, UnorderedListOutlined, SettingOutlined } from "@ant-design/icons";
+import { Skeleton, Table, Card, Space, Tooltip, Divider } from "antd";
+import {
+  PlusOutlined,
+  UnorderedListOutlined,
+  SettingOutlined,
+  DownloadOutlined,
+  CopyOutlined,
+} from "@ant-design/icons";
 
 // Components
 import { VIEW } from "../forms/FormManager";
@@ -15,6 +21,7 @@ import Sessions from "./Sessions";
 import ProgramModal from "../Modals/ProgramModal";
 
 import { formatDataSource } from "./formatDataSource";
+import { exportProgramToFile, copyProgramToClipboard } from "../file/yamlOperations";
 
 // Dev test data
 // import injection from "../../data/testdata";
@@ -43,9 +50,9 @@ function Agenda() {
   // if `program` is empty, fill it with example data for visualization.
   // Use when you need complete data in `program`
   // (so you don't have to enter it manually)
-//   if (!program.dateStart) {
-//   	program.injectTestData()
-//   }
+  //   if (!program.dateStart) {
+  //   	program.injectTestData()
+  //   }
 
   const handleAddSession = (day) => {
     history.push("/program", {
@@ -65,24 +72,29 @@ function Agenda() {
     setDrawerVisible(true);
   };
 
-  const programHeaderDateRange = (p) => {
-    const programDateString = `${moment(p.dateStart).format("MMM DD")} - ${moment(p.dateEnd).format("MMM DD")}`;
-
+  const programWidgets = (p) => {
     return (
-      <Button type="text" style={{ margin: 0, padding: 0 }}>
-        {programDateString}
-      </Button>
+      <Space size={10}>
+        <Tooltip title="Edit Program">
+          <SettingOutlined onClick={handleEditProgram} />
+        </Tooltip>
+        <Tooltip title="Export program to file">
+          <DownloadOutlined onClick={() => exportProgramToFile(program.id)} />
+        </Tooltip>
+        <Tooltip title="Copy program to clipboard">
+          <CopyOutlined onClick={() => copyProgramToClipboard(program.id)} />
+        </Tooltip>
+      </Space>
     );
   };
 
   const programHeader = (p) => {
+    const programDateString = `${moment(p.dateStart).format("MMM DD")} - ${moment(p.dateEnd).format("MMM DD")}`;
+
     return (
-      <Space size={8}>
-        <span>{p.name}</span>
-        <Tooltip title="Edit Program">
-          <SettingOutlined onClick={handleEditProgram} />
-        </Tooltip>
-      </Space>
+      <span>
+        {p.name} - ({programDateString})
+      </span>
     );
   };
 
@@ -97,7 +109,7 @@ function Agenda() {
         single={single}
       />
 
-      <Card title={programHeader(program)} extra={programHeaderDateRange(program)}>
+      <Card title={programHeader(program)} extra={programWidgets()}>
         <Table
           className="program-agenda"
           showHeader={false}
