@@ -21,7 +21,7 @@ function PresenterInput(props) {
     });
 
     parentForm.setFieldsValue({ presenter: "", presenterList: names });
-  }, [presenters]);
+  }, [presenters, parentForm]);
 
   const addPresenter = () => {
     /*

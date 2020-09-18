@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useCallback } from "react";
 import { ProgramContext } from "../../contexts/Program";
 import { useHistory } from "react-router-dom";
 
@@ -85,21 +85,40 @@ const File = () => {
 		});
 	};
 
-	const getall = async () => {
-		let ret = await db.readAll();
-		if (ret.length === 0) {
-			// DEV ONLY (by darrin)
-			// if `program` is empty, fill it with example data for visualization.
-			// Use when you need complete data in `program`
-			// (so you don't have to enter it manually)
+	// const getall = async () => {
+	// 	let ret = await db.readAll();
+	// 	if (ret.length === 0) {
+	// 		// DEV ONLY (by darrin)
+	// 		// if `program` is empty, fill it with example data for visualization.
+	// 		// Use when you need complete data in `program`
+	// 		// (so you don't have to enter it manually)
 
-			program.injectTestData()
-			window.location.reload()
-		}
-		ret.sort((x, y) => (x.dateStart < y.dateStart ? 1 : -1));
-		setDeleted(false);
-		setFileman([...ret]);
-	};
+	// 		program.injectTestData()
+	// 		window.location.reload()
+	// 	}
+	// 	ret.sort((x, y) => (x.dateStart < y.dateStart ? 1 : -1));
+	// 	setDeleted(false);
+	// 	setFileman([...ret]);
+	// };
+
+	const getall = useCallback(
+		async () => {
+			let ret = await db.readAll();
+			if (ret.length === 0) {
+				// DEV ONLY (by darrin)
+				// if `program` is empty, fill it with example data for visualization.
+				// Use when you need complete data in `program`
+				// (so you don't have to enter it manually)
+
+				program.injectTestData()
+				window.location.reload()
+			} else {
+				ret.sort((x, y) => (x.dateStart < y.dateStart ? 1 : -1));
+				setDeleted(false);
+				setFileman([...ret]);
+			}
+		},[program],
+	)
 
 	useEffect(() => {
 		getall();

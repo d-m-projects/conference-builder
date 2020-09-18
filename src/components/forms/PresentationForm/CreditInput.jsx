@@ -16,7 +16,7 @@ function CreditInput(props) {
       creditAmount: 0,
       creditList: creditsList,
     });
-  }, [creditsList]);
+  }, [creditsList, parentForm]);
 
   const addCredit = () => {
     // HELPER FUNC

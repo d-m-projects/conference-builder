@@ -54,7 +54,7 @@ function PresentationForm(props) {
     if (sessionId >= 0) {
       selectSession(sessionId);
     }
-  }, [sessionId]);
+  }, [sessionId, selectSession]);
 
   useEffect(() => {
     // Handles all UI flows (add, add / edit from agenda)
@@ -73,7 +73,7 @@ function PresentationForm(props) {
         creditAmount: 0,
       });
     }
-  }, [initialFormValues]);
+  }, [initialFormValues, initialFormMode]);
 
   useEffect(() => {
     if (formMode === "add") {
@@ -84,7 +84,7 @@ function PresentationForm(props) {
     }
 
     form.resetFields();
-  }, [formMode, prefillValues]);
+  }, [formMode, prefillValues, form]);
 
   const formSubmit = (values) => {
     // We need 1 presenter minimum

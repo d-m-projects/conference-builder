@@ -222,8 +222,11 @@ const ProgramProvider = (props) => {
 						foundSessionId = session.id;
 						return true;
 					}
+					return presentation
 				});
+				return session
 			});
+			return day
 		});
 
 		if (foundSessionId >= 0) {

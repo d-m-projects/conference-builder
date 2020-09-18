@@ -1,12 +1,11 @@
 import React from "react";
 
 // antd components
-import { Table, Space, ConfigProvider } from "antd";
+import { Table, Space } from "antd";
 
 // Components
 import EditDeleteWidget from "./EditDeleteWidget";
 import { formatDataSource } from "./formatDataSource";
-import renderNoData from "../components/NoData"
 
 const { Column } = Table;
 
@@ -39,7 +38,6 @@ function Presentations({ presentations }) {
 			className={`program-presentation`}
 			showHeader={false}
 			size="small"
-			style={{ marginLeft: "20px" }}
 			dataSource={formatDataSource(presentations)}
 			pagination={false}>
 			<Column
