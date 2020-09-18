@@ -142,7 +142,7 @@ function ProgramModal(props) {
             modalButton: "Edit Program",
           };
     setProgramInfo(programData);
-  }, [program]);
+  }, [program, history.location.pathname]);
 
   return (
     <Modal closable title={programInfo.modalHeader} visible={visible} onCancel={handleClose} footer={[]}>

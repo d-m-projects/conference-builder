@@ -9,7 +9,7 @@ import { exportProgramToFile, copyProgramToClipboard } from "../file/yamlOperati
 import db from "../../data/database";
 
 // antd components
-import { message, Card, Button, Modal, List, Skeleton, Tooltip, ConfigProvider } from "antd";
+import { message, Card, Button, Modal, List, Skeleton, Tooltip, ConfigProvider, Alert } from "antd";
 import {
 	EditOutlined,
 	DownloadOutlined,
@@ -29,13 +29,13 @@ const { confirm } = Modal;
 const File = () => {
 	const program = useContext(ProgramContext);
 	const { loadProgram, clearProgram } = program;
-	
+
 	const history = useHistory();
 
 	const [fileman, setFileman] = useState([]);
 	const [deleted, setDeleted] = useState(false); // reload database when a program is deleted
 	const [creatorVisible, setCreatorVisible] = useState(false); // show the create program modal
-	
+
 	const doCreateProgram = () => {
 		clearProgram();
 		setCreatorVisible(true)
@@ -45,7 +45,7 @@ const File = () => {
 		await loadProgram(id);
 		history.push("/review", { initialView: VIEW.REVIEW });
 	};
-	
+
 	const doDelete = (props) => {
 		console.log(`Request to delete program from DB: `, props.name, props);
 
@@ -87,6 +87,15 @@ const File = () => {
 
 	const getall = async () => {
 		let ret = await db.readAll();
+		if (ret.length === 0) {
+			// DEV ONLY (by darrin)
+			// if `program` is empty, fill it with example data for visualization.
+			// Use when you need complete data in `program`
+			// (so you don't have to enter it manually)
+
+			program.injectTestData()
+			window.location.reload()
+		}
 		ret.sort((x, y) => (x.dateStart < y.dateStart ? 1 : -1));
 		setDeleted(false);
 		setFileman([...ret]);
@@ -94,11 +103,11 @@ const File = () => {
 
 	useEffect(() => {
 		getall();
-	}, []);
+	}, [getall]);
 
 	useEffect(() => {
 		getall();
-	}, [deleted]);
+	}, [deleted, getall]);
 
 	return fileman ? (
 		<>
@@ -111,12 +120,9 @@ const File = () => {
 					header={
 						<div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
 							<h2 style={{ margin: "0" }}>All Programs</h2>
-							<Button style={{ float: "right" }} type="primary" htmlType="submit"
-								onClick={doCreateProgram}
-							>
-								<PlusOutlined />
-						Create
-					</Button>
+							<Button style={{ float: "right" }} type="primary" htmlType="submit" onClick={doCreateProgram}>
+								<PlusOutlined />Create
+							</Button>
 						</div>
 					}
 					bordered
@@ -152,6 +158,7 @@ const File = () => {
 					)}
 				/>
 			</ConfigProvider>
+			<Alert message="Multiple refreshes were required to populate the list with example data." type="info" showIcon closable />
 		</>
 	) : (
 			<Skeleton />
