@@ -1,15 +1,10 @@
 export const injection = {
 	name: "Diversified Commercial Services",
-	dateStart: "2020-09-20T12:00:00.000Z",
-	dateEnd: "2020-09-23T22:00:00.000Z",
+	dateStart: "2020-09-21T12:00:00.000Z",
+	dateEnd: "2020-09-24T22:00:00.000Z",
 	days: [
 		{
 			id: 0,
-			date: "2020-09-20T12:00:00.000Z",
-			sessions: []
-		},
-		{
-			id: 1,
 			date: "2020-09-21T12:00:00.000Z",
 			sessions: [
 				{
@@ -71,7 +66,7 @@ export const injection = {
 			]
 		},
 		{
-			id: 2,
+			id: 1,
 			date: "2020-09-22T12:00:00.000Z",
 			sessions: [
 				{
@@ -130,8 +125,13 @@ export const injection = {
 				}
 			]
 		}, {
-			id: 3,
+			id: 2,
 			date: "2020-09-23T12:00:00.000Z",
+			sessions: []
+		},
+		{
+			id: 3,
+			date: "2020-09-24T12:00:00.000Z",
 			sessions: []
 		},
 	],
